@@ -96,7 +96,7 @@ jobs:
           echo 'RECAPTCHA_PUBLIC_KEY=${{ secrets.RECAPTCHA_PUBLIC_KEY }}' >> .env
           echo 'RECAPTCHA_PRIVATE_KEY=${{ secrets.RECAPTCHA_PRIVATE_KEY }}' >> .env
       - name: Transfer static files to the Swarm manager
-        uses: appleboy/scp-action@v0.1.1
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SWARM_MANAGER_IP }}
           username: ${{ secrets.SSH_USER }}
