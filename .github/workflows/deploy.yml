@@ -40,7 +40,7 @@ jobs:
     needs: [ build ]
     environment:
       name: production
-      url: https://hackstudentlife.ca
+      url: https://makeuoft.ca
     defaults:
       run:
         working-directory: deployment
