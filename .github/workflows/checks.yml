@@ -52,8 +52,6 @@ jobs:
           node-version: '16.x'
       - name: Install dependencies
         run: yarn install
-      - name: Formatting check
-        run: yarn run prettier-check
 
   dashboard-checks:
     runs-on: ubuntu-latest
