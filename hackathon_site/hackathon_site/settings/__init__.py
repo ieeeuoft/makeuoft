@@ -37,9 +37,7 @@ IN_TESTING = False  # Overwritten by hackathon_site.settings.ci
 if DEBUG:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
     INTERNAL_IPS = ["localhost", "127.0.0.1"]
-    CORS_ORIGIN_REGEX_WHITELIST = [
-        r"^https?://localhost:?\d*$",
-    ]
+    CORS_ORIGIN_REGEX_WHITELIST = [r"^https?://localhost:?\d*$"]
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     HSS_URL = "http://localhost:3000/"
 else:
@@ -194,7 +192,7 @@ CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": f"redis://{REDIS_URI}",
-        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient",},
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
         # Default time for cache key expiry, in seconds. Can be changed on a per-key basis
         "TIMEOUT": 600,
     }
@@ -221,7 +219,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "PAGE_SIZE": 1000,
-    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend",],
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
 # Internationalization
@@ -273,8 +271,8 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {
-        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse",},
-        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue",},
+        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
+        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
     },
     "handlers": {
         "console": {
@@ -318,10 +316,14 @@ DEFAULT_FROM_EMAIL = "hello@makeuoft.ca"
 CONTACT_EMAIL = DEFAULT_FROM_EMAIL
 HSS_ADMIN_EMAIL = "hardware@makeuoft.ca"
 
-REGISTRATION_OPEN_DATE = datetime(2024, 1, 9, tzinfo=TZ_INFO)
-REGISTRATION_CLOSE_DATE = datetime(2024, 2, 4, tzinfo=TZ_INFO)
-EVENT_START_DATE = datetime(2024, 2, 17, 8, 0, 0, tzinfo=TZ_INFO)
-EVENT_END_DATE = datetime(2024, 2, 18, 17, 0, 0, tzinfo=TZ_INFO)
+REGISTRATION_OPEN_DATE = datetime(
+    2025, 1, 11, tzinfo=TZ_INFO
+)  # CHANGE FOR TESTING PURPOSES
+REGISTRATION_CLOSE_DATE = datetime(
+    2025, 2, 4, tzinfo=TZ_INFO
+)  # CHANGE FOR TESTING PURPOSES
+EVENT_START_DATE = datetime(2025, 2, 15, 8, 0, 0, tzinfo=TZ_INFO)
+EVENT_END_DATE = datetime(2025, 2, 16, 17, 0, 0, tzinfo=TZ_INFO)
 HARDWARE_SIGN_OUT_START_DATE = datetime(2024, 2, 18, 6, 30, tzinfo=TZ_INFO)
 HARDWARE_SIGN_OUT_END_DATE = datetime(2024, 2, 18, 11, 0, tzinfo=TZ_INFO)
 
