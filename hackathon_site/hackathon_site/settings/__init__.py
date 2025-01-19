@@ -317,15 +317,15 @@ CONTACT_EMAIL = DEFAULT_FROM_EMAIL
 HSS_ADMIN_EMAIL = "hardware@makeuoft.ca"
 
 REGISTRATION_OPEN_DATE = datetime(
-    2025, 1, 31, tzinfo=TZ_INFO
+    2025, 1, 17, tzinfo=TZ_INFO
 )  # CHANGE FOR TESTING PURPOSES
 REGISTRATION_CLOSE_DATE = datetime(
     2025, 2, 4, tzinfo=TZ_INFO
 )  # CHANGE FOR TESTING PURPOSES
 EVENT_START_DATE = datetime(2025, 2, 15, 8, 0, 0, tzinfo=TZ_INFO)
 EVENT_END_DATE = datetime(2025, 2, 16, 17, 0, 0, tzinfo=TZ_INFO)
-HARDWARE_SIGN_OUT_START_DATE = datetime(2024, 2, 18, 6, 30, tzinfo=TZ_INFO)
-HARDWARE_SIGN_OUT_END_DATE = datetime(2024, 2, 18, 11, 0, tzinfo=TZ_INFO)
+HARDWARE_SIGN_OUT_START_DATE = datetime(2025, 1, 17, 6, 30, tzinfo=TZ_INFO)
+HARDWARE_SIGN_OUT_END_DATE = datetime(2025, 2, 18, 11, 0, tzinfo=TZ_INFO)
 
 # Registration user requirements
 MINIMUM_AGE = 18
