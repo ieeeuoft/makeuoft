@@ -29,7 +29,7 @@ const extraState: OrderExtraState = {
     hardwareInOrders: null,
     returnedOrders: [],
     checkedOutOrders: [],
-    credit: 100
+    credit: 100,
 };
 
 const pendingOrderAdapter = createEntityAdapter<OrderInTable>();
@@ -116,7 +116,7 @@ const orderSlice = createSlice({
                 checkedOutOrders,
                 returnedOrders,
                 hardwareIdsToFetch,
-                credit
+                // TODO: add credit
             } = teamOrderListSerialization(payload.results);
 
             pendingOrderAdapter.setAll(state, pendingOrders);

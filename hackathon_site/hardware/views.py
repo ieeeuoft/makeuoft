@@ -62,7 +62,7 @@ class HardwareListView(mixins.ListModelMixin, generics.GenericAPIView):
     filter_backends = (filters.DjangoFilterBackend, SearchFilter, OrderingFilter)
     filterset_class = HardwareFilter
     search_fields = ("name",)
-    ordering_fields = ("name", "quantity_remaining")
+    ordering_fields = ("name", "quantity_remaining", "credits")
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

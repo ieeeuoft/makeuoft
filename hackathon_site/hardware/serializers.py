@@ -13,12 +13,14 @@ from hardware.models import Hardware, Category, OrderItem, Order, Incident
 
 class HardwareSerializer(serializers.ModelSerializer):
     quantity_remaining = serializers.IntegerField()
+    credits = serializers.IntegerField()
 
     class Meta:
         model = Hardware
         fields = (
             "id",
             "name",
+            "credits",
             "model_number",
             "manufacturer",
             "datasheet",
