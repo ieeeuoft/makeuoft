@@ -270,18 +270,11 @@ class CurrentTeamOrderListView(generics.ListAPIView):
     permission_classes = [UserHasProfile]
 
     def get_queryset(self):
-        """
-        Filters orders for the current team and prefetches related hardware data to calculate total credits.
-        """
         return (
             Order.objects.filter(team_id=self.request.user.profile.team_id)
-            .prefetch_related(
-                "items__hardware"
-            )  # Ensure OrderItem & Hardware are preloaded
-            .annotate(
-                total_credits=Sum(F("items__hardware__credits"))
-            )  # Sum up the credits
+            .prefetch_related("items__hardware")
         )
+
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

@@ -162,13 +162,8 @@ class OrderListSerializer(serializers.ModelSerializer):
         return obj.team.team_code if obj.team else None
 
     def get_total_credits(self, obj):
-        """
-        Fetches total credits dynamically by summing up credits from related OrderItems.
-        """
-        total_credits = obj.items.aggregate(total_credits=Sum(F("hardware__credits")))[
-            "total_credits"
-        ]
-        return total_credits or 0  # Return 0 if no credits are found
+        # Directly use the model method
+        return obj.get_total_credits()
 
 
 class OrderChangeSerializer(OrderListSerializer):
