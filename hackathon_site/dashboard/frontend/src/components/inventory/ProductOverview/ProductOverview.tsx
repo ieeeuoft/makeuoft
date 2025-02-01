@@ -91,7 +91,7 @@ export const AddToCartForm = ({
             disabled={dropdownNum === 0 || (!isTestUser && isOutsideSignOutPeriod)}
             disableElevation
         >
-            Add to cart (${totalCredits})
+            Add to cart ({totalCredits} Credits)
         </Button>
     );
     return (
