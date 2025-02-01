@@ -10,6 +10,7 @@ export interface APIListResponse<T> {
 export interface Hardware {
     id: number;
     name: string;
+    credits: number;
     model_number: string;
     manufacturer: string;
     datasheet: string;

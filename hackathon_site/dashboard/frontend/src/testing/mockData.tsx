@@ -470,6 +470,7 @@ export const mockLargeTeam: Team = {
 export const mockHardware: Hardware[] = [
     {
         id: 1,
+        credits: 5,
         name: "Arduino",
         model_number: "Uno",
         manufacturer: "Adafruit",
@@ -483,6 +484,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 2,
+        credits: 5,
         name: "Some Hardware 2",
         model_number: "ABC",
         manufacturer: "Acme",
@@ -496,6 +498,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 3,
+        credits: 5,
         name: "Some Hardware 3",
         model_number: "DEF",
         manufacturer: "Acme",
@@ -509,6 +512,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 4,
+        credits: 5,
         name: "Grove temperature and humidity sensor pro",
         model_number: "DHT11",
         manufacturer: "Grove",
@@ -522,6 +526,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 5,
+        credits: 5,
         name: "Some Hardware 5",
         model_number: "GHI",
         manufacturer: "Acme",
@@ -535,6 +540,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 6,
+        credits: 5,
         name: "Some Hardware 6",
         model_number: "JKL",
         manufacturer: "Acme",
@@ -548,6 +554,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 7,
+        credits: 5,
         name: "Some Hardware 7",
         model_number: "MNO",
         manufacturer: "Acme",
@@ -561,6 +568,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 8,
+        credits: 5,
         name: "Some Hardware 8",
         model_number: "PQR",
         manufacturer: "Acme",
@@ -574,6 +582,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 9,
+        credits: 5,
         name: "Raspberry Pi",
         model_number: "Pi",
         manufacturer: "Raspberry Pi Foundation",
@@ -587,6 +596,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 10,
+        credits: 5,
         name: "Hardware with no optional fields",
         model_number: "ABCD",
         manufacturer: "Nobody",
