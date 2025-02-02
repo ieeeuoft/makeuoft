@@ -270,11 +270,9 @@ class CurrentTeamOrderListView(generics.ListAPIView):
     permission_classes = [UserHasProfile]
 
     def get_queryset(self):
-        return (
-            Order.objects.filter(team_id=self.request.user.profile.team_id)
-            .prefetch_related("items__hardware")
-        )
-
+        return Order.objects.filter(
+            team_id=self.request.user.profile.team_id
+        ).prefetch_related("items__hardware")
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

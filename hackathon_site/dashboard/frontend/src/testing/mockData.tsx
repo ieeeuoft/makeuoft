@@ -279,6 +279,7 @@ export const mockTeam: Team = {
         },
     ],
     project_description: "",
+    credits: 100,
 };
 
 export const mockTeamMultiple = {
@@ -345,6 +346,7 @@ export const mockTeamMultiple = {
         },
     ],
     project_description: "",
+    credist: 10,
 };
 
 // Valid Team Size
@@ -384,6 +386,7 @@ export const mockValidTeam: Team = {
         },
     ],
     project_description: "",
+    credits: 10,
 };
 
 // Team with too many members
@@ -465,6 +468,7 @@ export const mockLargeTeam: Team = {
         },
     ],
     project_description: "",
+    credits: 10,
 };
 
 export const mockHardware: Hardware[] = [

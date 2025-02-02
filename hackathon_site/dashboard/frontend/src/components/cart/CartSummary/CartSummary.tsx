@@ -12,12 +12,11 @@ import {
     subtotalCreditsSelector,
 } from "slices/hardware/cartSlice";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { teamSizeSelector } from "slices/event/teamSlice";
+import { teamSelector, teamSizeSelector } from "slices/event/teamSlice";
 import { isTestUserSelector } from "slices/users/userSlice";
 import { projectDescriptionSelector } from "slices/event/teamSlice";
 import { getCreditsUsedSelector } from "slices/order/orderSlice";
 import {
-    creditsAvailable,
     hardwareSignOutEndDate,
     hardwareSignOutStartDate,
     maxTeamSize,
@@ -33,7 +32,10 @@ const CartSummary = () => {
     const projectDescription = useSelector(projectDescriptionSelector);
     const subtotalCredits = useSelector(subtotalCreditsSelector);
     const creditsUsed = useSelector(getCreditsUsedSelector);
-    const projectedCredits = creditsAvailable - creditsUsed - subtotalCredits;
+    const creditsAvailable = useSelector(teamSelector)?.credits;
+    const projectedCredits = creditsAvailable
+        ? creditsAvailable - creditsUsed - subtotalCredits
+        : 0;
     const teamSizeValid = teamSize >= minTeamSize && teamSize <= maxTeamSize;
     const dispatch = useDispatch();
     const onSubmit = () => {

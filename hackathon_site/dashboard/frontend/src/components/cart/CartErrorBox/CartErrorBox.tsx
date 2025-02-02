@@ -6,9 +6,9 @@ import {
     subtotalCreditsSelector,
 } from "slices/hardware/cartSlice";
 import Grid from "@material-ui/core/Grid";
-import { teamSizeSelector } from "slices/event/teamSlice";
+import { teamSizeSelector, teamSelector } from "slices/event/teamSlice";
 import { getCreditsUsedSelector } from "slices/order/orderSlice";
-import { creditsAvailable, maxTeamSize, minTeamSize } from "constants.js";
+import { maxTeamSize, minTeamSize } from "constants.js";
 import AlertBox from "components/general/AlertBox/AlertBox";
 import { Link } from "@material-ui/core";
 import DateRestrictionAlert from "components/general/DateRestrictionAlert/DateRestrictionAlert";
@@ -23,8 +23,11 @@ const CartErrorBox = () => {
     const errorMessage = teamSizeTooLarge ? "many" : teamSizeTooSmall ? "few" : "";
     const errorTitle = teamSizeTooLarge ? "Large" : teamSizeTooSmall ? "Small" : "";
     const subtotalCredits = useSelector(subtotalCreditsSelector);
+    const creditsAvailable = useSelector(teamSelector)?.credits;
     const creditsUsed = useSelector(getCreditsUsedSelector);
-    const projectedCredits = creditsAvailable - creditsUsed - subtotalCredits;
+    const projectedCredits = creditsAvailable
+        ? creditsAvailable - creditsUsed - subtotalCredits
+        : 0;
 
     return (
         <Grid direction="row" container>

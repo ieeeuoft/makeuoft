@@ -14,10 +14,10 @@ import { ReactComponent as Inventory } from "assets/images/icons/Hardware.svg";
 import Button from "@material-ui/core/Button";
 
 import { logout, userTypeSelector } from "slices/users/userSlice";
+import { teamSelector } from "slices/event/teamSlice";
 import { RootState } from "slices/store";
 import { cartTotalSelector } from "slices/hardware/cartSlice";
 import { getCreditsUsedSelector } from "slices/order/orderSlice";
-import { creditsAvailable } from "constants.js";
 
 interface NavBarProps {
     logout: any;
@@ -27,7 +27,9 @@ interface NavBarProps {
 export const UnconnectedNavbar = ({ logout, pathname }: NavBarProps) => {
     const cartQuantity = useSelector(cartTotalSelector);
     const userType = useSelector(userTypeSelector);
+    const creditsAvailable = useSelector(teamSelector)?.credits;
     const creditsUsed = useSelector(getCreditsUsedSelector);
+    const creditsRemaining = creditsAvailable ? creditsAvailable - creditsUsed : 0;
 
     const isParticipant = userType === "participant";
     const isAdmin = userType === "admin";
@@ -42,7 +44,7 @@ export const UnconnectedNavbar = ({ logout, pathname }: NavBarProps) => {
                         aria-label="Credits"
                         startIcon={<AccountBalanceWalletIcon />}
                     >
-                        Credits {creditsAvailable - creditsUsed}
+                        Credits {creditsRemaining}
                     </Button>
                 )}
                 {isParticipantOrAdmin && (

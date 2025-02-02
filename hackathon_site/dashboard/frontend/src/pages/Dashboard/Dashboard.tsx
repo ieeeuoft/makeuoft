@@ -12,7 +12,7 @@ import {
 import ProductOverview from "components/inventory/ProductOverview/ProductOverview";
 import Header from "components/general/Header/Header";
 import { cardItems } from "testing/mockData";
-import { hackathonName, creditsAvailable } from "constants.js";
+import { hackathonName } from "constants.js";
 import { useDispatch, useSelector } from "react-redux";
 import {
     getCurrentTeam,

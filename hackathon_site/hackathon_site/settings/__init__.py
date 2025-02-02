@@ -333,6 +333,7 @@ RSVP_DAYS = 7
 # Team requirements
 MIN_MEMBERS = 2
 MAX_MEMBERS = 4
+DEFAULT_CREDITS_AT_START = 300
 
 # The time at which waitlisted people will start being accepted into
 # the event. This usually happens an hour or two after the start of

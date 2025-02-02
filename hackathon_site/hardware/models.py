@@ -131,8 +131,9 @@ class Order(models.Model):
         Sums up credits only for OrderItems where part_returned_health is None.
         """
         return (
-            self.items.filter(part_returned_health__isnull=True)
-            .aggregate(total_credits=Sum(F("hardware__credits")))["total_credits"]
+            self.items.filter(part_returned_health__isnull=True).aggregate(
+                total_credits=Sum(F("hardware__credits"))
+            )["total_credits"]
             or 0
         )
 
