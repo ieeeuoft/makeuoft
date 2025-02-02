@@ -167,6 +167,7 @@ export interface ReturnOrderInTable {
 export interface CartItem {
     hardware_id: number;
     quantity: number;
+    credits: number;
 }
 
 /** Incidents API */

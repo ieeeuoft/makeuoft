@@ -608,9 +608,9 @@ export const mockHardware: Hardware[] = [
 ];
 
 export const mockCartItems: CartItem[] = [
-    { hardware_id: 1, quantity: 3 },
-    { hardware_id: 2, quantity: 1 },
-    { hardware_id: 3, quantity: 2 },
+    { hardware_id: 1, quantity: 3, credits: 5 },
+    { hardware_id: 2, quantity: 1, credits: 5 },
+    { hardware_id: 3, quantity: 2, credits: 5 },
 ];
 
 export const mockPendingOrders: Order[] = [

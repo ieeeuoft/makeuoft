@@ -146,7 +146,13 @@ export const EnhancedAddToCartForm = ({
     const onSubmit = (formikValues: { quantity: string }) => {
         const numQuantity: number = parseInt(formikValues.quantity);
         if (currentQuantityInCart + numQuantity <= (maxPerTeam ?? quantityRemaining)) {
-            dispatch(addToCart({ hardware_id: hardwareId, quantity: numQuantity }));
+            dispatch(
+                addToCart({
+                    hardware_id: hardwareId,
+                    quantity: numQuantity,
+                    credits: credits,
+                })
+            );
             dispatch(
                 displaySnackbar({
                     message: `Added ${numQuantity} ${name} item(s) to your cart.`,

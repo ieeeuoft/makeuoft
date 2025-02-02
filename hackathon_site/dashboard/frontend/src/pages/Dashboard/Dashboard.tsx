@@ -74,9 +74,7 @@ const Dashboard = () => {
             />
             <div className={styles.dashboard}>
                 {/* TODO: MOVE CREDIT TO NAVBAR */}
-                <Typography variant="h1">
-                    {hackathonName} Hardware Dashboard {creditsAvailable - creditsUsed}
-                </Typography>
+                <Typography variant="h1">{hackathonName} Hardware Dashboard</Typography>
                 <DateRestrictionAlert />
                 {isTeamLoading || areOrdersLoading ? (
                     <LinearProgress
