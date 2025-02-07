@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Typography from "@material-ui/core/Typography";
 import Header from "components/general/Header/Header";
 import { hackathonName } from "constants.js";
@@ -22,8 +22,10 @@ const AdminDashboard = () => {
     const pendingFilter: OrderFilters = {
         status: ["Submitted", "Ready for Pickup"],
     };
-    dispatch(setFilters(pendingFilter));
-    // TODO: getting spammed by this call investigate --> dispatch(getOrdersWithFilters());
+    useEffect(() => {
+        dispatch(setFilters(pendingFilter));
+        dispatch(getOrdersWithFilters());
+    }, [dispatch]);
     const numOrdersOnPage = 6;
     const ordersLength =
         allOrders.length <= numOrdersOnPage ? allOrders.length : numOrdersOnPage;
