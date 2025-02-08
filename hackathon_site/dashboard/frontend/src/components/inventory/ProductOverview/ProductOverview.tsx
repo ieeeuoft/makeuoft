@@ -62,6 +62,7 @@ interface AddToCartFormProps extends FormikValues {
 }
 export const AddToCartForm = ({
     quantityRemaining,
+    credits,
     maxPerTeam,
     handleSubmit,
     handleChange,
@@ -72,6 +73,7 @@ export const AddToCartForm = ({
         maxPerTeam !== null
             ? Math.min(quantityRemaining, maxPerTeam)
             : quantityRemaining;
+    const totalCredits = quantity * credits;
 
     const currentDateTime = new Date();
     const isOutsideSignOutPeriod =
@@ -89,7 +91,7 @@ export const AddToCartForm = ({
             disabled={dropdownNum === 0 || (!isTestUser && isOutsideSignOutPeriod)}
             disableElevation
         >
-            Add to cart
+            Add to cart ({totalCredits} Credits)
         </Button>
     );
     return (
@@ -124,12 +126,14 @@ export const AddToCartForm = ({
 
 interface EnhancedAddToCartFormProps {
     quantityRemaining: number;
+    credits: number;
     hardwareId: number;
     name: string;
     maxPerTeam: number | null;
 }
 export const EnhancedAddToCartForm = ({
     quantityRemaining,
+    credits,
     hardwareId,
     name,
     maxPerTeam,
@@ -142,7 +146,13 @@ export const EnhancedAddToCartForm = ({
     const onSubmit = (formikValues: { quantity: string }) => {
         const numQuantity: number = parseInt(formikValues.quantity);
         if (currentQuantityInCart + numQuantity <= (maxPerTeam ?? quantityRemaining)) {
-            dispatch(addToCart({ hardware_id: hardwareId, quantity: numQuantity }));
+            dispatch(
+                addToCart({
+                    hardware_id: hardwareId,
+                    quantity: numQuantity,
+                    credits: credits,
+                })
+            );
             dispatch(
                 displaySnackbar({
                     message: `Added ${numQuantity} ${name} item(s) to your cart.`,
@@ -185,6 +195,7 @@ export const EnhancedAddToCartForm = ({
                     )}
                     <AddToCartForm
                         quantityRemaining={quantityRemaining}
+                        credits={credits}
                         maxPerTeam={maxPerTeam}
                         handleSubmit={formikProps.handleSubmit}
                         handleChange={formikProps.handleChange}
@@ -411,6 +422,7 @@ export const ProductOverview = ({
                     {showAddToCartButton && (
                         <EnhancedAddToCartForm
                             quantityRemaining={hardware.quantity_remaining}
+                            credits={hardware.credits}
                             hardwareId={hardware.id}
                             name={hardware.name}
                             maxPerTeam={maxPerTeam}

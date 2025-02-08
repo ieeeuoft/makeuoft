@@ -75,6 +75,7 @@ class EventTeamAdmin(admin.ModelAdmin):
         "id",
         "team_code",
         "get_members_count",
+        "credits",
         "created_at",
     )
     list_display_links = ("id", "team_code")

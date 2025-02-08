@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth import get_user_model
 import uuid
 
@@ -14,6 +15,7 @@ def _generate_team_code():
 
 class Team(models.Model):
     team_code = models.CharField(max_length=5, default=_generate_team_code, null=False)
+    credits = models.IntegerField(null=False, default=settings.DEFAULT_CREDITS_AT_START)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)

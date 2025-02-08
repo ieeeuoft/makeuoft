@@ -175,6 +175,7 @@ class TeamSerializer(serializers.ModelSerializer):
             "updated_at",
             "profiles",
             "project_description",
+            "credits",
         )
         read_only_fields = (
             "id",
@@ -182,6 +183,7 @@ class TeamSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "profiles",
+            "credits",
         )
 
 

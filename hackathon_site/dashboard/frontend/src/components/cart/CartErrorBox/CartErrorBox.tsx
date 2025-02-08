@@ -1,8 +1,13 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { cartTotalSelector, errorSelector } from "slices/hardware/cartSlice";
+import {
+    cartTotalSelector,
+    errorSelector,
+    subtotalCreditsSelector,
+} from "slices/hardware/cartSlice";
 import Grid from "@material-ui/core/Grid";
-import { teamSizeSelector } from "slices/event/teamSlice";
+import { teamSizeSelector, teamSelector } from "slices/event/teamSlice";
+import { getCreditsUsedSelector } from "slices/order/orderSlice";
 import { maxTeamSize, minTeamSize } from "constants.js";
 import AlertBox from "components/general/AlertBox/AlertBox";
 import { Link } from "@material-ui/core";
@@ -17,6 +22,12 @@ const CartErrorBox = () => {
     const teamSizeTooSmall = teamSize < minTeamSize;
     const errorMessage = teamSizeTooLarge ? "many" : teamSizeTooSmall ? "few" : "";
     const errorTitle = teamSizeTooLarge ? "Large" : teamSizeTooSmall ? "Small" : "";
+    const subtotalCredits = useSelector(subtotalCreditsSelector);
+    const creditsAvailable = useSelector(teamSelector)?.credits;
+    const creditsUsed = useSelector(getCreditsUsedSelector);
+    const projectedCredits = creditsAvailable
+        ? creditsAvailable - creditsUsed - subtotalCredits
+        : 0;
 
     return (
         <Grid direction="row" container>
@@ -48,6 +59,17 @@ const CartErrorBox = () => {
                         }
                         type="warning"
                         title={`Team Size Too ${errorTitle}!`}
+                    />
+                )}
+                {projectedCredits < 0 && (
+                    <AlertBox
+                        body={
+                            <>
+                                {`You have exceeded your available credits. Please adjust your order.`}
+                            </>
+                        }
+                        type="error"
+                        title="Insufficient Credits"
                     />
                 )}
             </Grid>

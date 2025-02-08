@@ -9,11 +9,13 @@ import {
     cartTotalSelector,
     isLoadingSelector,
     submitOrder,
+    subtotalCreditsSelector,
 } from "slices/hardware/cartSlice";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { teamSizeSelector } from "slices/event/teamSlice";
+import { teamSelector, teamSizeSelector } from "slices/event/teamSlice";
 import { isTestUserSelector } from "slices/users/userSlice";
 import { projectDescriptionSelector } from "slices/event/teamSlice";
+import { getCreditsUsedSelector } from "slices/order/orderSlice";
 import {
     hardwareSignOutEndDate,
     hardwareSignOutStartDate,
@@ -28,6 +30,12 @@ const CartSummary = () => {
     const cartOrderLoading = useSelector(isLoadingSelector);
     const teamSize = useSelector(teamSizeSelector);
     const projectDescription = useSelector(projectDescriptionSelector);
+    const subtotalCredits = useSelector(subtotalCreditsSelector);
+    const creditsUsed = useSelector(getCreditsUsedSelector);
+    const creditsAvailable = useSelector(teamSelector)?.credits;
+    const projectedCredits = creditsAvailable
+        ? creditsAvailable - creditsUsed - subtotalCredits
+        : 0;
     const teamSizeValid = teamSize >= minTeamSize && teamSize <= maxTeamSize;
     const dispatch = useDispatch();
     const onSubmit = () => {
@@ -48,6 +56,18 @@ const CartSummary = () => {
                     {cartQuantity}
                 </Typography>
             </Container>
+            <Container className={styles.qty}>
+                <Typography variant="body2">Subtotal</Typography>
+                <Typography variant="body2" data-testid="subtotal-credits">
+                    {subtotalCredits}
+                </Typography>
+            </Container>
+            <Container className={styles.qty}>
+                <Typography variant="body2">Remaining Credits</Typography>
+                <Typography variant="body2" data-testid="subtotal-credits">
+                    {projectedCredits}
+                </Typography>
+            </Container>
             <Typography variant="body2" className={styles.msg}>
                 Your entire team's order is here. Ensure that you have the correct
                 number of hardware items before submitting.
@@ -63,7 +83,8 @@ const CartSummary = () => {
                     !projectDescription || // Checks if projectDescription is null, undefined, or an empty string
                     (projectDescription &&
                         projectDescription.length < minProjectDescriptionLength) ||
-                    (!isTestUser && isOutsideSignOutPeriod)
+                    (!isTestUser && isOutsideSignOutPeriod) ||
+                    projectedCredits < 0
                 }
                 onClick={onSubmit}
                 disableElevation

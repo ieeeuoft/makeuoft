@@ -21,12 +21,14 @@ export interface CartExtraState {
         order_id: number;
         errors: fulfillmentError[];
     } | null;
+    subtotal: number;
 }
 
 const extraState: CartExtraState = {
     isLoading: false,
     error: null,
     fulfillmentError: null,
+    subtotal: 0,
 };
 
 const cartAdapter = createEntityAdapter<CartItem>({
@@ -122,6 +124,7 @@ const cartSlice = createSlice({
                 cartAdapter.upsertOne(state, {
                     hardware_id: payload.hardware_id,
                     quantity: existingEntity.quantity + payload.quantity,
+                    credits: payload.credits,
                 });
             } else {
                 cartAdapter.addOne(state, payload);
@@ -184,6 +187,12 @@ export const isLoadingSelector = createSelector(
 export const cartTotalSelector = createSelector(
     [cartSelectors.selectAll],
     (cartItems) => cartItems.reduce((accum, item) => accum + item.quantity, 0)
+);
+
+export const subtotalCreditsSelector = createSelector(
+    [cartSelectors.selectAll],
+    (cartItems) =>
+        cartItems.reduce((accum, item) => accum + item.credits * item.quantity, 0)
 );
 
 export const errorSelector = createSelector(

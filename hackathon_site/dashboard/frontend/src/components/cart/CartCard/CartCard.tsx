@@ -93,6 +93,7 @@ export const CartCard = ({ hardware_id, quantity, error }: CartCardProps) => {
     );
 
     let maxPerTeam: number | null = null;
+    const totalCredits = hardware ? hardware.credits * quantity : 0;
 
     const categories = useSelector((state: RootState) =>
         selectCategoriesByIds(state, hardware?.categories || [])
@@ -143,6 +144,11 @@ export const CartCard = ({ hardware_id, quantity, error }: CartCardProps) => {
                 <Typography variant="body2" className={styles.CartName}>
                     {hardware.name}
                 </Typography>
+                {/* Display credits */}
+                <Typography variant="body2" className={styles.CartCredits}>
+                    Credits: {totalCredits}
+                </Typography>
+
                 {error && (
                     <Typography variant="caption" className={styles.CartError}>
                         {error}

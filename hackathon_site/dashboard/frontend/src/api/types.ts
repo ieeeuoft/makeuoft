@@ -10,6 +10,7 @@ export interface APIListResponse<T> {
 export interface Hardware {
     id: number;
     name: string;
+    credits: number;
     model_number: string;
     manufacturer: string;
     datasheet: string;
@@ -91,6 +92,7 @@ export interface Team {
     updated_at: string;
     profiles: ProfileWithUser[];
     project_description: string;
+    credits: number;
 }
 
 export interface ProfileWithUser extends ProfileWithoutTeamNumber {
@@ -126,6 +128,7 @@ export interface Order {
         id: number;
         requested_quantity: number;
     }[];
+    total_credits: number;
     created_at: string;
     updated_at: string;
 }
@@ -165,6 +168,7 @@ export interface ReturnOrderInTable {
 export interface CartItem {
     hardware_id: number;
     quantity: number;
+    credits: number;
 }
 
 /** Incidents API */

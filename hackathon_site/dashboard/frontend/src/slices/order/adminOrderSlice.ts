@@ -109,6 +109,7 @@ const adminOrderSlice = createSlice({
             const { search } = state.filters;
 
             state.filters = {};
+            state.needNumStatuses = true; // Ensure numStatuses updates on next fetch
 
             if (payload?.saveSearch && search) {
                 state.filters.search = search;

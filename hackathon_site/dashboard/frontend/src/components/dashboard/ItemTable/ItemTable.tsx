@@ -35,6 +35,7 @@ import {
     returnedOrdersSelector,
     cancelOrderThunk,
     cancelOrderLoadingSelector,
+    getTeamOrders,
 } from "slices/order/orderSlice";
 import {
     GeneralOrderTitle,
@@ -183,12 +184,13 @@ export const CheckedOutTables = () =>
                                                         <TableCell align="right">
                                                             {row.quantityGranted}
                                                         </TableCell>
-                                                        <TableCell align="right">
+                                                        {/* <TableCell align="right">
                                                             <Link
                                                                 to={`/incident-form?data=${JSON.stringify(
                                                                     row
                                                                 )}`}
                                                             >
+                                                                TODO: this has not been implemented yet
                                                                 <Button
                                                                     color="secondary"
                                                                     size="small"
@@ -202,7 +204,7 @@ export const CheckedOutTables = () =>
                                                                     Report broken/lost
                                                                 </Button>
                                                             </Link>
-                                                        </TableCell>
+                                                        </TableCell> */}
                                                     </TableRow>
                                                 )
                                             )}

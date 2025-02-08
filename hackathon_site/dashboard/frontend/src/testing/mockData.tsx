@@ -279,6 +279,7 @@ export const mockTeam: Team = {
         },
     ],
     project_description: "",
+    credits: 100,
 };
 
 export const mockTeamMultiple = {
@@ -345,6 +346,7 @@ export const mockTeamMultiple = {
         },
     ],
     project_description: "",
+    credist: 10,
 };
 
 // Valid Team Size
@@ -384,6 +386,7 @@ export const mockValidTeam: Team = {
         },
     ],
     project_description: "",
+    credits: 10,
 };
 
 // Team with too many members
@@ -465,11 +468,13 @@ export const mockLargeTeam: Team = {
         },
     ],
     project_description: "",
+    credits: 10,
 };
 
 export const mockHardware: Hardware[] = [
     {
         id: 1,
+        credits: 5,
         name: "Arduino",
         model_number: "Uno",
         manufacturer: "Adafruit",
@@ -483,6 +488,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 2,
+        credits: 5,
         name: "Some Hardware 2",
         model_number: "ABC",
         manufacturer: "Acme",
@@ -496,6 +502,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 3,
+        credits: 5,
         name: "Some Hardware 3",
         model_number: "DEF",
         manufacturer: "Acme",
@@ -509,6 +516,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 4,
+        credits: 5,
         name: "Grove temperature and humidity sensor pro",
         model_number: "DHT11",
         manufacturer: "Grove",
@@ -522,6 +530,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 5,
+        credits: 5,
         name: "Some Hardware 5",
         model_number: "GHI",
         manufacturer: "Acme",
@@ -535,6 +544,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 6,
+        credits: 5,
         name: "Some Hardware 6",
         model_number: "JKL",
         manufacturer: "Acme",
@@ -548,6 +558,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 7,
+        credits: 5,
         name: "Some Hardware 7",
         model_number: "MNO",
         manufacturer: "Acme",
@@ -561,6 +572,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 8,
+        credits: 5,
         name: "Some Hardware 8",
         model_number: "PQR",
         manufacturer: "Acme",
@@ -574,6 +586,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 9,
+        credits: 5,
         name: "Raspberry Pi",
         model_number: "Pi",
         manufacturer: "Raspberry Pi Foundation",
@@ -587,6 +600,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 10,
+        credits: 5,
         name: "Hardware with no optional fields",
         model_number: "ABCD",
         manufacturer: "Nobody",
@@ -598,9 +612,9 @@ export const mockHardware: Hardware[] = [
 ];
 
 export const mockCartItems: CartItem[] = [
-    { hardware_id: 1, quantity: 3 },
-    { hardware_id: 2, quantity: 1 },
-    { hardware_id: 3, quantity: 2 },
+    { hardware_id: 1, quantity: 3, credits: 5 },
+    { hardware_id: 2, quantity: 1, credits: 5 },
+    { hardware_id: 3, quantity: 2, credits: 5 },
 ];
 
 export const mockPendingOrders: Order[] = [
@@ -633,6 +647,7 @@ export const mockPendingOrders: Order[] = [
                 requested_quantity: 1,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 4,
@@ -668,6 +683,7 @@ export const mockPendingOrders: Order[] = [
                 requested_quantity: 1,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 5,
@@ -689,6 +705,7 @@ export const mockPendingOrders: Order[] = [
                 requested_quantity: 2,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 6,
@@ -710,6 +727,7 @@ export const mockPendingOrders: Order[] = [
                 requested_quantity: 2,
             },
         ],
+        total_credits: 5,
     },
 ];
 
@@ -739,6 +757,7 @@ export const mockCheckedOutOrders: Order[] = [
                 requested_quantity: 2,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 2,
@@ -774,6 +793,7 @@ export const mockCheckedOutOrders: Order[] = [
                 requested_quantity: 1,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 7,
@@ -805,6 +825,7 @@ export const mockCheckedOutOrders: Order[] = [
                 requested_quantity: 3,
             },
         ],
+        total_credits: 5,
     },
 ];
 
@@ -844,6 +865,7 @@ export const mockSubmittedOrder: Order = {
             requested_quantity: 1,
         },
     ],
+    total_credits: 5,
 };
 
 export const mockPendingOrdersInTable: OrderInTable[] = [

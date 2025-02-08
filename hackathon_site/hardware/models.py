@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Count, F, Q
+from django.db.models import Count, F, Q, Sum
 
 from event.models import Team as TeamEvent
 
@@ -56,6 +56,7 @@ class Hardware(models.Model):
     model_number = models.CharField(max_length=255, null=True, blank=True)
     manufacturer = models.CharField(max_length=255, null=True, blank=True)
     datasheet = models.URLField(null=True, blank=True)
+    credits = models.IntegerField(null=False, default=0)
     quantity_available = models.IntegerField(null=False)
     notes = models.TextField(null=True, blank=True)
     max_per_team = models.IntegerField(null=True)
@@ -102,7 +103,7 @@ class OrderItem(models.Model):
     )
 
     def __str__(self):
-        return f"{self.id} | {self.hardware.name} | Team {self.order.team.team_code if self.order.team else None}"
+        return f"{self.id} | {self.hardware.name}  | Credits: {self.hardware.credits} |  Team {self.order.team.team_code if self.order.team else None}"
 
 
 class Order(models.Model):
@@ -124,8 +125,20 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
 
+    # TODO sum only specific order statuses (self.items.part_returned_health = None)
+    def get_total_credits(self):
+        """
+        Sums up credits only for OrderItems where part_returned_health is None.
+        """
+        return (
+            self.items.filter(part_returned_health__isnull=True).aggregate(
+                total_credits=Sum(F("hardware__credits"))
+            )["total_credits"]
+            or 0
+        )
+
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id} | Total Credits: {self.get_total_credits()}"
 
 
 class Incident(models.Model):

@@ -26,6 +26,7 @@ import {
     getTeamOrders,
     hardwareInOrdersSelector,
     orderErrorSelector,
+    getCreditsUsedSelector,
     isLoadingSelector as areOrdersLoadingSelector,
 } from "slices/order/orderSlice";
 import { getHardwareWithFilters, setFilters } from "slices/hardware/hardwareSlice";
@@ -45,6 +46,7 @@ const Dashboard = () => {
     const hardwareInOrders = useSelector(hardwareInOrdersSelector);
     const team_code = useSelector(teamCodeSelector);
     const team_size = useSelector(teamSizeSelector);
+    const creditsUsed = useSelector(getCreditsUsedSelector);
 
     useEffect(() => {
         dispatch(getCurrentTeam());
@@ -71,6 +73,7 @@ const Dashboard = () => {
                 teamSize={team_size}
             />
             <div className={styles.dashboard}>
+                {/* TODO: MOVE CREDIT TO NAVBAR */}
                 <Typography variant="h1">{hackathonName} Hardware Dashboard</Typography>
                 <DateRestrictionAlert />
                 {isTeamLoading || areOrdersLoading ? (
