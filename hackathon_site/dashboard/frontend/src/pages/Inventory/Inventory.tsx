@@ -66,7 +66,7 @@ const Inventory = () => {
             dispatch(getCurrentTeam());
             dispatch(getTeamOrders());
         }
-    }, [dispatch]);
+    }, [dispatch, userType]);
 
     return (
         <>
