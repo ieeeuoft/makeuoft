@@ -320,15 +320,15 @@ REGISTRATION_OPEN_DATE = datetime(2025, 1, 28, tzinfo=TZ_INFO)
 REGISTRATION_CLOSE_DATE = datetime(2025, 2, 11, 23, 59, 0, tzinfo=TZ_INFO)
 EVENT_START_DATE = datetime(2025, 2, 15, 8, 0, 0, tzinfo=TZ_INFO)
 EVENT_END_DATE = datetime(2025, 2, 16, 17, 0, 0, tzinfo=TZ_INFO)
-HARDWARE_SIGN_OUT_START_DATE = datetime(2025, 1, 17, 6, 30, tzinfo=TZ_INFO)
-HARDWARE_SIGN_OUT_END_DATE = datetime(2025, 2, 18, 11, 0, tzinfo=TZ_INFO)
+HARDWARE_SIGN_OUT_START_DATE = datetime(2025, 2, 10, 23, 59, tzinfo=TZ_INFO)
+HARDWARE_SIGN_OUT_END_DATE = datetime(2025, 2, 16, 11, 0, tzinfo=TZ_INFO)
 
 # Registration user requirements
 MINIMUM_AGE = 17
 
 # Registration settings
 ACCOUNT_ACTIVATION_DAYS = 7
-RSVP_DAYS = 7
+RSVP_DAYS = 1
 
 # Team requirements
 MIN_MEMBERS = 2
@@ -344,11 +344,11 @@ WAITLISTED_ACCEPTANCE_START_TIME = EVENT_START_DATE + timedelta(hours=1)
 FINAL_REVIEW_RESPONSE_DATE = REGISTRATION_CLOSE_DATE + timedelta(days=7)
 
 # Links
-PARTICIPANT_PACKAGE_LINK = "https://docs.google.com/document/d/1xJAJTbcQyDCvjJ69JtLThClbwiou8azEMH7QqEFCqLo/edit?usp=sharing"
+PARTICIPANT_PACKAGE_LINK = "https://docs.google.com/document/d/1IvR_dvy6FXbtAh2fW_qBWHJm-tvyG_9QHEKroILABb8/edit?usp=sharing"
 
 # Note this is in the form (chat_room_name, chat_room_link)
 # Chat room name is such as the following: Slack, Discord
-CHAT_ROOM = ("Discord", "https://discord.gg/dNRs3p2Ab9")
+CHAT_ROOM = ("Discord", "https://discord.gg/rRCpjtQUaZ")
 
 # Enable/Disable certain Features
 TEAMS = True
@@ -363,26 +363,28 @@ SIGN_IN_TIMES = [
     {
         "name": "sign_in",
         "description": "Hackathon Sign In",
-        "time": datetime(2024, 2, 17, 9, 0, 0, tzinfo=TZ_INFO),  # Feb 17th @ 8:30am
+        "time": datetime(2024, 2, 15, 9, 0, 0, tzinfo=TZ_INFO),  # Feb 15th @ 9:00am
     },
     {
         "name": "lunch1",
         "description": "Lunch Day 1",
-        "time": datetime(2024, 2, 17, 13, 0, 0, tzinfo=TZ_INFO),  # Feb 17th @ 1pm
+        "time": datetime(
+            2024, 2, 15, 12, 0, 0, tzinfo=TZ_INFO
+        ),  # Feb 15th @ 12pm (noon)
     },
     {
         "name": "dinner1",
         "description": "Dinner Day 1",
-        "time": datetime(2024, 2, 17, 18, 0, 0, tzinfo=TZ_INFO),  # Feb 17th @ 6pm
+        "time": datetime(2024, 2, 15, 18, 0, 0, tzinfo=TZ_INFO),  # Feb 15th @ 6pm
     },
     {
         "name": "breakfast2",
         "description": "Breakfast Day 2",
-        "time": datetime(2024, 2, 18, 8, 0, 0, tzinfo=TZ_INFO),  # Feb 18th @ 8am
+        "time": datetime(2024, 2, 16, 8, 0, 0, tzinfo=TZ_INFO),  # Feb 16th @ 8am
     },
     {
         "name": "lunch2",
         "description": "Lunch Day 2",
-        "time": datetime(2024, 2, 18, 12, 0, 0, tzinfo=TZ_INFO),  # Feb 18th @ 1pm
+        "time": datetime(2024, 2, 16, 12, 0, 0, tzinfo=TZ_INFO),  # Feb 16th @ 1pm
     },
 ]
