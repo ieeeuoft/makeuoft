@@ -17,6 +17,7 @@ interface TeamOrderExtraState {
     hardwareIdsToFetch: number[] | null;
     returnedOrders: ReturnOrderInTable[];
     returnedIsLoading: boolean;
+    creditsUsed: number;
 }
 
 export interface UpdateOrderAttributes {
@@ -34,6 +35,7 @@ const extraState: TeamOrderExtraState = {
     hardwareIdsToFetch: null,
     returnedOrders: [],
     returnedIsLoading: false,
+    creditsUsed: 0,
 };
 
 const teamOrders = createEntityAdapter<OrderInTable>();
@@ -206,10 +208,12 @@ const teamOrderSlice = createSlice({
                 checkedOutOrders,
                 returnedOrders,
                 hardwareIdsToFetch,
+                creditsUsed,
             } = teamOrderListSerialization(payload.results);
             teamOrders.setAll(state, [...pendingOrders, ...checkedOutOrders]);
             state.returnedOrders = returnedOrders;
             state.hardwareIdsToFetch = hardwareIdsToFetch;
+            state.creditsUsed = creditsUsed;
         });
         builder.addCase(getAdminTeamOrders.rejected, (state, { payload }) => {
             state.isLoading = false;
@@ -310,4 +314,9 @@ export const checkedOutOrdersSelector = createSelector(
 export const returnedOrdersSelector = createSelector(
     [teamOrderSliceSelector],
     (teamOrderSlice) => teamOrderSlice.returnedOrders
+);
+
+export const getCreditsUsedSelector = createSelector(
+    [teamOrderSliceSelector],
+    (teamOrderSlice) => teamOrderSlice.creditsUsed
 );

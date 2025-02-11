@@ -66,6 +66,24 @@ export const TeamPendingOrderTable = () => {
     const hardware = useSelector(hardwareSelectors.selectEntities);
     const isLoading = useSelector(isLoadingSelector);
     const [visibility, setVisibility] = useState(true);
+    const [selectedQuantities, setSelectedQuantities] = useState<
+        Record<number, number>
+    >({});
+
+    const handleQuantityChange = (rowId: number, value: unknown) => {
+        const parsedValue =
+            typeof value === "string"
+                ? parseInt(value, 10) || 0
+                : typeof value === "number"
+                ? value
+                : 0;
+
+        setSelectedQuantities((prev: Record<number, number>) => ({
+            ...prev,
+            [rowId]: parsedValue,
+        }));
+    };
+
     const toggleVisibility = () => {
         setVisibility(!visibility);
     };
@@ -158,6 +176,11 @@ export const TeamPendingOrderTable = () => {
                                                     <TableCell
                                                         className={`${styles.width1} ${styles.noWrap}`}
                                                     >
+                                                        💳 Credits
+                                                    </TableCell>
+                                                    <TableCell
+                                                        className={`${styles.width1} ${styles.noWrap}`}
+                                                    >
                                                         Qty requested
                                                     </TableCell>
                                                     <TableCell
@@ -196,152 +219,200 @@ export const TeamPendingOrderTable = () => {
                                             </TableHead>
                                             <TableBody>
                                                 {pendingOrder.hardwareInTableRow.map(
-                                                    (row) => (
-                                                        <TableRow
-                                                            key={row.id}
-                                                            data-testid={`table-${pendingOrder.id}-${row.id}`}
-                                                        >
-                                                            <TableCell>
-                                                                <img
-                                                                    className={
-                                                                        styles.itemImg
-                                                                    }
-                                                                    src={
-                                                                        hardware[row.id]
-                                                                            ?.picture ??
-                                                                        hardware[row.id]
-                                                                            ?.image_url ??
-                                                                        hardwareImagePlaceholder
-                                                                    }
-                                                                    alt={
+                                                    (row) => {
+                                                        const selectedQuantity =
+                                                            selectedQuantities[
+                                                                row.id
+                                                            ] ??
+                                                            row.quantityGrantedBySystem;
+                                                        const creditsPerUnit =
+                                                            hardware[row.id]?.credits ??
+                                                            0;
+                                                        const totalCredits =
+                                                            selectedQuantity *
+                                                            creditsPerUnit;
+
+                                                        return (
+                                                            <TableRow
+                                                                key={row.id}
+                                                                data-testid={`table-${pendingOrder.id}-${row.id}`}
+                                                            >
+                                                                <TableCell>
+                                                                    <img
+                                                                        className={
+                                                                            styles.itemImg
+                                                                        }
+                                                                        src={
+                                                                            hardware[
+                                                                                row.id
+                                                                            ]
+                                                                                ?.picture ??
+                                                                            hardware[
+                                                                                row.id
+                                                                            ]
+                                                                                ?.image_url ??
+                                                                            hardwareImagePlaceholder
+                                                                        }
+                                                                        alt={
+                                                                            hardware[
+                                                                                row.id
+                                                                            ]?.name
+                                                                        }
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {
                                                                         hardware[row.id]
                                                                             ?.name
                                                                     }
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {hardware[row.id]?.name}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {
-                                                                    hardware[row.id]
-                                                                        ?.model_number
-                                                                }
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {
-                                                                    hardware[row.id]
-                                                                        ?.manufacturer
-                                                                }
-                                                            </TableCell>
-                                                            <TableCell
-                                                                style={{
-                                                                    textAlign: "right",
-                                                                }}
-                                                            >
-                                                                {row.quantityRequested}
-                                                            </TableCell>
-                                                            <TableCell
-                                                                style={{
-                                                                    textAlign: "right",
-                                                                }}
-                                                            >
-                                                                {
-                                                                    row.quantityGrantedBySystem
-                                                                }
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {pendingOrder.status ===
-                                                                    "Submitted" && (
-                                                                    <div
-                                                                        style={{
-                                                                            display:
-                                                                                "flex",
-                                                                            alignItems:
-                                                                                "end",
-                                                                        }}
-                                                                    >
-                                                                        <Link
-                                                                            underline="always"
-                                                                            color="textPrimary"
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {
+                                                                        hardware[row.id]
+                                                                            ?.model_number
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {
+                                                                        hardware[row.id]
+                                                                            ?.manufacturer
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell
+                                                                    style={{
+                                                                        textAlign:
+                                                                            "right",
+                                                                        color: "#5a6f94",
+                                                                    }}
+                                                                >
+                                                                    {totalCredits}
+                                                                </TableCell>
+                                                                <TableCell
+                                                                    style={{
+                                                                        textAlign:
+                                                                            "right",
+                                                                    }}
+                                                                >
+                                                                    {
+                                                                        row.quantityRequested
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell
+                                                                    style={{
+                                                                        textAlign:
+                                                                            "right",
+                                                                    }}
+                                                                >
+                                                                    {
+                                                                        row.quantityGrantedBySystem
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {pendingOrder.status ===
+                                                                        "Submitted" && (
+                                                                        <div
                                                                             style={{
-                                                                                marginRight:
-                                                                                    "15px",
-                                                                            }}
-                                                                            data-testid={`all-button`}
-                                                                            onClick={() => {
-                                                                                props.setFieldValue(
-                                                                                    `${row.id}-quantity`,
-                                                                                    row.quantityGrantedBySystem
-                                                                                );
+                                                                                display:
+                                                                                    "flex",
+                                                                                alignItems:
+                                                                                    "end",
                                                                             }}
                                                                         >
-                                                                            All
-                                                                        </Link>
-                                                                        <Select
-                                                                            value={
+                                                                            <Link
+                                                                                underline="always"
+                                                                                color="textPrimary"
+                                                                                style={{
+                                                                                    marginRight:
+                                                                                        "15px",
+                                                                                }}
+                                                                                data-testid={`all-button`}
+                                                                                onClick={() => {
+                                                                                    props.setFieldValue(
+                                                                                        `${row.id}-quantity`,
+                                                                                        row.quantityGrantedBySystem
+                                                                                    );
+                                                                                    handleQuantityChange(
+                                                                                        row.id,
+                                                                                        row.quantityGrantedBySystem
+                                                                                    );
+                                                                                }}
+                                                                            >
+                                                                                All
+                                                                            </Link>
+                                                                            <Select
+                                                                                value={
+                                                                                    selectedQuantity
+                                                                                }
+                                                                                onChange={(
+                                                                                    e
+                                                                                ) => {
+                                                                                    props.handleChange(
+                                                                                        e
+                                                                                    );
+                                                                                    handleQuantityChange(
+                                                                                        row.id,
+                                                                                        e
+                                                                                            .target
+                                                                                            .value ??
+                                                                                            0
+                                                                                    );
+                                                                                }}
+                                                                                label="Qty"
+                                                                                labelId="qtyLabel"
+                                                                                name={`${row.id}-quantity`}
+                                                                                id={`${row.id}-quantity`}
+                                                                                data-testid={`select`}
+                                                                            >
+                                                                                {createDropdownList(
+                                                                                    row.quantityGrantedBySystem
+                                                                                )}
+                                                                            </Select>
+                                                                        </div>
+                                                                    )}
+                                                                    {pendingOrder.status ===
+                                                                        "Ready for Pickup" && (
+                                                                        <p
+                                                                            style={{
+                                                                                textAlign:
+                                                                                    "center",
+                                                                                ...(row.quantityGranted <
+                                                                                    row.quantityGrantedBySystem && {
+                                                                                    fontWeight:
+                                                                                        "bold",
+                                                                                    backgroundColor:
+                                                                                        "#c1edc1",
+                                                                                }),
+                                                                            }}
+                                                                        >
+                                                                            {
+                                                                                row.quantityGranted
+                                                                            }
+                                                                        </p>
+                                                                    )}
+                                                                </TableCell>
+                                                                <TableCell align="center">
+                                                                    {pendingOrder.status ===
+                                                                        "Submitted" && (
+                                                                        <Checkbox
+                                                                            color="primary"
+                                                                            checked={
                                                                                 props
                                                                                     .values[
-                                                                                    `${row.id}-quantity`
-                                                                                ]
+                                                                                    `${row.id}-checkbox`
+                                                                                ] ===
+                                                                                true
                                                                             }
+                                                                            name={`${row.id}-checkbox`}
                                                                             onChange={
                                                                                 props.handleChange
                                                                             }
-                                                                            label="Qty"
-                                                                            labelId="qtyLabel"
-                                                                            name={`${row.id}-quantity`}
-                                                                            id={`${row.id}-quantity`}
-                                                                            data-testid={`select`}
-                                                                        >
-                                                                            {createDropdownList(
-                                                                                row.quantityGrantedBySystem
-                                                                            )}
-                                                                        </Select>
-                                                                    </div>
-                                                                )}
-                                                                {pendingOrder.status ===
-                                                                    "Ready for Pickup" && (
-                                                                    <p
-                                                                        style={{
-                                                                            textAlign:
-                                                                                "center",
-                                                                            ...(row.quantityGranted <
-                                                                                row.quantityGrantedBySystem && {
-                                                                                fontWeight:
-                                                                                    "bold",
-                                                                                backgroundColor:
-                                                                                    "#c1edc1",
-                                                                            }),
-                                                                        }}
-                                                                    >
-                                                                        {
-                                                                            row.quantityGranted
-                                                                        }
-                                                                    </p>
-                                                                )}
-                                                            </TableCell>
-                                                            <TableCell align="center">
-                                                                {pendingOrder.status ===
-                                                                    "Submitted" && (
-                                                                    <Checkbox
-                                                                        color="primary"
-                                                                        checked={
-                                                                            props
-                                                                                .values[
-                                                                                `${row.id}-checkbox`
-                                                                            ] === true
-                                                                        }
-                                                                        name={`${row.id}-checkbox`}
-                                                                        onChange={
-                                                                            props.handleChange
-                                                                        }
-                                                                        data-testid={`${row.id}-checkbox`}
-                                                                    />
-                                                                )}
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    )
+                                                                            data-testid={`${row.id}-checkbox`}
+                                                                        />
+                                                                    )}
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    }
                                                 )}
                                             </TableBody>
                                         </Table>
