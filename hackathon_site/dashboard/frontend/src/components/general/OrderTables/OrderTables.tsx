@@ -23,6 +23,7 @@ import hardwareImagePlaceholder from "assets/images/placeholders/no-hardware-ima
 import { useSelector } from "react-redux";
 import { hardwareSelectors } from "slices/hardware/hardwareSlice";
 import { formatDateTime } from "api/helpers";
+import { userTypeSelector } from "slices/users/userSlice";
 
 export const ChipStatus = ({ status }: { status: OrderStatus | "Error" }) => {
     switch (status) {
@@ -227,6 +228,7 @@ export const GeneralReturnTable = ({
     fetchOrdersError?: string | null;
 }) => {
     const hardware = useSelector(hardwareSelectors.selectEntities);
+    const isAdmin = useSelector(userTypeSelector) === "admin";
 
     return (
         <Container
@@ -276,6 +278,14 @@ export const GeneralReturnTable = ({
                                             >
                                                 Name
                                             </TableCell>
+                                            {isAdmin && (
+                                                <TableCell
+                                                    className={styles.width4}
+                                                    align="right"
+                                                >
+                                                    💳 Credits
+                                                </TableCell>
+                                            )}
                                             <TableCell
                                                 className={styles.widthFixed}
                                                 align="right"
@@ -297,44 +307,71 @@ export const GeneralReturnTable = ({
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {order.hardwareInOrder.map((row) => (
-                                            <TableRow key={row.id}>
-                                                <TableCell align="left">
-                                                    <img
-                                                        className={styles.itemImg}
-                                                        src={
-                                                            hardware[row.hardware_id]
-                                                                ?.picture ??
-                                                            hardware[row.hardware_id]
-                                                                ?.image_url ??
-                                                            hardwareImagePlaceholder
-                                                        }
-                                                        alt={
+                                        {order.hardwareInOrder.map((row) => {
+                                            const creditsPerUnit =
+                                                hardware[row.hardware_id]?.credits ?? 0;
+                                            const totalCredits =
+                                                row.part_returned_health === "Lost" ||
+                                                row.part_returned_health === "Broken"
+                                                    ? 0
+                                                    : row.quantity * creditsPerUnit;
+
+                                            return (
+                                                <TableRow key={row.id}>
+                                                    <TableCell align="left">
+                                                        <img
+                                                            className={styles.itemImg}
+                                                            src={
+                                                                hardware[
+                                                                    row.hardware_id
+                                                                ]?.picture ??
+                                                                hardware[
+                                                                    row.hardware_id
+                                                                ]?.image_url ??
+                                                                hardwareImagePlaceholder
+                                                            }
+                                                            alt={
+                                                                hardware[
+                                                                    row.hardware_id
+                                                                ]?.name
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell align="left">
+                                                        {
                                                             hardware[row.hardware_id]
                                                                 ?.name
                                                         }
-                                                    />
-                                                </TableCell>
-                                                <TableCell align="left">
-                                                    {hardware[row.hardware_id]?.name}
-                                                </TableCell>
-                                                <TableCell align="right">
-                                                    {row.quantity}
-                                                </TableCell>
-                                                <TableCell
-                                                    align="right"
-                                                    className={styles.noWrap}
-                                                >
-                                                    {row.time}
-                                                </TableCell>
-                                                <TableCell
-                                                    align="left"
-                                                    className={styles.noWrap}
-                                                >
-                                                    {row.part_returned_health}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
+                                                    </TableCell>
+                                                    {isAdmin && (
+                                                        <TableCell
+                                                            align="right"
+                                                            style={{
+                                                                fontWeight: "bold",
+                                                                color: "#28a745", // Green for refunded credits
+                                                            }}
+                                                        >
+                                                            {totalCredits}
+                                                        </TableCell>
+                                                    )}
+                                                    <TableCell align="right">
+                                                        {row.quantity}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        align="right"
+                                                        className={styles.noWrap}
+                                                    >
+                                                        {row.time}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        align="left"
+                                                        className={styles.noWrap}
+                                                    >
+                                                        {row.part_returned_health}
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
