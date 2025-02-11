@@ -162,3 +162,5 @@ node_modules/
 
 # analytics
 hackathon_site/registration/analytics/data/
+
+hackathon_site/dashboard/frontend/package.json
