@@ -120,7 +120,7 @@ export const TeamCheckedOutOrderTable = () => {
                 throw new Error("Order not found.");
             }
 
-            // Convert Formik values to the correct format
+            // Convert Formik values to the correct format, but filter out hardware that is already fully returned.
             const hardwareReturnData: {
                 id: number;
                 quantity: number;
@@ -129,19 +129,41 @@ export const TeamCheckedOutOrderTable = () => {
             const keys = Object.keys(values);
             for (let i = 0; i < keys.length; i += 3) {
                 const id = parseInt(keys[i].split("-")[0]);
+                // Only process if the checkbox (or whatever flag) is checked
                 if (values[keys[i + 1]]) {
-                    hardwareReturnData.push({
-                        id,
-                        quantity: parseInt(values[keys[i]] as string, 10),
-                        part_returned_health: values[keys[i + 2]] as string,
-                    });
+                    const quantityToReturn = parseInt(values[keys[i]] as string, 10);
+
+                    // Look up the hardware row in the checked out order
+                    const hardwareRow = checkedOutOrder.hardwareInTableRow.find(
+                        (row) => row.id === id
+                    );
+                    // If the hardwareRow exists and its remaining quantity is greater than zero, include it.
+                    if (hardwareRow && hardwareRow.quantityGranted > 0) {
+                        // You might also want to ensure that quantityToReturn does not exceed the remaining quantity.
+                        hardwareReturnData.push({
+                            id,
+                            quantity: Math.min(
+                                quantityToReturn,
+                                hardwareRow.quantityGranted
+                            ),
+                            part_returned_health: values[keys[i + 2]] as string,
+                        });
+                    }
                 }
             }
 
-            dispatch(returnItems({ hardware: hardwareReturnData, order: orderId }));
+            // Only dispatch returnItems if there's at least one valid hardware return.
+            if (hardwareReturnData.length > 0) {
+                dispatch(returnItems({ hardware: hardwareReturnData, order: orderId }));
+            } else {
+                // Otherwise, you might choose to directly update the order status
+                dispatch(updateOrderStatus({ id: orderId, status: "Returned" }));
+                return;
+            }
 
-            // Check if all items in the order have been returned
+            // Check if all items in the order have been returned.
             const allItemsReturned = checkedOutOrder.hardwareInTableRow.every((row) => {
+                // Calculate how many of this hardware have been returned (from the current request)
                 const returnedQuantity =
                     hardwareReturnData.find((h) => h.id === row.id)?.quantity || 0;
                 const remainingQty = (row.quantityGranted || 0) - returnedQuantity;
