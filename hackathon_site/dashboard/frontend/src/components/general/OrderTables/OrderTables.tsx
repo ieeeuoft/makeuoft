@@ -11,6 +11,7 @@ import Error from "@material-ui/icons/Error";
 import EditIcon from "@material-ui/icons/Edit";
 import UpdateIcon from "@material-ui/icons/Update";
 import {
+    Grid,
     Paper,
     Table,
     TableBody,
@@ -252,131 +253,169 @@ export const GeneralReturnTable = ({
                             : "Please bring items to the tech table and a tech team member will assist you."}
                     </Paper>
                 ) : (
-                    orders.map((order) => (
-                        <div
-                            key={order.id}
-                            data-testid={`returned-order-table-${order.id}`}
-                            data-updated-time={`returned-order-time-${order.hardwareInOrder[0].time}`}
-                        >
-                            <GeneralOrderTableTitle orderId={order.id} />
-                            <TableContainer
-                                component={Paper}
-                                elevation={2}
-                                square={true}
+                    orders.map((order) => {
+                        // Compute the subtotal for this order.
+                        const orderRefundedCredits = order.hardwareInOrder.reduce(
+                            (sum, row) => {
+                                const creditsPerUnit =
+                                    hardware[row.hardware_id]?.credits ?? 0;
+                                // If the item is Broken or Lost, its refunded credits are 0.
+                                const rowTotal =
+                                    row.part_returned_health === "Broken" ||
+                                    row.part_returned_health === "Lost"
+                                        ? 0
+                                        : row.quantity * creditsPerUnit;
+                                return sum + rowTotal;
+                            },
+                            0
+                        );
+                        return (
+                            <div
+                                key={order.id}
+                                data-testid={`returned-order-table-${order.id}`}
+                                data-updated-time={`returned-order-time-${order.hardwareInOrder[0].time}`}
                             >
-                                <Table
-                                    className={styles.table}
-                                    size="small"
-                                    aria-label="returned table"
+                                <GeneralOrderTableTitle orderId={order.id} />
+                                {/* Only show the credit subtotal if the user is admin */}
+                                {isAdmin && (
+                                    <Typography
+                                        variant="subtitle1"
+                                        color="textPrimary"
+                                        style={{
+                                            textAlign: "right",
+                                        }}
+                                    >
+                                        Total Credits Refunded: 💳{" "}
+                                        {orderRefundedCredits}
+                                    </Typography>
+                                )}
+                                <TableContainer
+                                    component={Paper}
+                                    elevation={2}
+                                    square={true}
                                 >
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell className={styles.widthFixed} />
-                                            <TableCell
-                                                className={styles.width6}
-                                                align="left"
-                                            >
-                                                Name
-                                            </TableCell>
-                                            {isAdmin && (
+                                    <Table
+                                        className={styles.table}
+                                        size="small"
+                                        aria-label="returned table"
+                                    >
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell
+                                                    className={styles.widthFixed}
+                                                />
+                                                <TableCell
+                                                    className={styles.width6}
+                                                    align="left"
+                                                >
+                                                    Name
+                                                </TableCell>
+                                                {isAdmin && (
+                                                    <TableCell
+                                                        className={styles.width4}
+                                                        align="right"
+                                                    >
+                                                        💳 Credits
+                                                    </TableCell>
+                                                )}
+                                                <TableCell
+                                                    className={styles.widthFixed}
+                                                    align="right"
+                                                >
+                                                    Qty
+                                                </TableCell>
                                                 <TableCell
                                                     className={styles.width4}
                                                     align="right"
                                                 >
-                                                    💳 Credits
+                                                    Time
                                                 </TableCell>
-                                            )}
-                                            <TableCell
-                                                className={styles.widthFixed}
-                                                align="right"
-                                            >
-                                                Qty
-                                            </TableCell>
-                                            <TableCell
-                                                className={styles.width4}
-                                                align="right"
-                                            >
-                                                Time
-                                            </TableCell>
-                                            <TableCell
-                                                align="left"
-                                                className={styles.width2}
-                                            >
-                                                Condition
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {order.hardwareInOrder.map((row) => {
-                                            const creditsPerUnit =
-                                                hardware[row.hardware_id]?.credits ?? 0;
-                                            const totalCredits =
-                                                row.part_returned_health === "Lost" ||
-                                                row.part_returned_health === "Broken"
-                                                    ? 0
-                                                    : row.quantity * creditsPerUnit;
+                                                <TableCell
+                                                    align="left"
+                                                    className={styles.width2}
+                                                >
+                                                    Condition
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {order.hardwareInOrder.map((row) => {
+                                                const creditsPerUnit =
+                                                    hardware[row.hardware_id]
+                                                        ?.credits ?? 0;
+                                                const totalCredits =
+                                                    row.part_returned_health ===
+                                                        "Lost" ||
+                                                    row.part_returned_health ===
+                                                        "Broken"
+                                                        ? 0
+                                                        : row.quantity * creditsPerUnit;
 
-                                            return (
-                                                <TableRow key={row.id}>
-                                                    <TableCell align="left">
-                                                        <img
-                                                            className={styles.itemImg}
-                                                            src={
-                                                                hardware[
-                                                                    row.hardware_id
-                                                                ]?.picture ??
-                                                                hardware[
-                                                                    row.hardware_id
-                                                                ]?.image_url ??
-                                                                hardwareImagePlaceholder
-                                                            }
-                                                            alt={
+                                                return (
+                                                    <TableRow key={row.id}>
+                                                        <TableCell align="left">
+                                                            <img
+                                                                className={
+                                                                    styles.itemImg
+                                                                }
+                                                                src={
+                                                                    hardware[
+                                                                        row.hardware_id
+                                                                    ]?.picture ??
+                                                                    hardware[
+                                                                        row.hardware_id
+                                                                    ]?.image_url ??
+                                                                    hardwareImagePlaceholder
+                                                                }
+                                                                alt={
+                                                                    hardware[
+                                                                        row.hardware_id
+                                                                    ]?.name
+                                                                }
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell align="left">
+                                                            {
                                                                 hardware[
                                                                     row.hardware_id
                                                                 ]?.name
                                                             }
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align="left">
-                                                        {
-                                                            hardware[row.hardware_id]
-                                                                ?.name
-                                                        }
-                                                    </TableCell>
-                                                    {isAdmin && (
+                                                        </TableCell>
+                                                        {isAdmin && (
+                                                            <TableCell
+                                                                align="right"
+                                                                style={{
+                                                                    fontWeight: "bold",
+                                                                    color: "#28a745", // Green for refunded credits
+                                                                }}
+                                                            >
+                                                                {totalCredits}
+                                                            </TableCell>
+                                                        )}
+                                                        <TableCell align="right">
+                                                            {row.quantity}
+                                                        </TableCell>
                                                         <TableCell
                                                             align="right"
-                                                            style={{
-                                                                fontWeight: "bold",
-                                                                color: "#28a745", // Green for refunded credits
-                                                            }}
+                                                            className={styles.noWrap}
                                                         >
-                                                            {totalCredits}
+                                                            {row.time}
                                                         </TableCell>
-                                                    )}
-                                                    <TableCell align="right">
-                                                        {row.quantity}
-                                                    </TableCell>
-                                                    <TableCell
-                                                        align="right"
-                                                        className={styles.noWrap}
-                                                    >
-                                                        {row.time}
-                                                    </TableCell>
-                                                    <TableCell
-                                                        align="left"
-                                                        className={styles.noWrap}
-                                                    >
-                                                        {row.part_returned_health}
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </div>
-                    ))
+                                                        <TableCell
+                                                            align="left"
+                                                            className={styles.noWrap}
+                                                        >
+                                                            {row.part_returned_health}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </div>
+                        );
+                    })
                 ))}
         </Container>
     );
