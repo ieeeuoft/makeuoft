@@ -1,6 +1,10 @@
 import {
     Button,
     Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Grid,
     Link,
     Paper,
@@ -10,6 +14,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
     Tooltip,
     Typography,
 } from "@material-ui/core";
@@ -71,6 +76,9 @@ export const TeamPendingOrderTable = () => {
     const creditsAvailable = useSelector(teamStartingCreditsSelector);
     const creditsUsed = useSelector(getCreditsUsedSelector);
     const creditsRemaining = creditsAvailable ? creditsAvailable - creditsUsed : 0;
+    const [showRejectDialog, setShowRejectDialog] = useState<boolean>(false);
+    const [cancelMsg, setCancelMsg] = useState<string>("");
+    const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
     const [selectedQuantities, setSelectedQuantities] = useState<
         Record<number, number>
@@ -97,15 +105,22 @@ export const TeamPendingOrderTable = () => {
     const updateOrder = (
         orderId: number,
         status: OrderStatus,
-        values: FormikValues | null = null
+        values: FormikValues | null = null,
+        cancellationMessage?: string
     ) => {
         const updateOrderData: UpdateOrderAttributes = {
             id: orderId,
             status,
             request: [],
         };
+
+        // If a cancellation message is provided, add it.
+        if (cancellationMessage) {
+            updateOrderData.cancellation_message = cancellationMessage;
+        }
+
         if (values) {
-            const request = [];
+            const request: Array<{ id: number; requested_quantity: number }> = [];
             const formikKeys = Object.keys(values);
             for (let i = 0; i < formikKeys.length; i += 2) {
                 const hardwareId = parseInt(formikKeys[i].split("-")[0]);
@@ -118,6 +133,7 @@ export const TeamPendingOrderTable = () => {
             }
             updateOrderData.request = request;
         }
+
         dispatch(updateOrderStatus(updateOrderData));
     };
 
@@ -484,12 +500,12 @@ export const TeamPendingOrderTable = () => {
                                             {pendingOrder.status === "Submitted" && (
                                                 <Grid item>
                                                     <Button
-                                                        onClick={() =>
-                                                            updateOrder(
-                                                                pendingOrder.id,
-                                                                "Cancelled"
-                                                            )
-                                                        }
+                                                        onClick={() => {
+                                                            setSelectedOrderId(
+                                                                pendingOrder.id
+                                                            );
+                                                            setShowRejectDialog(true);
+                                                        }}
                                                         disabled={isLoading}
                                                         color="secondary"
                                                         variant="text"
@@ -592,6 +608,43 @@ export const TeamPendingOrderTable = () => {
                         }}
                     </Formik>
                 ))}
+
+            <Dialog open={showRejectDialog} onClose={() => setShowRejectDialog(false)}>
+                <DialogTitle>Cancel Order</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Cancellation Message (optional)"
+                        type="text"
+                        fullWidth
+                        value={cancelMsg}
+                        onChange={(e) => setCancelMsg(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowRejectDialog(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            if (selectedOrderId !== null) {
+                                updateOrder(
+                                    selectedOrderId,
+                                    "Cancelled",
+                                    null,
+                                    cancelMsg
+                                );
+                            }
+                            setShowRejectDialog(false);
+                            setCancelMsg("");
+                        }}
+                        color="primary"
+                    >
+                        Confirm Cancellation
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

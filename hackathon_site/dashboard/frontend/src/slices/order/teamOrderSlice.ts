@@ -33,6 +33,7 @@ export interface UpdateOrderAttributes {
         id: number;
         requested_quantity: number;
     }[];
+    cancellation_message?: string;
 }
 
 const extraState: TeamOrderExtraState = {
