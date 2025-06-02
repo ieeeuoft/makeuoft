@@ -71,6 +71,7 @@ const Dashboard = () => {
                 teamSize={team_size}
             />
             <div className={styles.dashboard}>
+                {/* TODO: MOVE CREDIT TO NAVBAR */}
                 <Typography variant="h1">{hackathonName} Hardware Dashboard</Typography>
                 <DateRestrictionAlert />
                 {isTeamLoading || areOrdersLoading ? (

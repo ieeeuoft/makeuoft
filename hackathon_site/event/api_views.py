@@ -3,7 +3,7 @@ import logging
 from django.core import mail
 from django.core.mail import send_mail
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, F, Sum
 from django.conf import settings
 from django.http import HttpResponseServerError
 from django.template.loader import render_to_string
@@ -270,7 +270,9 @@ class CurrentTeamOrderListView(generics.ListAPIView):
     permission_classes = [UserHasProfile]
 
     def get_queryset(self):
-        return Order.objects.filter(team_id=self.request.user.profile.team_id)
+        return Order.objects.filter(
+            team_id=self.request.user.profile.team_id
+        ).prefetch_related("items__hardware")
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -283,7 +285,7 @@ class TeamDetailView(
     generics.GenericAPIView,
 ):
     serializer_class = TeamSerializer
-    permission_classes = [FullDjangoModelPermissions]
+    # permission_classes = [FullDjangoModelPermissions]
     lookup_field = "team_code"
     queryset = EventTeam.objects.all()
 

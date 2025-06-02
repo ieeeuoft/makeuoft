@@ -26,44 +26,55 @@ export const cardItems = [
         title: "Important Links",
         content: [
             {
-                name: "Hackathon main site",
-                url: "https://www.facebook.com",
-                icon: <OpenInNew />,
-            },
-            {
-                name: "Hardware Signout Site",
-                url: "https://hardware.newhacks.ca",
+                name: "MakeUofT Main Site",
+                url: "https://makeuoft.ca/",
                 icon: <OpenInNew />,
             },
         ],
     },
     {
-        title: "General electronics aid",
+        title: "General Electronics aid",
         content: [
             {
-                name: "Test1 asdajslkd",
-                url: "https://www.youtube.com",
+                name: "Circuit Design App - Circuit.io",
+                url: "https://www.circuito.io/",
                 icon: <OpenInNew />,
             },
-            { name: "Test2", url: "https://www.youtube.com", icon: <OpenInNew /> },
             {
-                name: "Test3 asknd",
-                url: "https://www.youtube.com",
+                name: "Learn about batteries - Battery University",
+                url: "https://batteryuniversity.com/articles",
                 icon: <OpenInNew />,
             },
-            { name: "Test4 blah", url: "https://www.youtube.com", icon: <GetApp /> },
-            { name: "Test5", url: "https://www.youtube.com", icon: <GetApp /> },
+            {
+                name: "Learn Electronics - SparkFun",
+                url: "https://www.sparkfun.com/",
+                icon: <OpenInNew />,
+            },
+            {
+                name: "Electronics Tutorials - GreatScott",
+                url: "https://www.youtube.com/user/greatscottlab",
+                icon: <OpenInNew />,
+            },
+            {
+                name: "Learn Arduino Programming",
+                url: "https://www.halvorsen.blog/documents/technology/resources/resources/Arduino/Programming%20with%20Arduino.pdf",
+                icon: <GetApp />,
+            },
         ],
     },
     {
         title: "Stores nearby",
         content: [
             {
-                name: "Home Hardware",
-                url: "https://www.facebook.com",
+                name: "Canada Computers",
+                url: "https://www.canadacomputers.com/",
                 icon: <PinDrop />,
             },
-            { name: "Test2", url: "https://www.facebook.com", icon: <PinDrop /> },
+            {
+                name: "Home Hardware",
+                url: "https://www.homehardware.ca/en/store/16093",
+                icon: <PinDrop />,
+            },
         ],
     },
 ];
@@ -268,6 +279,7 @@ export const mockTeam: Team = {
         },
     ],
     project_description: "",
+    credits: 100,
 };
 
 export const mockTeamMultiple = {
@@ -333,6 +345,8 @@ export const mockTeamMultiple = {
             },
         },
     ],
+    project_description: "",
+    credist: 10,
 };
 
 // Valid Team Size
@@ -372,6 +386,7 @@ export const mockValidTeam: Team = {
         },
     ],
     project_description: "",
+    credits: 10,
 };
 
 // Team with too many members
@@ -453,11 +468,13 @@ export const mockLargeTeam: Team = {
         },
     ],
     project_description: "",
+    credits: 10,
 };
 
 export const mockHardware: Hardware[] = [
     {
         id: 1,
+        credits: 5,
         name: "Arduino",
         model_number: "Uno",
         manufacturer: "Adafruit",
@@ -471,6 +488,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 2,
+        credits: 5,
         name: "Some Hardware 2",
         model_number: "ABC",
         manufacturer: "Acme",
@@ -484,6 +502,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 3,
+        credits: 5,
         name: "Some Hardware 3",
         model_number: "DEF",
         manufacturer: "Acme",
@@ -497,6 +516,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 4,
+        credits: 5,
         name: "Grove temperature and humidity sensor pro",
         model_number: "DHT11",
         manufacturer: "Grove",
@@ -510,6 +530,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 5,
+        credits: 5,
         name: "Some Hardware 5",
         model_number: "GHI",
         manufacturer: "Acme",
@@ -523,6 +544,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 6,
+        credits: 5,
         name: "Some Hardware 6",
         model_number: "JKL",
         manufacturer: "Acme",
@@ -536,6 +558,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 7,
+        credits: 5,
         name: "Some Hardware 7",
         model_number: "MNO",
         manufacturer: "Acme",
@@ -549,6 +572,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 8,
+        credits: 5,
         name: "Some Hardware 8",
         model_number: "PQR",
         manufacturer: "Acme",
@@ -562,6 +586,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 9,
+        credits: 5,
         name: "Raspberry Pi",
         model_number: "Pi",
         manufacturer: "Raspberry Pi Foundation",
@@ -575,6 +600,7 @@ export const mockHardware: Hardware[] = [
     },
     {
         id: 10,
+        credits: 5,
         name: "Hardware with no optional fields",
         model_number: "ABCD",
         manufacturer: "Nobody",
@@ -586,9 +612,9 @@ export const mockHardware: Hardware[] = [
 ];
 
 export const mockCartItems: CartItem[] = [
-    { hardware_id: 1, quantity: 3 },
-    { hardware_id: 2, quantity: 1 },
-    { hardware_id: 3, quantity: 2 },
+    { hardware_id: 1, quantity: 3, credits: 5 },
+    { hardware_id: 2, quantity: 1, credits: 5 },
+    { hardware_id: 3, quantity: 2, credits: 5 },
 ];
 
 export const mockPendingOrders: Order[] = [
@@ -621,6 +647,7 @@ export const mockPendingOrders: Order[] = [
                 requested_quantity: 1,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 4,
@@ -656,6 +683,7 @@ export const mockPendingOrders: Order[] = [
                 requested_quantity: 1,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 5,
@@ -677,6 +705,7 @@ export const mockPendingOrders: Order[] = [
                 requested_quantity: 2,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 6,
@@ -698,6 +727,7 @@ export const mockPendingOrders: Order[] = [
                 requested_quantity: 2,
             },
         ],
+        total_credits: 5,
     },
 ];
 
@@ -727,6 +757,7 @@ export const mockCheckedOutOrders: Order[] = [
                 requested_quantity: 2,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 2,
@@ -762,6 +793,7 @@ export const mockCheckedOutOrders: Order[] = [
                 requested_quantity: 1,
             },
         ],
+        total_credits: 5,
     },
     {
         id: 7,
@@ -793,6 +825,7 @@ export const mockCheckedOutOrders: Order[] = [
                 requested_quantity: 3,
             },
         ],
+        total_credits: 5,
     },
 ];
 
@@ -832,6 +865,7 @@ export const mockSubmittedOrder: Order = {
             requested_quantity: 1,
         },
     ],
+    total_credits: 5,
 };
 
 export const mockPendingOrdersInTable: OrderInTable[] = [
@@ -842,6 +876,7 @@ export const mockPendingOrdersInTable: OrderInTable[] = [
                 id: 10,
                 quantityRequested: 2,
                 quantityGranted: 1,
+                quantityGrantedBySystem: 1,
             },
         ],
         status: "Ready for Pickup",
@@ -855,11 +890,13 @@ export const mockPendingOrdersInTable: OrderInTable[] = [
                 id: 1,
                 quantityRequested: 2,
                 quantityGranted: 2,
+                quantityGrantedBySystem: 2,
             },
             {
                 id: 4,
                 quantityRequested: 1,
                 quantityGranted: 1,
+                quantityGrantedBySystem: 1,
             },
         ],
         status: "Submitted",
@@ -873,11 +910,13 @@ export const mockPendingOrdersInTable: OrderInTable[] = [
                 id: 3,
                 quantityRequested: 1,
                 quantityGranted: 1,
+                quantityGrantedBySystem: 1,
             },
             {
                 id: 4,
                 quantityRequested: 1,
                 quantityGranted: 1,
+                quantityGrantedBySystem: 1,
             },
         ],
         status: "Ready for Pickup",
@@ -894,6 +933,7 @@ export const mockCheckedOutOrdersInTable: OrderInTable[] = [
                 id: 10,
                 quantityRequested: 3,
                 quantityGranted: 2,
+                quantityGrantedBySystem: 2,
             },
         ],
         status: "Picked Up",
@@ -907,11 +947,13 @@ export const mockCheckedOutOrdersInTable: OrderInTable[] = [
                 id: 1,
                 quantityRequested: 2,
                 quantityGranted: 1,
+                quantityGrantedBySystem: 1,
             },
             {
                 id: 2,
                 quantityRequested: 1,
                 quantityGranted: 1,
+                quantityGrantedBySystem: 1,
             },
         ],
         status: "Picked Up",
@@ -925,6 +967,7 @@ export const mockCheckedOutOrdersInTable: OrderInTable[] = [
                 id: 1,
                 quantityRequested: 2,
                 quantityGranted: 2,
+                quantityGrantedBySystem: 2,
             },
         ],
         status: "Picked Up",

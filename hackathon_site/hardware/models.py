@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Count, F, Q
+from django.db.models import Count, F, Q, Sum
 
 from event.models import Team as TeamEvent
 
@@ -9,7 +9,7 @@ class Category(models.Model):
         verbose_name_plural = "categories"
 
     name = models.CharField(max_length=255, null=False)
-    max_per_team = models.IntegerField(null=True)
+    max_per_team = models.IntegerField(null=True, default=999)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
@@ -28,6 +28,10 @@ class AnnotatedHardwareManager(models.Manager):
                     "order_items",
                     filter=(
                         ~Q(order_items__part_returned_health="Healthy")
+                        & ~(
+                            Q(order_items__part_returned_health="Rejected")
+                            & Q(order_items__order__status="Picked Up")
+                        )
                         & ~Q(order_items__order__status="Cancelled")
                     ),
                     distinct=True,
@@ -52,9 +56,10 @@ class Hardware(models.Model):
     model_number = models.CharField(max_length=255, null=True, blank=True)
     manufacturer = models.CharField(max_length=255, null=True, blank=True)
     datasheet = models.URLField(null=True, blank=True)
+    credits = models.IntegerField(null=False, default=0)
     quantity_available = models.IntegerField(null=False)
     notes = models.TextField(null=True, blank=True)
-    max_per_team = models.IntegerField(null=True)
+    max_per_team = models.IntegerField(null=True, default=999)
     picture = models.ImageField(
         upload_to="uploads/hardware/pictures/", null=True, blank=True
     )
@@ -85,6 +90,7 @@ class OrderItem(models.Model):
         ("Heavily Used", "Heavily Used"),
         ("Broken", "Broken"),
         ("Lost", "Lost"),
+        ("Rejected", "Rejected"),
     ]
     order = models.ForeignKey(
         "Order", null=False, on_delete=models.CASCADE, related_name="items"
@@ -97,7 +103,7 @@ class OrderItem(models.Model):
     )
 
     def __str__(self):
-        return f"{self.id} | {self.hardware.name} | Team {self.order.team.team_code if self.order.team else None}"
+        return f"{self.id} | {self.hardware.name}  | Credits: {self.hardware.credits} |  Team {self.order.team.team_code if self.order.team else None}"
 
 
 class Order(models.Model):
@@ -119,8 +125,24 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
 
+    # TODO sum only specific order statuses (self.items.part_returned_health = None)
+    def get_total_credits(self):
+        """
+        Computes the total credits used by a team:
+        - Includes items that are still checked out (part_returned_health is NULL).
+        - Includes returned items that are marked as "Broken" or "Lost".
+        - Excludes items that were returned in acceptable conditions.
+        """
+        return (
+            self.items.filter(
+                Q(part_returned_health__isnull=True)
+                | Q(part_returned_health__in=["Broken", "Lost"])
+            ).aggregate(total_credits=Sum(F("hardware__credits")))["total_credits"]
+            or 0
+        )
+
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id} | Total Credits: {self.get_total_credits()}"
 
 
 class Incident(models.Model):

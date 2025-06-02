@@ -29,6 +29,7 @@ class HardwareCategoryInline(admin.TabularInline):
     readonly_fields = (
         "hardware",
         "name",
+        "credits",
         "model_number",
         "manufacturer",
         "datasheet",
@@ -43,6 +44,10 @@ class HardwareCategoryInline(admin.TabularInline):
     @staticmethod
     def name(obj):
         return obj.hardware.name
+
+    @staticmethod
+    def credits(obj):
+        return obj.hardware.credits
 
     @staticmethod
     def model_number(obj):
@@ -93,6 +98,7 @@ class OrderItemInline(admin.TabularInline):
     readonly_fields = (
         "id",
         "name",
+        "credits",
         "model_number",
         "manufacturer",
         "datasheet",
@@ -113,6 +119,10 @@ class OrderItemInline(admin.TabularInline):
     @staticmethod
     def name(obj: OrderItem):
         return obj.hardware.name
+
+    @staticmethod
+    def credits(obj):
+        return obj.hardware.credits
 
     @staticmethod
     def model_number(obj: OrderItem):
@@ -233,6 +243,7 @@ class HardwareAdmin(DcsicAdminMixin, ImportMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "name",
+        "credits",
         "model_number",
         "manufacturer",
         "get_datasheet_link",
@@ -250,6 +261,10 @@ class HardwareAdmin(DcsicAdminMixin, ImportMixin, admin.ModelAdmin):
             )
         }
     }
+
+    @admin.display(ordering="credits", description="Credit")
+    def credits(self, obj):
+        return obj.credits
 
     @admin.display(ordering="quantity_remaining", description="Quantity Remaining")
     def get_quantity_remaining(self, obj):

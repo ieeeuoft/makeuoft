@@ -25,13 +25,18 @@ export const teamOrderListSerialization = (
     checkedOutOrders: OrderInTable[];
     returnedOrders: ReturnOrderInTable[];
     hardwareIdsToFetch: number[];
+    creditsUsed: number;
 } => {
     const pendingOrders: OrderInTable[] = [];
     const checkedOutOrders: OrderInTable[] = [];
     const returnedOrders: ReturnOrderInTable[] = [];
     const hardwareIdsToFetch: Record<number, number> = {};
+    let creditsUsed = 0; // Initialize credits used
+
     orders.forEach((order) => {
         if (order.status !== "Cancelled") {
+            creditsUsed += order.total_credits || 0; // Sum up total credits
+
             const hardwareItems: Record<number, OrderItemTableRow> = {};
             const hardwareRequested: Record<number, number> = {};
             const returnedItems: Record<string, ReturnedItem> = {};
@@ -40,7 +45,7 @@ export const teamOrderListSerialization = (
                     (hardwareRequested[hardware.id] = hardware.requested_quantity)
             );
             order.items.forEach(({ id, hardware_id, part_returned_health }) => {
-                if (part_returned_health) {
+                if (part_returned_health && part_returned_health !== "Rejected") {
                     const returnItemKey = `${hardware_id}-${part_returned_health}`;
                     if (returnedItems[returnItemKey])
                         returnedItems[returnItemKey].quantity += 1;
@@ -55,14 +60,26 @@ export const teamOrderListSerialization = (
                         };
                     }
                 } else {
-                    if (hardwareItems[hardware_id])
-                        hardwareItems[hardware_id].quantityGranted += 1;
-                    else
-                        hardwareItems[hardware_id] = {
-                            id: hardware_id,
-                            quantityGranted: 1,
-                            quantityRequested: hardwareRequested[hardware_id],
-                        };
+                    if (
+                        !(
+                            part_returned_health === "Rejected" &&
+                            order.status === "Picked Up"
+                        )
+                    ) {
+                        if (hardwareItems[hardware_id]) {
+                            if (part_returned_health !== "Rejected")
+                                hardwareItems[hardware_id].quantityGranted += 1;
+                            hardwareItems[hardware_id].quantityGrantedBySystem += 1;
+                        } else {
+                            hardwareItems[hardware_id] = {
+                                id: hardware_id,
+                                quantityGranted:
+                                    part_returned_health === "Rejected" ? 0 : 1,
+                                quantityRequested: hardwareRequested[hardware_id],
+                                quantityGrantedBySystem: 1,
+                            };
+                        }
+                    }
                 }
                 hardwareIdsToFetch[hardware_id] = hardware_id;
             });
@@ -72,9 +89,14 @@ export const teamOrderListSerialization = (
                     id: order.id,
                     hardwareInOrder: returnedHardware,
                 });
-
             const hardwareInTableRow = Object.values(hardwareItems);
-            if (hardwareInTableRow.length > 0)
+
+            // Check if ALL order items have a part_returned_health status (i.e., they are all returned or rejected)
+            const allItemsReturnedOrRejected = order.items.every(
+                (item) => item.part_returned_health !== null
+            );
+
+            if (hardwareInTableRow.length > 0 && !allItemsReturnedOrRejected) {
                 (order.status === "Submitted" || order.status === "Ready for Pickup"
                     ? pendingOrders
                     : checkedOutOrders
@@ -85,6 +107,7 @@ export const teamOrderListSerialization = (
                     createdTime: order.created_at,
                     updatedTime: order.updated_at,
                 });
+            }
         }
     });
     return {
@@ -92,6 +115,7 @@ export const teamOrderListSerialization = (
         checkedOutOrders: [...checkedOutOrders].sort((a, b) => b.id - a.id),
         returnedOrders,
         hardwareIdsToFetch: Object.values(hardwareIdsToFetch),
+        creditsUsed,
     };
 };
 

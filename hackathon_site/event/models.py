@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth import get_user_model
 import uuid
 
@@ -14,6 +15,7 @@ def _generate_team_code():
 
 class Team(models.Model):
     team_code = models.CharField(max_length=5, default=_generate_team_code, null=False)
+    credits = models.IntegerField(null=False, default=settings.DEFAULT_CREDITS_AT_START)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
@@ -46,3 +48,12 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.id} | {self.user.first_name} {self.user.last_name}"
+
+
+class UserActivity(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    sign_in = models.DateTimeField(null=True, blank=True)
+    lunch1 = models.DateTimeField(null=True, blank=True)
+    dinner1 = models.DateTimeField(null=True, blank=True)
+    breakfast2 = models.DateTimeField(null=True, blank=True)
+    lunch2 = models.DateTimeField(null=True, blank=True)

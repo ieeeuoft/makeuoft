@@ -13,8 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     adminOrderSelectors,
     getOrdersWithFilters,
+    clearFilters,
 } from "slices/order/adminOrderSlice";
-import { clearFilters } from "slices/hardware/hardwareSlice";
 import { OrdersTable } from "components/orders/OrdersTable/OrdersTable";
 
 const Orders = () => {
