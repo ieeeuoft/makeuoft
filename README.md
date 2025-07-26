@@ -37,21 +37,19 @@ A website template for hackathons run by [IEEE University of Toronto Student Bra
 - [Customization](#customization)
   - [Branding and Styling](#branding-and-styling)
 
-## Requirements
+## Setup Guide
 
-- Python 3.9 or higher
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+### 1. Prerequisites
 
-## Getting Started
+- Python 3.9
+- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/)
+- Node.js V16
 
-### Python Environment
+### 2. Configure Environment
 
-For local development, create a Python virtual environment.
+#### Create virtual environment
 
-#### Conda
-
-We recommend you use [Anaconda](https://www.anaconda.com/products/individual) (or [Miniconda](https://docs.conda.io/en/latest/miniconda.html)), as it makes managing virtual environments with different Python versions easier:
+For local development, create a Python virtual environment. We recommend you use [Anaconda](https://www.anaconda.com/products/individual) (or [Miniconda](https://docs.conda.io/en/latest/miniconda.html)), as it makes managing virtual environments with different Python versions easier:
 
 ```bash
 conda env create -f environment.yml
@@ -63,7 +61,7 @@ This will create a new conda environment named `makeuoft` (you may choose a diff
 conda activate makeuoft
 ```
 
-### Environment Variables
+#### Environment Variables
 
 In order to run the django and react development servers locally (or run tests), the following environment variables are used. Those in **bold** are required.
 
@@ -88,38 +86,38 @@ conda env config vars set SECRET_KEY=123
 ```
 
 ```bash
-conda env config vars set DEBUG=1 
+conda env config vars set DEBUG=1
 ```
 
 ```bash
-conda env config vars set REACT_APP_DEV_SERVER_URL=http://localhost:8000 
+conda env config vars set REACT_APP_DEV_SERVER_URL=http://localhost:8000
 ```
-### Reactivate Environment
+
+#### Reactivate Environment
+
 Once the all the environment varaiables are set, reactivate the conda environment with
 
 Deactivate:
+
 ```bash
 conda deactivate
 ```
+
 Reactivate:
+
 ```bash
 conda activate makeuoft
 ```
 
+### 3. Start services
 
-#### Testing
+##### Database & cache services
 
-Specifying `SECRET_KEY` is still required to run tests, because the settings file expects it to be set. `DEBUG` is forced to `False` by Django.
+Before the development server can be ran, the database must be running. This project is configured to use [PostgreSQL](https://www.postgresql.org/). You may install Postgres on your machine if you wish, but we recommend running it locally using docker. A docker compose service is available in [development/docker-compose.yml](/home/graham/ieee/hackathon-template/README.md).
 
-In the [GitHub action for Python tests](.github/workflows/pythonchecks.yml), `DEBUG` is set to be `1`. `SECRET_KEY` is taken from the `DJANGO_SECRET_KEY` repository secret. In order to run tests on a fork of this repo, you will need to [create this secret yourself](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets).
+This application also relies on a cache, for which we use [Redis](https://redis.io/). You may install Redis on your machine if you wish, but we recommend running it locally using docker. A Redis service is available in [development/docker-compose.yml](/home/graham/ieee/hackathon-template/README.md).
 
-### Running the development server
-
-#### Database
-
-Before the development server can be ran, the database must be running. This project is configured to use [PostgreSQL](https://www.postgresql.org/).
-
-You may install Postgres on your machine if you wish, but we recommend running it locally using docker. A docker-compose service is available in [development/docker-compose.yml](/home/graham/ieee/hackathon-template/README.md). To run all the services, including the database:
+To run all the services, including the database:
 
 ```bash
 docker compose -f development/docker-compose.yml up -d
@@ -131,12 +129,6 @@ To shut down the database and all other services:
 docker compose -f development/docker-compose.yml down
 ```
 
-To run only the database service:
-
-```bash
-$ docker-compose -f development/docker-compose.yml up -d postgres
-```
-
 The postgres container uses a volume mounted to `development/.postgres-data/` for persistent data storage, so you can safely stop the service without losing any data in your local database.
 
 A note about security: by default, the Postgres service is run with [trust authentication](https://www.postgresql.org/docs/current/auth-trust.html) for convenience, so no passwords are required even if they are set. You should not store any sensitive information in your local database, or broadcast your database host publicly with these settings.
@@ -146,29 +138,21 @@ A note about security: by default, the Postgres service is run with [trust authe
 [Migrations](https://docs.djangoproject.com/en/3.0/topics/migrations/) are Django's way of managing changes to the database structure. Before you run the development server, you should run any unapplied migrations; this should be done every time you pull an update to the codebase, not just the first time you set up:
 
 ```bash
-$ cd hackathon_site
-$ python manage.py migrate
+cd hackathon_site
+python manage.py migrate
 ```
 
-#### Cache
+### 4. Compile styling
 
-This application also relies on a cache, for which we use [Redis](https://redis.io/).
-
-You may install Redis on your machine if you wish, but we recommend running it locally using docker. A Redis service is available in [development/docker-compose.yml](/home/graham/ieee/hackathon-template/README.md). To run all the services, including the database:
+To compile all SCSS files at once, run:
 
 ```bash
-$ docker-compose -f development/docker-compose.yml up -d
+yarn run scss
 ```
 
-To run only the redis service:
+### 5. Run the development server
 
-```bash
-$ docker-compose -f development/docker-compose.yml up -d redis
-```
-
-If you run multiple instances of this application in production using Redis through Docker (perhaps in Swarm mode), you should make sure that the Redis databases used between applications do not conflict. The easiest way to do this is to change the database id in the [Redis URI environment variable](#environment-variables), eg to `172.17.0.1:6379/2`.
-
-#### Run the development server
+#### Main site
 
 Finally, you can run the development server, by default on port 8000. From above, you should already be in the top-level `hackathon_site` directory:
 
@@ -178,14 +162,27 @@ $ python manage.py runserver
 
 If you would like to run on a port other than 8000, specify a port number after `runserver`.
 
-### Creating users locally
+#### Hardware signout site (HSS)
+
+To run HSS server, make sure the main site server is running, including the docker containers and the Django server.
+
+Then, run the following commands to start the HSS server, make sure the the current directory is the top-level `hackathon_site` directory
+
+```bash
+cd hackathon_site/dashboard/frontend
+yarn run start
+```
+
+# Additional information
+
+## 1. Creating users locally
 
 In order to access most of the functionality of the site (the React dashboard or otherwise), you will need to have user accounts to test with.
 
 To start, create an admin user. This will give you access to the admin site, and will bypass all Django permissions checks:
 
 ```bash
-$ python manage.py createsuperuser
+python manage.py createsuperuser
 ```
 
 Once a superuser is created (and the Django dev server is running), you can log in to the admin site at `http://localhost:8000/admin`. Note that creating a superuser does not give it a first or last name, so you should set those from the admin site otherwise some parts of the site may behave weird. Our regular sign up flow also assumes that username and email are the same, so we recommend creating your superuser accordingly.
@@ -194,41 +191,7 @@ Once a superuser is created (and the Django dev server is running), you can log 
 
 The easiest way to add new users is via the admin site, through the "Users" link of the "Authentication and Authorization" panel. When adding a user, you will be prompted for only a username and a password. The react site uses email to log in, so _make sure_ to click "Save and continue editing" and add a first name, last name, and email address.
 
-#### Giving a user a profile
-
-Profiles are used by participants who have either been accepted or waitlisted. Some features of the React dashboard require the user to have a profile. This can be done through the "Profiles" link of the "Event" panel on the admin site. Click "Add profile", select a user from the dropdown, either add them to an existing team (if you have any) or click the green "+" to create a team, pick a status, fill out any other required fields, and click save.
-
-### Tests
-
-#### Django
-
-Django tests are run using [Django's test system](https://docs.djangoproject.com/en/3.0/topics/testing/overview/), based on the standard python `unittest` module.
-
-A custom settings settings module is available for testing, which tells Django to use an in-memory sqlite3 database instead of the postgresql database and to use an in-memory cache instead of Redis. To run the full test suite locally:
-
-```bash
-$ cd hackathon_site
-$ python manage.py test --settings=hackathon_site.settings.ci
-```
-
-##### Fixtures
-
-Django has fixtures which are hardcoded files (YAML/JSON) that provide initial data for models. They are placed in a fixtures folder under each app.
-
-More information at [this link](https://docs.djangoproject.com/en/3.0/howto/initial-data/).
-
-To load fixtures into the database, use the command `python manage.py loaddata <fixturename>` where `<fixturename>` is the name of the fixture file you’ve created. Each time you run loaddata, the data will be read from the fixture and re-loaded into the database. Note this means that if you change one of the rows created by a fixture and then run loaddata again, you’ll wipe out any changes you’ve made.
-
-#### React
-
-React tests are handled by [Jest](https://jestjs.io/). To run the full suite of React tests:
-
-```bash
-$ cd hackathon_site/dashboard/frontend
-$ yarn test
-```
-
-## File Structure
+## 2. File Structure
 
 The top level [hackathon_site](hackathon_site) folder contains the Django project that encapsulates this template.
 
@@ -240,7 +203,7 @@ The [event](hackathon_site/event) app contains the public-facing templates for t
 
 The [registration](hackathon_site/registration) app contains models, forms, and templates for user registration, including signup and application templates. Since these templates are similar to the landing page, they may extend templates and use static files from the `event` app.
 
-### Templates and Static Files
+## 3. Templates and Static Files
 
 Templates served from Django can be placed in any app. We use [Jinja 2](https://jinja.palletsprojects.com/en/2.11.x/) as our templating engine, instead of the default Django Template Language. Within each app, Jinja 2 templates must be placed in a folder called `jinja2/<app_name>/` (i.e., the full path will be `hackathon_site/<app_name>/jinja2/<app_name>/`). Templates can then be referenced in views as `<app_name>/your_template.html`.
 
@@ -267,7 +230,7 @@ $ python manage.py collectstatic
 
 This will place static files in `hackathon_site/static/`. These must be served separately, for example using Nginx, as Django cannot serve static files in production. [Read more about how Django handles static files](https://docs.djangoproject.com/en/3.0/howto/static-files/).
 
-## Using this Template
+## 4. Using this Template
 
 This repository is setup as a template. To read more about how to use a template and what a template repository is, see [GitHub's doc page](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template).
 
@@ -354,7 +317,7 @@ This approach is very similar to using the template, but you lose the "generated
 
 6. Make a PR on your repo to merge `update-from-upstream-template` into your base branch.
 
-## Customization
+## 5. Customization
 
 This project was designed to be generic and customizable. At minimum, you will want to update templates to include your event's name and logo, but you may customize them to whatever degree you wish. See [file structure](#file-structure) for more details about templates.
 
@@ -418,7 +381,7 @@ h1 { font-family: $header; }
 h1 { font-family: font(header); }
 ```
 
-## Deploying
+## 6. Deploying
 
 This template may be deployed however you wish, we recommend you read [Django's documentation on deploying](https://docs.djangoproject.com/en/3.1/howto/deployment/).
 
