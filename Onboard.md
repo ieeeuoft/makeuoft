@@ -29,7 +29,7 @@ A customizable website template for hackathons run by [IEEE University of Toront
 ```bash
 # Create and activate conda environment
 conda env create -f environment.yml
-conda activate makeuoft
+conda activate ieee-makeuoft
 
 # Set required environment variables
 conda env config vars set SECRET_KEY=123
@@ -38,7 +38,7 @@ conda env config vars set REACT_APP_DEV_SERVER_URL=http://localhost:8000
 
 # Reactivate environment
 conda deactivate
-conda activate makeuoft
+conda activate ieee-makeuoft
 ```
 
 ### 3. Start Services
@@ -66,6 +66,7 @@ python manage.py runserver
 
 # In separate terminal - Start Hardware Signout System (HSS)
 cd hackathon_site/dashboard/frontend
+nvm use 16
 yarn run start
 ```
 

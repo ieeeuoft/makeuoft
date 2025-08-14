@@ -1,4 +1,4 @@
-name: makeuoft
+name: ieee-makeuoft
 channels:
   - conda-forge
   - defaults
