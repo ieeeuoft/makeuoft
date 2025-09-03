@@ -7,7 +7,7 @@ from django.db.models import Q, F, Sum
 from django.conf import settings
 from django.http import HttpResponseServerError
 from django.template.loader import render_to_string
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema as swagger_auto_schema
 
 from rest_framework import generics, mixins, status, permissions
 from rest_framework.exceptions import ValidationError, PermissionDenied

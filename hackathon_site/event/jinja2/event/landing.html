@@ -23,13 +23,13 @@
 
 {% block body %}
 <!-- MLH Badge -->
-<a id="mlh-trust-badge" style="display:block;max-width:100px;min-width:60px;position:fixed;right:50px;top:0;width:10%;z-index:10000" href="https://mlh.io/na?utm_source=na-hackathon&utm_medium=TrustBadge&utm_campaign=2024-season&utm_content=white" target="_blank"><img src="https://s3.amazonaws.com/logged-assets/trust-badge/2025/mlh-trust-badge-2025-white.svg" alt="Major League Hacking 2025 Hackathon Season" style="width:100%"></a>
+<a id="mlh-trust-badge" style="display:block;max-width:100px;min-width:60px;position:fixed;right:50px;top:0;width:10%;z-index:10000" href="https://mlh.io/seasons/2026/events" target="_blank"><img src="https://s3.amazonaws.com/logged-assets/trust-badge/2026/mlh-trust-badge-2026-white.svg" alt="Major League Hacking 2026 Hackathon Season" style="width:100%"></a>
 <div class="wrapper">
     <div class="landingBackground">
         <div class="container">
             <div class="section row" id="landing">
                 <div class="col container s12 m12 l7">
-                    <h1 class="row header">MakeUofT 2025</h1>
+                    <h1 class="row header">MakeUofT 2026</h1>
                     <div class="row">
                         <h4 class="header s12">Canada's Largest Makeathon</h4>
                         <div class="definition">
@@ -45,6 +45,11 @@
                             {# Update this logic if your event ends in a different month or year #}
                             {{ localtime(event_start_date).strftime("%B %d") }}-{{ localtime(event_end_date).strftime("%d, %Y") }}
                         </h5>
+                        <button
+                            class="btn-small waves-effect waves-light colorBtn"
+                            onclick="window.open('https://forms.gle/z8XUUAVzYozFjVnq8', '_blank')">
+                            Register Your Interest Here!
+                        </button>
                     </div>
                     <div class="row">
                         {% if request.user.is_authenticated %}
@@ -202,7 +207,7 @@
                             </div>
                             <div class="collapsible-body">
                                 <span>
-                                    Yes! Once you are accepted, each team will be able to select and sign out a wide range of hardware on our Hardware Signout Site <a href="https://hardware.makeuoft.ca" target="_blank">hardware.makeuoft.ca</a>. The site opens for ordering on February 12th, 2025, you must be in a team of 2 to 4 to order from our inventory.
+                                    Yes! Once you are accepted, each team will be able to select and sign out a wide range of hardware on our Hardware Signout Site <a href="https://hardware.makeuoft.ca" target="_blank">hardware.makeuoft.ca</a>. The site opens for ordering on February 14th, 2026, you must be in a team of 2 to 4 to order from our inventory.
                                 </span>
                             </div>
                         </li>
@@ -229,7 +234,7 @@
                             </div>
                             <div class="collapsible-body">
                                 <span>
-                                    We’re welcoming any students pursuing post-secondary education! Applications open on January 28th, 2025 and close at 11:59 PM EST on February 11th, 2025. Acceptances will be internally decided on a rolling basis, so apply early to maximize your chances of getting accepted!
+                                    We're welcoming any students pursuing post-secondary education! Applications open on January 24th, 2026 and close at 11:59 PM EST on January 31th, 2026. Acceptances will be internally decided on a rolling basis, so apply early to maximize your chances of getting accepted!
                                 </span>
                             </div>
                         </li>
@@ -275,7 +280,7 @@
         <div class="section">
             <div class="row">
                 <div class="col m12">
-                    <h3 class="center">2024 Hackathon stats</h3>
+                    <h3 class="center">2025 Hackathon stats</h3>
                 </div>
             </div>
             <div class="row">

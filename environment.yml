@@ -20,8 +20,6 @@ dependencies:
       - chardet==3.0.4
       - click==7.1.2
       - confusable-homoglyphs==3.3.1
-      - coreapi==2.3.3
-      - coreschema==0.0.4
       - defusedxml==0.7.1
       - diff-match-patch==20241021
       - dj-rest-auth==1.0.6
@@ -34,9 +32,9 @@ dependencies:
       - django-recaptcha==2.0.6
       - django-redis==4.12.1
       - django-registration==3.1.2
-      - djangorestframework==3.11.2
+      - djangorestframework==3.14.0
       - dotenv==0.9.9
-      - drf-yasg==1.17.1
+      - drf-spectacular[sidecar]==0.27.2
       - et_xmlfile==2.0.0
       - gunicorn==20.0.4
       - idna==2.9
@@ -49,7 +47,6 @@ dependencies:
       - packaging==20.4
       - pathspec==0.8.0
       - Pillow==9.0.1
-      - psycopg2-binary==2.9.10 # optional: you can remove this since conda’s psycopg2 is already installed
       - pyparsing==2.4.7
       - python-dateutil==2.8.2
       - python-dotenv==1.1.0

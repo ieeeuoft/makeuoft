@@ -106,7 +106,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
-    "drf_yasg",
+    "drf_spectacular",
     "import_export",
     "django_filters",
     "client_side_image_cropping",
@@ -220,6 +220,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "PAGE_SIZE": 1000,
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 # Internationalization
@@ -316,12 +317,12 @@ DEFAULT_FROM_EMAIL = "hello@makeuoft.ca"
 CONTACT_EMAIL = DEFAULT_FROM_EMAIL
 HSS_ADMIN_EMAIL = "hardware@makeuoft.ca"
 
-REGISTRATION_OPEN_DATE = datetime(2025, 1, 28, tzinfo=TZ_INFO)
-REGISTRATION_CLOSE_DATE = datetime(2025, 8, 11, 23, 59, 0, tzinfo=TZ_INFO)
-EVENT_START_DATE = datetime(2025, 1, 15, 8, 0, 0, tzinfo=TZ_INFO)
-EVENT_END_DATE = datetime(2025, 8, 16, 17, 0, 0, tzinfo=TZ_INFO)
-HARDWARE_SIGN_OUT_START_DATE = datetime(2025, 1, 16, 6, 0, tzinfo=TZ_INFO)
-HARDWARE_SIGN_OUT_END_DATE = datetime(2025, 8, 16, 11, 0, tzinfo=TZ_INFO)
+REGISTRATION_OPEN_DATE = datetime(2026, 1, 24, tzinfo=TZ_INFO)
+REGISTRATION_CLOSE_DATE = datetime(2026, 1, 31, 23, 59, 0, tzinfo=TZ_INFO)
+EVENT_START_DATE = datetime(2026, 2, 14, 8, 0, 0, tzinfo=TZ_INFO)
+EVENT_END_DATE = datetime(2026, 2, 15, 17, 0, 0, tzinfo=TZ_INFO)
+HARDWARE_SIGN_OUT_START_DATE = datetime(2026, 2, 14, 6, 0, tzinfo=TZ_INFO)
+HARDWARE_SIGN_OUT_END_DATE = datetime(2026, 2, 15, 11, 0, tzinfo=TZ_INFO)
 
 # Registration user requirements
 MINIMUM_AGE = 17
@@ -363,28 +364,28 @@ SIGN_IN_TIMES = [
     {
         "name": "sign_in",
         "description": "Hackathon Sign In",
-        "time": datetime(2025, 2, 15, 9, 0, 0, tzinfo=TZ_INFO),  # Feb 15th @ 9:00am
+        "time": datetime(2026, 2, 14, 9, 0, 0, tzinfo=TZ_INFO),  # Feb 15th @ 9:00am
     },
     {
         "name": "lunch1",
         "description": "Lunch Day 1",
         "time": datetime(
-            2025, 2, 15, 12, 0, 0, tzinfo=TZ_INFO
+            2026, 2, 14, 12, 0, 0, tzinfo=TZ_INFO
         ),  # Feb 15th @ 12pm (noon)
     },
     {
         "name": "dinner1",
         "description": "Dinner Day 1",
-        "time": datetime(2025, 2, 15, 18, 0, 0, tzinfo=TZ_INFO),  # Feb 15th @ 6pm
+        "time": datetime(2026, 2, 14, 18, 0, 0, tzinfo=TZ_INFO),  # Feb 15th @ 6pm
     },
     {
         "name": "breakfast2",
         "description": "Breakfast Day 2",
-        "time": datetime(2025, 2, 16, 8, 0, 0, tzinfo=TZ_INFO),  # Feb 16th @ 8am
+        "time": datetime(2026, 2, 15, 8, 0, 0, tzinfo=TZ_INFO),  # Feb 16th @ 8am
     },
     {
         "name": "lunch2",
         "description": "Lunch Day 2",
-        "time": datetime(2025, 2, 16, 12, 0, 0, tzinfo=TZ_INFO),  # Feb 16th @ 1pm
+        "time": datetime(2026, 2, 15, 12, 0, 0, tzinfo=TZ_INFO),  # Feb 16th @ 1pm
     },
 ]
