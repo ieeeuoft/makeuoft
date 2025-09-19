@@ -1,27 +1,31 @@
-FROM python:3.8-buster
+FROM python:3.9-slim-bookworm
 
-# Set working directory
 WORKDIR /usr/src/hackathon_site
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# Set time zone
+# Set timezone (install tzdata only if needed)
+# If /usr/share/zoneinfo isn't present, uncomment the tzdata block.
+# ARG DEBIAN_FRONTEND=noninteractive
+# RUN apt-get update && apt-get install -y --no-install-recommends tzdata && rm -rf /var/lib/apt/lists/*
 RUN cp /usr/share/zoneinfo/Canada/Eastern /etc/localtime \
-  && echo "America/Toronto" > /etc/timezone
+ && echo "America/Toronto" > /etc/timezone
 
-# Install dependencies
-RUN apt-get update && apt-get install -y postgresql-client
+# System deps: psql client (brings libpq), then clean
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends postgresql-client \
+ && rm -rf /var/lib/apt/lists/*
 
+# Python deps
 RUN pip install --upgrade pip
-COPY hackathon_site/requirements.txt /usr/src/hackathon_site/requirements.txt
-RUN pip install -r /usr/src/hackathon_site/requirements.txt
+COPY hackathon_site/requirements.txt .
+RUN pip install -r requirements.txt
 
-# Copy app
-COPY hackathon_site/ /usr/src/hackathon_site/
+# App
+COPY hackathon_site/ .
 
-# Copy entrypoint
+# Entrypoint
 COPY deployment/entrypoint.sh /usr/src/entrypoint.sh
 RUN chmod +x /usr/src/entrypoint.sh
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
