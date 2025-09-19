@@ -6,7 +6,8 @@ from django.core.mail import send_mail
 from django_filters import rest_framework as filters
 from django.db import transaction
 from django.http import HttpResponseServerError
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema as swagger_auto_schema
+
 from django.template.loader import render_to_string
 
 from rest_framework import generics, mixins, status, permissions
