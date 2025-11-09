@@ -42,6 +42,7 @@ from hardware.serializers import (
 logger = logging.getLogger(__name__)
 
 ORDER_STATUS_MSG = {
+    "In Progress": "is currently being packed!",  # new status for tracking order packing
     "Ready for Pickup": "is Ready for Pickup!",
     "Picked Up": "has been Picked Up!",
     "Cancelled": f"was Cancelled by a {settings.HACKATHON_NAME} Exec.",
@@ -49,6 +50,7 @@ ORDER_STATUS_MSG = {
 }
 
 ORDER_STATUS_CLOSING_MSG = {
+    "In Progress": "Your order is currently being prepared by our team. You will receive another notification when it's ready for pickup.",
     "Ready for Pickup": "After the opening ceremony concludes on February 15th at around 11 am, please make your way to the Hardware Distribution Room at MYHAL 320 to retrieve your order.",
     "Picked Up": "Take good care of your hardware and Happy Hacking! Remember to return the items when you are finished using them.",
     "Cancelled": f"A {settings.HACKATHON_NAME} exec will be in contact with you shortly. If you don't hear back from them soon, please go to the Hardware Distribution Room for more information on why your order was cancelled.",

@@ -97,7 +97,10 @@ export const teamOrderListSerialization = (
             );
 
             if (hardwareInTableRow.length > 0 && !allItemsReturnedOrRejected) {
-                (order.status === "Submitted" || order.status === "Ready for Pickup"
+                // include "In Progress" status with pending orders so admins can see who's packing
+                (order.status === "Submitted" ||
+                order.status === "In Progress" ||
+                order.status === "Ready for Pickup"
                     ? pendingOrders
                     : checkedOutOrders
                 ).push({
@@ -106,6 +109,8 @@ export const teamOrderListSerialization = (
                     hardwareInTableRow,
                     createdTime: order.created_at,
                     updatedTime: order.updated_at,
+                    packing_admin_id: order.packing_admin_id, // track who is packing this order
+                    packing_admin_name: order.packing_admin_name, // display admin name in ui
                 });
             }
         }
@@ -205,15 +210,25 @@ export const sortCheckedOutOrders = (
 
 export const sortPendingOrders = (orders: OrderInTable[]): OrderInTable[] => {
     let ready_orders = [];
+    let in_progress_orders = []; // track orders currently being packed
     let submitted_orders = [];
     for (let order of orders) {
         if (order.status === "Ready for Pickup") {
             ready_orders.push(order);
+        } else if (order.status === "In Progress") {
+            in_progress_orders.push(order);
         } else {
             submitted_orders.push(order);
         }
     }
     ready_orders.sort((order1, order2) => {
+        return (
+            new Date(order1.updatedTime).valueOf() -
+            new Date(order2.updatedTime).valueOf()
+        );
+    });
+
+    in_progress_orders.sort((order1, order2) => {
         return (
             new Date(order1.updatedTime).valueOf() -
             new Date(order2.updatedTime).valueOf()
@@ -227,6 +242,13 @@ export const sortPendingOrders = (orders: OrderInTable[]): OrderInTable[] => {
         );
     });
 
-    orders.splice(0, orders.length, ...submitted_orders, ...ready_orders);
+    // sort order: submitted first, then in progress (being packed), then ready for pickup
+    orders.splice(
+        0,
+        orders.length,
+        ...submitted_orders,
+        ...in_progress_orders,
+        ...ready_orders
+    );
     return orders;
 };

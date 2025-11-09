@@ -12,6 +12,7 @@ import { displaySnackbar } from "slices/ui/uiSlice";
 
 interface numStatuses {
     Submitted?: number;
+    "In Progress"?: number; // new status for tracking order packing
     "Ready for Pickup"?: number;
     "Picked Up"?: number;
     Cancelled?: number;
@@ -137,6 +138,11 @@ const adminOrderSlice = createSlice({
                 state.needNumStatuses = false;
                 state.numStatuses["Submitted"] = numOrdersByStatus(
                     "Submitted",
+                    payload.results
+                );
+                // count orders currently being packed by admins
+                state.numStatuses["In Progress"] = numOrdersByStatus(
+                    "In Progress",
                     payload.results
                 );
                 state.numStatuses["Ready for Pickup"] = numOrdersByStatus(

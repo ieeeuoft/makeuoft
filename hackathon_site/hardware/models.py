@@ -1,7 +1,10 @@
 from django.db import models
 from django.db.models import Count, F, Q, Sum
+from django.contrib.auth import get_user_model
 
 from event.models import Team as TeamEvent
+
+User = get_user_model()
 
 
 class Category(models.Model):
@@ -109,6 +112,7 @@ class OrderItem(models.Model):
 class Order(models.Model):
     STATUS_CHOICES = [
         ("Submitted", "Submitted"),
+        ("In Progress", "In Progress"),  # new status to track orders being packed
         ("Ready for Pickup", "Ready for Pickup"),
         ("Picked Up", "Picked Up"),
         ("Cancelled", "Cancelled"),
@@ -121,6 +125,10 @@ class Order(models.Model):
         max_length=64, choices=STATUS_CHOICES, default="Submitted"
     )
     request = models.JSONField(null=False)
+    # track which admin is currently packing this order to prevent double-packing
+    packing_admin = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="packing_orders"
+    )
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
