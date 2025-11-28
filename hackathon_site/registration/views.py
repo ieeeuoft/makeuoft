@@ -270,11 +270,19 @@ class RSVPView(LoginRequiredMixin, View):
 
                 # Delete the profile
                 if hasattr(request.user, "profile"):
-                    team = user.profile.team
+                    # Get team ID before deleting profile (in case signal deletes it)
+                    team_id = user.profile.team_id
                     user.profile.delete()
 
-                    # Delete the team if it is empty
-                    if not team.profiles.exists():
-                        team.delete()
+                    # Delete the team if it is empty (only if it still exists and has a valid ID)
+                    # Note: The signal may have already deleted it, so we need to check
+                    if team_id:
+                        try:
+                            team = EventTeam.objects.get(pk=team_id)
+                            if not team.profiles.exists():
+                                team.delete()
+                        except EventTeam.DoesNotExist:
+                            # Team was already deleted by the signal, which is fine
+                            pass
 
         return redirect(reverse_lazy("event:dashboard"))

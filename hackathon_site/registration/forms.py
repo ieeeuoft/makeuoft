@@ -151,7 +151,7 @@ class ApplicationForm(forms.ModelForm):
             "what_past_experience",
             "why_participate",
             "what_technical_experience",
-            "what_role_in_team_setting",
+            "one_million_dollars_investment",
             "discovery_method",
             "conduct_agree",
             "logistics_agree",
@@ -190,7 +190,7 @@ class ApplicationForm(forms.ModelForm):
             "what_past_experience": forms.Textarea(
                 attrs={
                     "class": "materialize-textarea",
-                    "placeholder": "Insert answer here...",
+                    "placeholder": "The most significant challenge I faced in a project/hackathon was...",
                     "data-length": 1000,
                     "style": "padding-top: 38px;",
                 }
@@ -209,10 +209,10 @@ class ApplicationForm(forms.ModelForm):
                     "data-length": 1000,
                 }
             ),
-            "what_role_in_team_setting": forms.Textarea(
+            "one_million_dollars_investment": forms.Textarea(
                 attrs={
                     "class": "materialize-textarea",
-                    "placeholder": "I take on the role of...",
+                    "placeholder": "If I had a million dollars to invest in one technology brand, it would be...",
                     "data-length": 1000,
                 }
             ),

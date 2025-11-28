@@ -202,7 +202,7 @@ class Application(models.Model):
         null=False,
         validators=[
             validators.RegexValidator(
-                r"^(?:\+\d{1,3})?\s?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$",
+                r"^\+?\d[\d\s()-]{7,}$",
                 message="Enter a valid phone number.",
             )
         ],
@@ -321,7 +321,7 @@ class Application(models.Model):
     what_past_experience = models.TextField(
         null=False,
         default="",
-        help_text="If you’ve been to a hackathon, what is your most memorable moment or challenge you faced? How did you overcome it? If not, what excites you most about attending your first hackathon and what do you hope to achieve and experience?",
+        help_text="Describe the most significant challenges you faced in a project/hackathon. What did you learn from them?",
         max_length=1000,
     )
     why_participate = models.TextField(
@@ -334,10 +334,10 @@ class Application(models.Model):
         help_text="What is your technical experience with software and hardware?",
         max_length=1000,
     )
-    what_role_in_team_setting = models.TextField(
+    one_million_dollars_investment = models.TextField(
         null=False,
         default="",
-        help_text="Describe a time when you helped a team overcome a challenge. What was your role, and what was the result?",
+        help_text="If you had a million dollars to invest in one technology brand, what would it be and why?",
         max_length=1000,
     )
     discovery_method = models.TextField(
@@ -349,7 +349,7 @@ class Application(models.Model):
     )
     conduct_agree = models.BooleanField(
         help_text="I have read and agree to the "
-        '<a href="https://static.mlh.io/docs/mlh-code-of-conduct.pdf" rel="noopener noreferrer" target="_blank">MLH code of conduct</a>.',
+        '<a href="https://github.com/MLH/mlh-policies/blob/main/code-of-conduct.md" rel="noopener noreferrer" target="_blank">MLH code of conduct</a>.',
         blank=False,
         null=False,
         default=False,
@@ -357,7 +357,7 @@ class Application(models.Model):
     logistics_agree = models.BooleanField(
         help_text="I authorize you to share my application/registration information with Major League Hacking"
         " for event administration, ranking, and MLH administration in-line with the "
-        '<a href="https://mlh.io/privacy" rel="noopener noreferrer" target="_blank">MLH Privacy Policy</a>. '
+        '<a href="https://github.com/MLH/mlh-policies/blob/main/privacy-policy.md" rel="noopener noreferrer" target="_blank">MLH Privacy Policy</a>. '
         "I further agree to the terms of both the "
         '<a href="https://github.com/MLH/mlh-policies/blob/main/contest-terms.md" rel="noopener noreferrer" target="_blank">MLH Contest Terms and Conditions</a>'
         " and the "
