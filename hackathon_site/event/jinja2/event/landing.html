@@ -339,12 +339,11 @@
     <div class="section scrollspy" id="sponsors">
         <div class="row">
             <h3 class="center">Sponsors</h3>
-                <div class="row sponsorImgs">
-                      <img style="max-width: 100%; height: auto; margin-top: -3vw; margin-left: 1vw; margin-bottom:-1vw; "src="{{ static('event/images/sponsors/sponsors_merged.png') }}" alt="One big sponsor image"/>
-            </div>
+            <div id="sponsors-react-container"></div>
             <p class="center">
                 If you would like to sponsor us, feel free to reach out:
-                <a href=mailto:{{ contact_email }}" class="hoverLink">{{ contact_email }}</a>
+                <a href="mailto:{{ contact_email }}" class="hoverLink">{{ contact_email }}</a>
+            </p>
         </div>
     </div>
 </div>
@@ -372,5 +371,14 @@
 {% endblock %}
 
 {% block scripts %}
+<!-- React and ReactDOM from CDN -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<!-- Sponsors configuration -->
+<script>
+    window.STATIC_URL = "{{ static('') }}";
+</script>
+<script src="{{ static('event/js/sponsors-data.js') }}"></script>
+<script src="{{ static('event/js/sponsors-component.js') }}"></script>
 <script src="{{ static('event/js/landing.js') }}"></script>
 {% endblock %}
