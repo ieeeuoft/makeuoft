@@ -143,7 +143,7 @@
                     e.stopPropagation();
                 });
             });
-            $("#id_free_response_pronouns, #id_free_response_gender, #id_free_response_sexual_identity, #id_free_response_dietary_restrictions, #id_free_response_highest_formal_education, #id_what_role_in_team_setting, #id_past_hackathon_info, #id_what_hackathon_experience, #id_why_participate, #id_what_technical_experience").characterCounter(); // TODO: TEMPORARY LINE
+            $('textarea[data-length]').characterCounter();
 
             // on first focus (bubbles up to document), open the menu
             // https://stackoverflow.com/a/49261426/3882202
