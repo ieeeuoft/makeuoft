@@ -1,16 +1,16 @@
-import React from "react";
 import { Box, IconButton, InputAdornment, TextField } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import SearchIcon from "@material-ui/icons/Search";
-import styles from "pages/Orders/Orders.module.scss";
 import { Formik, FormikValues } from "formik";
-import { RootState } from "slices/store";
-import { connect, ConnectedProps } from "react-redux";
+import styles from "pages/Orders/Orders.module.scss";
+import { connect, ConnectedProps, useSelector } from "react-redux";
 import {
+    adminOrderFiltersSelector,
     getOrdersWithFilters,
     isLoadingSelector,
     setFilters,
 } from "slices/order/adminOrderSlice";
+import { RootState } from "slices/store";
 
 interface SearchValues {
     search: string;
@@ -65,9 +65,13 @@ export const EnhancedOrderSearch = ({
     getOrdersWithFilters,
     setFilters,
 }: ConnectedOrderSearchProps) => {
+    // const initialValues = {
+    //     search: "",
+    // };
+    const savedFilters = useSelector(adminOrderFiltersSelector);
     const initialValues = {
-        search: "",
-    };
+        search: savedFilters.search ?? "",
+    }; // Filter Bux Fix
 
     const onSubmit = ({ search }: SearchValues) => {
         setFilters({ search });
@@ -81,6 +85,7 @@ export const EnhancedOrderSearch = ({
 
     return (
         <Formik
+            enableReinitialize
             initialValues={initialValues}
             onSubmit={onSubmit}
             onReset={onReset}
