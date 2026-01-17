@@ -23,6 +23,8 @@ import {
 import {
     categorySelectors,
     isLoadingSelector as isCategoriesLoadingSelector,
+    categorySelectorsFiltered,
+    selectNonThreeDCategoryIds,
 } from "slices/hardware/categorySlice";
 import styles from "components/sharedStyles/Filter.module.scss";
 type OrderByOptions = {
@@ -95,7 +97,7 @@ interface InventoryFilterValues {
 }
 
 export const InventoryFilter = ({ handleReset, handleSubmit }: FormikValues) => {
-    const categories = useSelector(categorySelectors.selectAll);
+    const categories = useSelector(categorySelectorsFiltered);
     const isCategoriesLoading = useSelector(isCategoriesLoadingSelector);
     const isHardwareLoading = useSelector(isHardwareLoadingSelector);
     return (
@@ -169,12 +171,14 @@ export const InventoryFilter = ({ handleReset, handleSubmit }: FormikValues) => 
 
 export const EnhancedInventoryFilter = () => {
     const dispatch = useDispatch();
-
+    const nonThreeDIds = useSelector(selectNonThreeDCategoryIds);
     const onSubmit = ({ ordering, in_stock, categories }: InventoryFilterValues) => {
+        const selectedIds = categories.map((id) => parseInt(id, 10));
         const filters: HardwareFilters = {
             ordering,
             in_stock: in_stock || undefined, // If false, it will be cleared below
-            category_ids: categories.map((id) => parseInt(id, 10)),
+            // category_ids: categories.map((id) => parseInt(id, 10)),
+            category_ids: selectedIds.length > 0 ? selectedIds : nonThreeDIds,
         };
 
         dispatch(setFilters(filters));
