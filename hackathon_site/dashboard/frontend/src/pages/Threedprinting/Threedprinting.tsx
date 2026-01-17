@@ -11,24 +11,41 @@ import CloseIcon from "@material-ui/icons/Close";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import AlertBox from "components/general/AlertBox/AlertBox";
 import InventorySearch from "components/inventory/InventorySearch/InventorySearch";
+import InventorySearch3D from "components/inventory/InventorySearch3D/InventorySearch3D";
+
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import styles from "./Threedprinting.module.scss";
 import Header from "components/general/Header/Header";
 import InventoryFilter from "components/inventory/InventoryFilter/InventoryFilter";
 import InventoryGrid from "components/inventory/InventoryGrid/InventoryGrid";
+import InventoryGrid3D from "components/inventory/InventoryGrid3D/InventoryGrid3D";
+
 import ProductOverview from "components/inventory/ProductOverview/ProductOverview";
+import ProductOverview3D from "components/inventory/ProductOverview3D/ProductOverview3D";
+
+// import {
+//     clearFilters,
+//     getHardwareWithFilters,
+//     getHardwareNextPage,
+//     hardwareCountSelector,
+//     hardwareSelectors,
+//     isMoreLoadingSelector,
+//     isLoadingSelector,
+//     setFilters,
+// } from "slices/hardware/hardwareSlice";
 
 import {
-    clearFilters,
-    getHardwareWithFilters,
-    getHardwareNextPage,
-    hardwareCountSelector,
-    hardwareSelectors,
-    isMoreLoadingSelector,
-    isLoadingSelector,
-    setFilters,
-} from "slices/hardware/hardwareSlice";
+    clear3dClearFilters,
+    getHardware3dWithFilters,
+    getHardware3dNextPage,
+    hardware3dCountSelector,
+    hardware3dSelectors,
+    is3dMoreLoadingSelector,
+    is3dLoadingSelector,
+    set3dFilters,
+} from "slices/hardware/hardware3dSlice";
+
 import {
     getCategories,
     categorySelectorsFiltered,
@@ -42,10 +59,10 @@ import { getTeamOrders } from "slices/order/orderSlice";
 
 const Threedprinting = () => {
     const dispatch = useDispatch();
-    const itemsInStore = useSelector(hardwareSelectors.selectTotal);
-    const count = useSelector(hardwareCountSelector);
-    const isMoreLoading = useSelector(isMoreLoadingSelector);
-    const isLoading = useSelector(isLoadingSelector);
+    const itemsInStore = useSelector(hardware3dSelectors.selectTotal);
+    const count = useSelector(hardware3dCountSelector);
+    const isMoreLoading = useSelector(is3dMoreLoadingSelector);
+    const isLoading = useSelector(is3dLoadingSelector);
     const userType = useSelector(userTypeSelector);
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -54,23 +71,23 @@ const Threedprinting = () => {
     };
 
     const getMoreHardware = () => {
-        dispatch(getHardwareNextPage());
+        dispatch(getHardware3dNextPage());
     };
 
     const refreshHardware = () => {
         if (threeDPrintingId !== undefined) {
-            dispatch(setFilters({ category_ids: [threeDPrintingId] }));
+            dispatch(set3dFilters({ category_ids: [threeDPrintingId] }));
         }
-        dispatch(getHardwareWithFilters());
+        dispatch(getHardware3dWithFilters());
     };
 
     // When the page is loaded, clear filters and fetch fresh inventory data
     // useEffect(() => {
     //     dispatch(clearFilters());
     //     if(threeDPrintingId != undefined){
-    //         dispatch(setFilters({ category_ids: [threeDPrintingId] }));
+    //         dispatch(set3dFilters({ category_ids: [threeDPrintingId] }));
     //     }
-    //     dispatch(getHardwareWithFilters());
+    //     dispatch(getHardware3dWithFilters());
     //     dispatch(getCategories());
     //     // Reload team-related data for participants on page reload for accurate credit usage
     //     if (userType === "participant") {
@@ -89,8 +106,8 @@ const Threedprinting = () => {
     useEffect(() => {
         if (threeDPrintingId) {
             // dispatch(clearFilters());
-            dispatch(setFilters({ category_ids: [threeDPrintingId] }));
-            dispatch(getHardwareWithFilters());
+            dispatch(set3dFilters({ category_ids: [threeDPrintingId] }));
+            dispatch(getHardware3dWithFilters());
         }
         if (userType === "participant") {
             dispatch(getCurrentTeam());
@@ -101,7 +118,8 @@ const Threedprinting = () => {
     return (
         <>
             <Header />
-            <ProductOverview showAddToCartButton={userType === "participant"} />
+            {/* <ProductOverview showAddToCartButton={userType === "participant"} /> */}
+            <ProductOverview3D showAddToCartButton={userType === "participant"} />
             <div className={styles.threedprinting}>
                 {/* <Drawer
                     className={styles.threedprintingFilterDrawer}
@@ -135,7 +153,7 @@ const Threedprinting = () => {
                     <Grid item xs={12} md={12} xl={12}>
                         <div className={styles.threedprintingBodyToolbar}>
                             <div className={styles.threedprintingBodyToolbarDiv}>
-                                <InventorySearch />
+                                <InventorySearch3D />
                             </div>
 
                             <Divider
@@ -172,7 +190,7 @@ const Threedprinting = () => {
                                 </div>
                             </div>
                         </div>
-                        <InventoryGrid />
+                        <InventoryGrid3D />
                         {count > 0 && (
                             <Divider
                                 className={styles.threedprintingLoadDivider}
