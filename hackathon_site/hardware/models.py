@@ -174,3 +174,37 @@ class Incident(models.Model):
 
     def __str__(self):
         return f"{self.id}"
+
+
+class OrderLockConfig(models.Model):
+    """
+    Control whether order submissions are locked.
+    Admins can toggle this to prevent/allow order submissions without redeployment.
+    Superusers can bypass the lock for emergency situations.
+    """
+    orders_locked = models.BooleanField(default=False)
+    locked_by = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL, related_name="order_locks"
+    )
+    locked_at = models.DateTimeField(null=True, blank=True)
+    reason = models.TextField(blank=True, default="")
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True, null=False)
+
+    class Meta:
+        verbose_name = "Order Lock Configuration"
+        verbose_name_plural = "Order Lock Configuration"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_lock_status(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def __str__(self):
+        status = "Locked" if self.orders_locked else "Unlocked"
+        return f"Order Submissions: {status}"

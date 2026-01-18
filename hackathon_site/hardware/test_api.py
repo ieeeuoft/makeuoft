@@ -10,7 +10,7 @@ from rest_framework import status, serializers
 from rest_framework.test import APITestCase
 
 from event.models import Team, User, Profile
-from hardware.models import Hardware, Category, Order, OrderItem, Incident
+from hardware.models import Hardware, Category, Order, OrderItem, Incident, OrderLockConfig
 from hardware.serializers import (
     HardwareSerializer,
     CategorySerializer,
@@ -2045,3 +2045,140 @@ class OrderItemReturnViewTestCase(SetupUserMixin, APITestCase):
     #     del final_response["id"]
     #     for attribute in similar_attributes:
     #         self.assertEqual(final_response[attribute], self.request_data[attribute])
+
+
+class OrderLockViewTestCase(SetupUserMixin, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.view = reverse("api:hardware:order-lock")
+        self.admin_permissions = Permission.objects.filter(
+            content_type__app_label="hardware", codename__in=["view_order", "change_order"]
+        )
+        # Ensure lock config starts in unlocked state
+        lock_config = OrderLockConfig.get_lock_status()
+        lock_config.orders_locked = False
+        lock_config.save()
+
+    def test_get_lock_status_not_logged_in(self):
+        response = self.client.get(self.view)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_lock_status_success(self):
+        self._login()
+        response = self.client.get(self.view)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertIn("orders_locked", data)
+        self.assertIn("locked_by", data)
+        self.assertIn("locked_at", data)
+        self.assertIn("reason", data)
+        self.assertFalse(data["orders_locked"])
+
+    def test_toggle_lock_requires_admin(self):
+        self._login()
+        request_data = {"orders_locked": True}
+        response = self.client.post(self.view, request_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_toggle_lock_success(self):
+        # Create admin user
+        admin_group = Group.objects.get(name="Hardware Site Admins")
+        self.user.groups.add(admin_group)
+        self._login()
+        
+        # Lock orders
+        request_data = {"orders_locked": True, "reason": "Test lock"}
+        response = self.client.post(self.view, request_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertTrue(data["orders_locked"])
+        
+        # Verify in database
+        lock_config = OrderLockConfig.get_lock_status()
+        self.assertTrue(lock_config.orders_locked)
+        self.assertEqual(lock_config.locked_by, self.user)
+        self.assertIsNotNone(lock_config.locked_at)
+        
+        # Unlock orders
+        request_data = {"orders_locked": False}
+        response = self.client.post(self.view, request_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertFalse(data["orders_locked"])
+        
+        # Verify in database
+        lock_config.refresh_from_db()
+        self.assertFalse(lock_config.orders_locked)
+        self.assertIsNone(lock_config.locked_by)
+
+
+class OrderSubmissionWithLockTestCase(SetupUserMixin, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.view = reverse("api:hardware:order-list")
+        self.hardware = Hardware.objects.create(
+            name="Test Hardware",
+            model_number="model",
+            manufacturer="manufacturer",
+            datasheet="/datasheet/location/",
+            quantity_available=10,
+            max_per_team=5,
+            picture="/picture/location",
+        )
+        # Ensure lock config starts in unlocked state
+        lock_config = OrderLockConfig.get_lock_status()
+        lock_config.orders_locked = False
+        lock_config.save()
+
+    def test_order_submission_when_locked(self):
+        """Test that regular users cannot submit orders when locked"""
+        self._login()
+        self.create_min_number_of_profiles()
+        
+        # Lock orders
+        lock_config = OrderLockConfig.get_lock_status()
+        lock_config.orders_locked = True
+        lock_config.save()
+        
+        request_data = {"hardware": [{"id": self.hardware.id, "quantity": 1}]}
+        response = self.client.post(self.view, request_data, format="json")
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("non_field_errors", response.json())
+        self.assertIn("locked by administrators", response.json()["non_field_errors"][0])
+
+    @override_settings(
+        HARDWARE_SIGN_OUT_START_DATE=datetime.now(settings.TZ_INFO) - relativedelta(days=1),
+        HARDWARE_SIGN_OUT_END_DATE=datetime.now(settings.TZ_INFO) + relativedelta(days=1),
+    )
+    def test_order_submission_when_unlocked(self):
+        """Test that users can submit orders when unlocked"""
+        self._login()
+        self.create_min_number_of_profiles()
+        
+        # Ensure unlocked
+        lock_config = OrderLockConfig.get_lock_status()
+        lock_config.orders_locked = False
+        lock_config.save()
+        
+        request_data = {"hardware": [{"id": self.hardware.id, "quantity": 1}]}
+        response = self.client.post(self.view, request_data, format="json")
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_superuser_can_bypass_lock(self):
+        """Test that superusers can submit orders even when locked"""
+        self._login()
+        self.user.is_superuser = True
+        self.user.save()
+        self.create_min_number_of_profiles()
+        
+        # Lock orders
+        lock_config = OrderLockConfig.get_lock_status()
+        lock_config.orders_locked = True
+        lock_config.save()
+        
+        request_data = {"hardware": [{"id": self.hardware.id, "quantity": 1}]}
+        response = self.client.post(self.view, request_data, format="json")
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)

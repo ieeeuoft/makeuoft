@@ -202,3 +202,11 @@ export interface Incident {
     created_at: string;
     updated_at: string;
 }
+
+/** Order Lock API */
+export interface OrderLockStatus {
+    orders_locked: boolean;
+    locked_by: string | null;
+    locked_at: string | null;
+    reason: string;
+}

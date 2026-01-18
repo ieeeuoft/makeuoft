@@ -22,7 +22,7 @@ from hardware.api_filters import (
     IncidentFilter,
     OrderItemFilter,
 )
-from hardware.models import Hardware, Category, Order, Incident, OrderItem
+from hardware.models import Hardware, Category, Order, Incident, OrderItem, OrderLockConfig
 
 from hardware.serializers import (
     CategorySerializer,
@@ -434,3 +434,45 @@ class OrderItemReturnView(generics.GenericAPIView):
             finally:
                 connection.close()
         return Response(create_response, status=status.HTTP_201_CREATED)
+
+
+class OrderLockView(generics.GenericAPIView):
+    """
+    API endpoint to get and toggle order submission lock status.
+    GET: Returns current lock status (accessible to all authenticated users)
+    POST: Toggles lock status (admin only)
+    """
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [UserIsAdmin()]
+        return [permissions.IsAuthenticated()]
+
+    def get(self, request, *args, **kwargs):
+        """Get current lock status"""
+        lock_config = OrderLockConfig.get_lock_status()
+        return Response({
+            "orders_locked": lock_config.orders_locked,
+            "locked_by": lock_config.locked_by.email if lock_config.locked_by else None,
+            "locked_at": lock_config.locked_at,
+            "reason": lock_config.reason,
+        })
+
+    def post(self, request, *args, **kwargs):
+        """Toggle lock status (admin only)"""
+        from django.utils import timezone
+        
+        lock_config = OrderLockConfig.get_lock_status()
+        new_lock_state = request.data.get("orders_locked", False)
+        
+        lock_config.orders_locked = new_lock_state
+        lock_config.locked_by = request.user if new_lock_state else None
+        lock_config.locked_at = timezone.now() if new_lock_state else None
+        lock_config.reason = request.data.get("reason", "")
+        lock_config.save()
+        
+        return Response({
+            "orders_locked": lock_config.orders_locked,
+            "locked_by": lock_config.locked_by.email if lock_config.locked_by else None,
+            "locked_at": lock_config.locked_at,
+            "reason": lock_config.reason,
+        })

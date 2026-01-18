@@ -8,7 +8,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 from event.models import Profile
-from hardware.models import Hardware, Category, OrderItem, Order, Incident
+from hardware.models import Hardware, Category, OrderItem, Order, Incident, OrderLockConfig
 
 
 class HardwareSerializer(serializers.ModelSerializer):
@@ -317,11 +317,20 @@ class OrderCreateSerializer(serializers.Serializer):
 
     # check that the requests are within per-team constraints
     def validate(self, data):
-        if (
-            not self.context["request"]
-            .user.groups.filter(name=settings.TEST_USER_GROUP)
-            .exists()
-        ):
+        user = self.context["request"].user
+        is_test_user = user.groups.filter(name=settings.TEST_USER_GROUP).exists()
+        is_superuser = user.is_superuser
+        
+        # Allow test users and superusers to bypass all restrictions
+        if not is_test_user and not is_superuser:
+            # Check lock status first
+            lock_config = OrderLockConfig.get_lock_status()
+            if lock_config.orders_locked:
+                raise serializers.ValidationError(
+                    "Order submissions are currently locked by administrators. "
+                    "Please contact the hardware team for assistance."
+                )
+            
             # time restrictions
             if datetime.now(settings.TZ_INFO) < settings.HARDWARE_SIGN_OUT_START_DATE:
                 raise serializers.ValidationError(
