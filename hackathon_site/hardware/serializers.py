@@ -8,7 +8,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 from event.models import Profile
-from hardware.models import Hardware, Category, OrderItem, Order, Incident
+from hardware.models import Hardware, Category, OrderItem, Order, Incident, OrderLockConfig
 
 
 class HardwareSerializer(serializers.ModelSerializer):
@@ -142,6 +142,8 @@ class OrderListSerializer(serializers.ModelSerializer):
     items = OrderItemInOrderSerializer(many=True, read_only=True)
     team_code = serializers.SerializerMethodField()
     total_credits = serializers.SerializerMethodField()  # Add total_credits field
+    packing_admin_id = serializers.SerializerMethodField()  # track who is packing this order
+    packing_admin_name = serializers.SerializerMethodField()  # display admin name for ui
 
     class Meta:
         model = Order
@@ -155,6 +157,8 @@ class OrderListSerializer(serializers.ModelSerializer):
             "updated_at",
             "request",
             "total_credits",  # Include total_credits in API response
+            "packing_admin_id",
+            "packing_admin_name",
         )
 
     @staticmethod
@@ -164,6 +168,16 @@ class OrderListSerializer(serializers.ModelSerializer):
     def get_total_credits(self, obj):
         # Directly use the model method
         return obj.get_total_credits()
+    
+    def get_packing_admin_id(self, obj):
+        # return the id of the admin currently packing this order
+        return obj.packing_admin.id if obj.packing_admin else None
+    
+    def get_packing_admin_name(self, obj):
+        # return full name of admin packing the order for display purposes
+        if obj.packing_admin:
+            return f"{obj.packing_admin.first_name} {obj.packing_admin.last_name}".strip() or obj.packing_admin.username
+        return None
 
 
 class OrderChangeSerializer(OrderListSerializer):
@@ -172,8 +186,10 @@ class OrderChangeSerializer(OrderListSerializer):
         required=False, allow_blank=True, write_only=True
     )
 
+    # updated status transitions to support the new "In Progress" packing state
     change_options = {
-        "Submitted": ["Cancelled", "Ready for Pickup"],
+        "Submitted": ["Cancelled", "In Progress"],
+        "In Progress": ["Submitted", "Ready for Pickup", "Cancelled"],
         "Ready for Pickup": ["Picked Up", "Submitted"],
         "Picked Up": ["Returned"],
     }
@@ -207,13 +223,24 @@ class OrderChangeSerializer(OrderListSerializer):
 
     def update(self, instance: Order, validated_data):
         # Remove the optional cancellation message from the validated data
-        # so it isn’t passed to the model update.
+        # so it isn't passed to the model update.
         cancellation_message = validated_data.pop("cancellation_message", None)
         status = validated_data.pop("status", None)
         request_field = validated_data.pop("request", None)
 
         if status is not None:
             instance.status = status
+            
+            # automatically manage packing_admin based on status changes
+            if status == "In Progress" and instance.packing_admin is None:
+                # when starting to pack an order, assign current user as packing admin
+                request = self.context.get("request")
+                if request and request.user:
+                    instance.packing_admin = request.user
+            elif status in ["Ready for Pickup", "Cancelled", "Submitted"]:
+                # clear packing admin when order is no longer being packed
+                instance.packing_admin = None
+        
         if request_field is not None:
             for item in request_field:
                 items_in_order = list(
@@ -290,11 +317,20 @@ class OrderCreateSerializer(serializers.Serializer):
 
     # check that the requests are within per-team constraints
     def validate(self, data):
-        if (
-            not self.context["request"]
-            .user.groups.filter(name=settings.TEST_USER_GROUP)
-            .exists()
-        ):
+        user = self.context["request"].user
+        is_test_user = user.groups.filter(name=settings.TEST_USER_GROUP).exists()
+        is_superuser = user.is_superuser
+        
+        # Allow test users and superusers to bypass all restrictions
+        if not is_test_user and not is_superuser:
+            # Check lock status first
+            lock_config = OrderLockConfig.get_lock_status()
+            if lock_config.orders_locked:
+                raise serializers.ValidationError(
+                    "Order submissions are currently locked by administrators. "
+                    "Please contact the hardware team for assistance."
+                )
+            
             # time restrictions
             if datetime.now(settings.TZ_INFO) < settings.HARDWARE_SIGN_OUT_START_DATE:
                 raise serializers.ValidationError(

@@ -6,6 +6,7 @@ import OrdersSearch from "components/orders/OrdersSearch/OrdersSearch";
 import OrdersFilterButton from "components/orders/OrdersFilterButton/OrdersFilterButton";
 import OrdersCount from "components/orders/OrdersCount/OrdersCount";
 import OrdersFilter from "components/orders/OrdersFilter/OrderFilter";
+import OrderLockButton from "components/orders/OrderLockButton/OrderLockButton";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
 import styles from "./Orders.module.scss";
@@ -15,6 +16,7 @@ import {
     getOrdersWithFilters,
     clearFilters,
 } from "slices/order/adminOrderSlice";
+import { fetchLockStatus } from "slices/hardware/orderLockSlice";
 import { OrdersTable } from "components/orders/OrdersTable/OrdersTable";
 
 const Orders = () => {
@@ -28,6 +30,7 @@ const Orders = () => {
     useEffect(() => {
         dispatch(clearFilters());
         dispatch(getOrdersWithFilters());
+        dispatch(fetchLockStatus());
     }, [dispatch]);
 
     return (
@@ -79,6 +82,7 @@ const Orders = () => {
                                         />
                                     </Hidden>
                                     <OrdersCount />
+                                    <OrderLockButton />
                                 </div>
                             </div>
                         </Grid>

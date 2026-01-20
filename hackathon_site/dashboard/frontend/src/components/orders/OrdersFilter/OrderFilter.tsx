@@ -90,6 +90,11 @@ const OrderFilter = ({ handleReset, handleSubmit }: FormikValues) => {
             numOrders: numStatuses["Submitted"],
         },
         {
+            // new status to show orders currently being packed
+            status: "In Progress",
+            numOrders: numStatuses["In Progress"],
+        },
+        {
             status: "Ready for Pickup",
             numOrders: numStatuses["Ready for Pickup"],
         },
