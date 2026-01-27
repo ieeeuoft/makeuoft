@@ -24,7 +24,7 @@ import {
     categorySelectors,
     isLoadingSelector as isCategoriesLoadingSelector,
     categorySelectorsFiltered,
-    selectNonThreeDCategoryIds,
+    selectThreeDPrintingIdAsArray,
 } from "slices/hardware/categorySlice";
 import styles from "components/sharedStyles/Filter.module.scss";
 type OrderByOptions = {
@@ -171,14 +171,17 @@ export const InventoryFilter = ({ handleReset, handleSubmit }: FormikValues) => 
 
 export const EnhancedInventoryFilter = () => {
     const dispatch = useDispatch();
-    const nonThreeDIds = useSelector(selectNonThreeDCategoryIds);
+    const threeDPrintingIdArray = useSelector(selectThreeDPrintingIdAsArray);
     const onSubmit = ({ ordering, in_stock, categories }: InventoryFilterValues) => {
         const selectedIds = categories.map((id) => parseInt(id, 10));
         const filters: HardwareFilters = {
             ordering,
             in_stock: in_stock || undefined, // If false, it will be cleared below
-            // category_ids: categories.map((id) => parseInt(id, 10)),
-            category_ids: selectedIds.length > 0 ? selectedIds : nonThreeDIds,
+            // When specific categories are selected, use category_ids filter
+            // Otherwise, use exclude_category_ids to exclude 3D printing
+            category_ids: selectedIds.length > 0 ? selectedIds : undefined,
+            exclude_category_ids:
+                selectedIds.length === 0 ? threeDPrintingIdArray : undefined,
         };
 
         dispatch(setFilters(filters));
@@ -187,6 +190,10 @@ export const EnhancedInventoryFilter = () => {
 
     const onReset = () => {
         dispatch(clearFilters({ saveSearch: true }));
+        // Re-apply the 3D printing exclusion after clearing
+        if (threeDPrintingIdArray && threeDPrintingIdArray.length > 0) {
+            dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
+        }
         dispatch(getHardwareWithFilters());
     };
 

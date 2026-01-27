@@ -24,7 +24,7 @@ import DateRestrictionAlert from "components/general/DateRestrictionAlert/DateRe
 import { getCurrentTeam } from "slices/event/teamSlice";
 import {
     getCategories,
-    selectNonThreeDCategoryIds,
+    selectThreeDPrintingIdAsArray,
 } from "slices/hardware/categorySlice";
 import {
     clearFilters,
@@ -56,8 +56,8 @@ const Inventory = () => {
     };
 
     const refreshHardware = () => {
-        if (nonThreeDPrintingIDs !== undefined) {
-            dispatch(setFilters({ category_ids: nonThreeDPrintingIDs }));
+        if (threeDPrintingIdArray !== undefined) {
+            dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
         }
         dispatch(getHardwareWithFilters());
     };
@@ -66,20 +66,19 @@ const Inventory = () => {
         dispatch(getCategories());
     }, [dispatch]);
 
-    const nonThreeDPrintingIDs = useSelector(selectNonThreeDCategoryIds);
-    console.log("NonThreeDPrintingIDs are ", nonThreeDPrintingIDs);
+    const threeDPrintingIdArray = useSelector(selectThreeDPrintingIdAsArray);
+    console.log("3D Printing ID to exclude: ", threeDPrintingIdArray);
 
     useEffect(() => {
-        if (nonThreeDPrintingIDs && nonThreeDPrintingIDs.length > 0) {
-            // dispatch(clearFilters());
-            dispatch(setFilters({ category_ids: nonThreeDPrintingIDs }));
+        if (threeDPrintingIdArray && threeDPrintingIdArray.length > 0) {
+            dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
             dispatch(getHardwareWithFilters());
         }
         if (userType === "participant") {
             dispatch(getCurrentTeam());
             dispatch(getTeamOrders());
         }
-    }, [dispatch, userType, nonThreeDPrintingIDs]);
+    }, [dispatch, userType, threeDPrintingIdArray]);
 
     return (
         <>

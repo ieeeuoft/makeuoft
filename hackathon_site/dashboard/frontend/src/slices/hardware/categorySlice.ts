@@ -123,6 +123,11 @@ export const selectThreeDPrintingId = createSelector(
     (categories) => categories.find((c) => c.name === "3D Printing")?.id
 );
 
+export const selectThreeDPrintingIdAsArray = createSelector(
+    [selectThreeDPrintingId],
+    (id) => (id !== undefined ? [id] : undefined)
+);
+
 export const selectNonThreeDCategoryIds = createSelector(
     categorySelectorsFiltered,
     (categories) => {

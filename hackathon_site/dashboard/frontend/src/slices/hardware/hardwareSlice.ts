@@ -146,7 +146,14 @@ const hardwareSlice = createSlice({
             state: HardwareState,
             { payload }: PayloadAction<HardwareFilters>
         ) => {
-            const { in_stock, hardware_ids, category_ids, search, ordering } = {
+            const {
+                in_stock,
+                hardware_ids,
+                category_ids,
+                exclude_category_ids,
+                search,
+                ordering,
+            } = {
                 ...state.filters,
                 ...payload,
             };
@@ -156,6 +163,8 @@ const hardwareSlice = createSlice({
                 ...(in_stock && { in_stock }),
                 ...(hardware_ids && hardware_ids.length > 0 && { hardware_ids }),
                 ...(category_ids && category_ids.length > 0 && { category_ids }),
+                ...(exclude_category_ids &&
+                    exclude_category_ids.length > 0 && { exclude_category_ids }),
                 ...(search && { search }),
                 ...(ordering && { ordering }),
             };
@@ -163,14 +172,21 @@ const hardwareSlice = createSlice({
 
         clearFilters: (
             state: HardwareState,
-            { payload }: PayloadAction<{ saveSearch?: boolean } | undefined>
+            {
+                payload,
+            }: PayloadAction<
+                { saveSearch?: boolean; saveExcludeCategories?: boolean } | undefined
+            >
         ) => {
-            const { search } = state.filters;
+            const { search, exclude_category_ids } = state.filters;
 
             state.filters = {};
 
             if (payload?.saveSearch && search) {
                 state.filters.search = search;
+            }
+            if (payload?.saveExcludeCategories && exclude_category_ids) {
+                state.filters.exclude_category_ids = exclude_category_ids;
             }
         },
 

@@ -65,6 +65,16 @@ class HardwareFilter(filters.FilterSet):
         help_text="Comma separated list of category IDs",
     )
 
+    exclude_category_ids = IntegerCSVFilter(
+        method="filter_exclude_category_ids",
+        label="Comma separated list of category IDs to exclude",
+        help_text="Comma separated list of category IDs to exclude",
+    )
+
+    @staticmethod
+    def filter_exclude_category_ids(queryset, _, value):
+        return queryset.exclude(categories__id__in=value)
+
 
 class OrderFilter(filters.FilterSet):
     queryset = Order
