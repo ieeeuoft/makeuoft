@@ -113,22 +113,6 @@ export const TeamPendingOrderTable = () => {
         setVisibility(!visibility);
     };
 
-    // Helper to extract error message from various error shapes
-    const getErrorMessage = (error: unknown): string => {
-        if (typeof error === "string") return error;
-        if (typeof error === "object" && error !== null) {
-            const err = error as Record<string, unknown>;
-            if (err.message) {
-                if (typeof err.message === "string") return err.message;
-                if (typeof err.message === "object") return JSON.stringify(err.message);
-            }
-            if (err.detail) return String(err.detail);
-            if (err.error) return String(err.error);
-            return JSON.stringify(error);
-        }
-        return "An unknown error occurred";
-    };
-
     // Handle closing the concurrency error dialog and redirect to orders page
     const handleConcurrencyErrorClose = () => {
         setShowConcurrencyError(false);
