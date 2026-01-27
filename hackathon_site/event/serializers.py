@@ -183,7 +183,6 @@ class TeamSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "profiles",
-            "credits",
         )
 
 
