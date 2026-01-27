@@ -23,11 +23,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectCategoriesByIds } from "slices/hardware/categorySlice";
 import { RootState } from "slices/store";
 import { addToCart, cartSelectors } from "slices/hardware/cartSlice";
-import {
-    hardwareInProductOverviewSelector,
-    isUpdateDetailsLoading,
-    removeProductOverviewItem,
-} from "slices/hardware/hardwareSlice";
 
 import {
     hardware3dInProductOverviewSelector,

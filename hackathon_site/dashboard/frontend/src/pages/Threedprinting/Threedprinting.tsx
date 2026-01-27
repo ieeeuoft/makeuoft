@@ -1,42 +1,23 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Drawer from "@material-ui/core/Drawer";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import Hidden from "@material-ui/core/Hidden";
 import Button from "@material-ui/core/Button";
 import RefreshIcon from "@material-ui/icons/Refresh";
-import CloseIcon from "@material-ui/icons/Close";
 import FilterListIcon from "@material-ui/icons/FilterList";
-import AlertBox from "components/general/AlertBox/AlertBox";
-import InventorySearch from "components/inventory/InventorySearch/InventorySearch";
 import InventorySearch3D from "components/inventory/InventorySearch3D/InventorySearch3D";
 
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import styles from "./Threedprinting.module.scss";
 import Header from "components/general/Header/Header";
-import InventoryFilter from "components/inventory/InventoryFilter/InventoryFilter";
-import InventoryGrid from "components/inventory/InventoryGrid/InventoryGrid";
 import InventoryGrid3D from "components/inventory/InventoryGrid3D/InventoryGrid3D";
 
-import ProductOverview from "components/inventory/ProductOverview/ProductOverview";
 import ProductOverview3D from "components/inventory/ProductOverview3D/ProductOverview3D";
 
-// import {
-//     clearFilters,
-//     getHardwareWithFilters,
-//     getHardwareNextPage,
-//     hardwareCountSelector,
-//     hardwareSelectors,
-//     isMoreLoadingSelector,
-//     isLoadingSelector,
-//     setFilters,
-// } from "slices/hardware/hardwareSlice";
-
 import {
-    clear3dClearFilters,
     getHardware3dWithFilters,
     getHardware3dNextPage,
     hardware3dCountSelector,
@@ -46,11 +27,7 @@ import {
     set3dFilters,
 } from "slices/hardware/hardware3dSlice";
 
-import {
-    getCategories,
-    categorySelectorsFiltered,
-    selectThreeDPrintingId,
-} from "slices/hardware/categorySlice";
+import { getCategories, selectThreeDPrintingId } from "slices/hardware/categorySlice";
 import { Grid } from "@material-ui/core";
 import { userTypeSelector } from "slices/users/userSlice";
 import DateRestrictionAlert from "components/general/DateRestrictionAlert/DateRestrictionAlert";

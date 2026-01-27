@@ -31,6 +31,7 @@ import {
     getHardwareNextPage,
     getHardwareWithFilters,
     hardwareCountSelector,
+    hardwareFiltersSelector,
     hardwareSelectors,
     isLoadingSelector,
     isMoreLoadingSelector,
@@ -46,7 +47,9 @@ const Inventory = () => {
     const isMoreLoading = useSelector(isMoreLoadingSelector);
     const isLoading = useSelector(isLoadingSelector);
     const userType = useSelector(userTypeSelector);
+    const threeDPrintingIdArray = useSelector(selectThreeDPrintingIdAsArray);
     const [mobileOpen, setMobileOpen] = React.useState(false);
+
     const toggleFilter = () => {
         setMobileOpen(!mobileOpen);
     };
@@ -56,29 +59,43 @@ const Inventory = () => {
     };
 
     const refreshHardware = () => {
-        if (threeDPrintingIdArray !== undefined) {
+        if (threeDPrintingIdArray && threeDPrintingIdArray.length > 0) {
             dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
         }
         dispatch(getHardwareWithFilters());
     };
 
+    // On mount: clear filters and fetch categories
     useEffect(() => {
+        dispatch(clearFilters());
         dispatch(getCategories());
     }, [dispatch]);
 
-    const threeDPrintingIdArray = useSelector(selectThreeDPrintingIdAsArray);
-    console.log("3D Printing ID to exclude: ", threeDPrintingIdArray);
+    // Watch filters to detect when exclude filter is cleared (e.g., by Clear All button)
+    const currentFilters = useSelector(hardwareFiltersSelector);
+    const hasExcludeFilter =
+        currentFilters.exclude_category_ids &&
+        currentFilters.exclude_category_ids.length > 0;
 
+    // Whenever threeDPrintingIdArray is available and exclude filter is missing, re-apply it
     useEffect(() => {
-        if (threeDPrintingIdArray && threeDPrintingIdArray.length > 0) {
+        if (
+            threeDPrintingIdArray &&
+            threeDPrintingIdArray.length > 0 &&
+            !hasExcludeFilter
+        ) {
             dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
             dispatch(getHardwareWithFilters());
         }
+    }, [dispatch, threeDPrintingIdArray, hasExcludeFilter]);
+
+    // Participant-specific data (separate from hardware)
+    useEffect(() => {
         if (userType === "participant") {
             dispatch(getCurrentTeam());
             dispatch(getTeamOrders());
         }
-    }, [dispatch, userType, threeDPrintingIdArray]);
+    }, [dispatch, userType]);
 
     return (
         <>

@@ -21,7 +21,6 @@ import {
     clearFilters,
 } from "slices/hardware/hardwareSlice";
 import {
-    categorySelectors,
     isLoadingSelector as isCategoriesLoadingSelector,
     categorySelectorsFiltered,
     selectThreeDPrintingIdAsArray,
@@ -188,13 +187,22 @@ export const EnhancedInventoryFilter = () => {
         dispatch(getHardwareWithFilters());
     };
 
+    const isCategoriesLoading = useSelector(isCategoriesLoadingSelector);
+
     const onReset = () => {
         dispatch(clearFilters({ saveSearch: true }));
-        // Re-apply the 3D printing exclusion after clearing
+
+        // If categories are loaded, apply the exclude filter and fetch
         if (threeDPrintingIdArray && threeDPrintingIdArray.length > 0) {
             dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
+            dispatch(getHardwareWithFilters());
+        } else if (!isCategoriesLoading) {
+            // Categories loaded but no 3D printing category found (edge case)
+            // Still fetch hardware without the exclude filter
+            dispatch(getHardwareWithFilters());
         }
-        dispatch(getHardwareWithFilters());
+        // If categories are still loading, don't fetch - let Inventory.tsx handle it
+        // once categories are loaded via its useEffect
     };
 
     const initialValues: InventoryFilterValues = {
