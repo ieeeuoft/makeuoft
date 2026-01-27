@@ -4,6 +4,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    DialogContentText,
     DialogTitle,
     Grid,
     Link,
@@ -21,6 +22,7 @@ import {
 import { OrderStatus } from "api/types";
 import React, { useState } from "react";
 import Container from "@material-ui/core/Container";
+import { useHistory } from "react-router-dom";
 import styles from "components/general/OrderTables/OrderTables.module.scss";
 import hardwareImagePlaceholder from "assets/images/placeholders/no-hardware-image.svg";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -32,6 +34,7 @@ import {
 import { Formik, FormikValues } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import {
+    clearError,
     getCreditsUsedSelector,
     isLoadingSelector,
     pendingOrdersSelector,
@@ -40,6 +43,8 @@ import {
 } from "slices/order/teamOrderSlice";
 import { hardwareSelectors } from "slices/hardware/hardwareSlice";
 import { teamStartingCreditsSelector } from "slices/event/teamDetailSlice";
+import { userSelector } from "slices/users/userSlice"; // get current user to track who is packing
+import { AppDispatch } from "slices/store";
 
 const createDropdownList = (number: number) => {
     let entry = [];
@@ -68,7 +73,8 @@ const setInitialValues = (
 };
 
 export const TeamPendingOrderTable = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
+    const history = useHistory();
     const orders = useSelector(pendingOrdersSelector);
     const hardware = useSelector(hardwareSelectors.selectEntities);
     const isLoading = useSelector(isLoadingSelector);
@@ -79,6 +85,11 @@ export const TeamPendingOrderTable = () => {
     const [showRejectDialog, setShowRejectDialog] = useState<boolean>(false);
     const [cancelMsg, setCancelMsg] = useState<string>("");
     const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+    const currentUser = useSelector(userSelector); // get current user to check if they're packing
+
+    // Concurrency error dialog state
+    const [showConcurrencyError, setShowConcurrencyError] = useState<boolean>(false);
+    const [concurrencyErrorMsg, setConcurrencyErrorMsg] = useState<string>("");
 
     const [selectedQuantities, setSelectedQuantities] = useState<
         Record<number, number>
@@ -102,7 +113,14 @@ export const TeamPendingOrderTable = () => {
         setVisibility(!visibility);
     };
 
-    const updateOrder = (
+    // Handle closing the concurrency error dialog and redirect to orders page
+    const handleConcurrencyErrorClose = () => {
+        setShowConcurrencyError(false);
+        setConcurrencyErrorMsg("");
+        history.push("/orders");
+    };
+
+    const updateOrder = async (
         orderId: number,
         status: OrderStatus,
         values: FormikValues | null = null,
@@ -134,7 +152,20 @@ export const TeamPendingOrderTable = () => {
             updateOrderData.request = request;
         }
 
-        dispatch(updateOrderStatus(updateOrderData));
+        try {
+            await dispatch(updateOrderStatus(updateOrderData)).unwrap();
+        } catch (error: unknown) {
+            // Show concurrency error dialog for "In Progress" status changes (Start Packing)
+            if (status === "In Progress") {
+                // Clear the slice error state so TeamDetail doesn't show AlertBox
+                dispatch(clearError());
+                setConcurrencyErrorMsg(
+                    "Another admin might be packing this order. Please refresh the page."
+                );
+                setShowConcurrencyError(true);
+            }
+            // For other status changes, the snackbar from the thunk will handle the error
+        }
     };
 
     return (
@@ -188,6 +219,23 @@ export const TeamPendingOrderTable = () => {
                                             component={Paper}
                                             elevation={2}
                                             square={true}
+                                            style={{
+                                                // highlight orders being packed by current user
+                                                border:
+                                                    pendingOrder.status ===
+                                                        "In Progress" &&
+                                                    pendingOrder.packing_admin_id ===
+                                                        currentUser?.id
+                                                        ? "3px solid #ffa000"
+                                                        : "none",
+                                                backgroundColor:
+                                                    pendingOrder.status ===
+                                                        "In Progress" &&
+                                                    pendingOrder.packing_admin_id ===
+                                                        currentUser?.id
+                                                        ? "#fff9f0"
+                                                        : "inherit",
+                                            }}
                                         >
                                             <Table
                                                 className={styles.table}
@@ -238,8 +286,10 @@ export const TeamPendingOrderTable = () => {
                                                         <TableCell
                                                             className={`${styles.width1} ${styles.noWrap}`}
                                                         >
-                                                            {pendingOrder.status ===
-                                                                "Submitted" && (
+                                                            {(pendingOrder.status ===
+                                                                "Submitted" ||
+                                                                pendingOrder.status ===
+                                                                    "In Progress") && (
                                                                 <Checkbox
                                                                     color="primary"
                                                                     data-testid={`checkall-${pendingOrder.id}`}
@@ -359,8 +409,10 @@ export const TeamPendingOrderTable = () => {
                                                                         }
                                                                     </TableCell>
                                                                     <TableCell>
-                                                                        {pendingOrder.status ===
-                                                                            "Submitted" && (
+                                                                        {(pendingOrder.status ===
+                                                                            "Submitted" ||
+                                                                            pendingOrder.status ===
+                                                                                "In Progress") && (
                                                                             <div
                                                                                 style={{
                                                                                     display:
@@ -442,8 +494,10 @@ export const TeamPendingOrderTable = () => {
                                                                         )}
                                                                     </TableCell>
                                                                     <TableCell align="center">
-                                                                        {pendingOrder.status ===
-                                                                            "Submitted" && (
+                                                                        {(pendingOrder.status ===
+                                                                            "Submitted" ||
+                                                                            pendingOrder.status ===
+                                                                                "In Progress") && (
                                                                             <Checkbox
                                                                                 color="primary"
                                                                                 checked={
@@ -498,22 +552,154 @@ export const TeamPendingOrderTable = () => {
                                                 </Typography>
                                             </Grid>
                                             {pendingOrder.status === "Submitted" && (
-                                                <Grid item>
-                                                    <Button
-                                                        onClick={() => {
-                                                            setSelectedOrderId(
-                                                                pendingOrder.id
-                                                            );
-                                                            setShowRejectDialog(true);
-                                                        }}
-                                                        disabled={isLoading}
-                                                        color="secondary"
-                                                        variant="text"
-                                                        disableElevation
-                                                    >
-                                                        Reject Order
-                                                    </Button>
-                                                </Grid>
+                                                <>
+                                                    <Grid item>
+                                                        <Button
+                                                            onClick={() => {
+                                                                setSelectedOrderId(
+                                                                    pendingOrder.id
+                                                                );
+                                                                setShowRejectDialog(
+                                                                    true
+                                                                );
+                                                            }}
+                                                            disabled={isLoading}
+                                                            color="secondary"
+                                                            variant="text"
+                                                            disableElevation
+                                                        >
+                                                            Reject Order
+                                                        </Button>
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <Button
+                                                            onClick={() =>
+                                                                updateOrder(
+                                                                    pendingOrder.id,
+                                                                    "In Progress"
+                                                                )
+                                                            }
+                                                            disabled={isLoading}
+                                                            color="primary"
+                                                            variant="outlined"
+                                                            disableElevation
+                                                            style={{
+                                                                backgroundColor:
+                                                                    "#ffe3b4",
+                                                                borderColor: "#ffa000",
+                                                            }}
+                                                        >
+                                                            Start Packing
+                                                        </Button>
+                                                    </Grid>
+                                                </>
+                                            )}
+                                            {/* show different buttons when order is being packed */}
+                                            {pendingOrder.status === "In Progress" && (
+                                                <>
+                                                    {/* check if current user is the one packing this order */}
+                                                    {pendingOrder.packing_admin_id ===
+                                                    currentUser?.id ? (
+                                                        <>
+                                                            <Grid item>
+                                                                <Typography
+                                                                    variant="body2"
+                                                                    style={{
+                                                                        color: "#ffa000",
+                                                                        fontWeight:
+                                                                            "bold",
+                                                                        marginTop:
+                                                                            "10px",
+                                                                    }}
+                                                                >
+                                                                    You are currently
+                                                                    packing this order
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <Button
+                                                                    onClick={() =>
+                                                                        updateOrder(
+                                                                            pendingOrder.id,
+                                                                            "Submitted"
+                                                                        )
+                                                                    }
+                                                                    disabled={isLoading}
+                                                                    color="secondary"
+                                                                    variant="text"
+                                                                    disableElevation
+                                                                >
+                                                                    Stop Packing
+                                                                </Button>
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <Button
+                                                                    color="primary"
+                                                                    variant="contained"
+                                                                    type="submit"
+                                                                    disableElevation
+                                                                    data-testid={`complete-button-${pendingOrder.id}`}
+                                                                    disabled={
+                                                                        isLoading ||
+                                                                        // Check if all quantity fields are zero
+                                                                        Object.keys(
+                                                                            props.values
+                                                                        )
+                                                                            .filter(
+                                                                                (key) =>
+                                                                                    key.endsWith(
+                                                                                        "-quantity"
+                                                                                    )
+                                                                            )
+                                                                            .every(
+                                                                                (key) =>
+                                                                                    props
+                                                                                        .values[
+                                                                                        key
+                                                                                    ] ===
+                                                                                    "0"
+                                                                            ) ||
+                                                                        // Check if no checkbox is selected
+                                                                        Object.keys(
+                                                                            props.values
+                                                                        )
+                                                                            .filter(
+                                                                                (key) =>
+                                                                                    key.endsWith(
+                                                                                        "-checkbox"
+                                                                                    )
+                                                                            )
+                                                                            .every(
+                                                                                (key) =>
+                                                                                    !props
+                                                                                        .values[
+                                                                                        key
+                                                                                    ]
+                                                                            )
+                                                                    }
+                                                                >
+                                                                    Complete Packing
+                                                                </Button>
+                                                            </Grid>
+                                                        </>
+                                                    ) : (
+                                                        <Grid item>
+                                                            <Typography
+                                                                variant="body2"
+                                                                style={{
+                                                                    color: "#ffa000",
+                                                                    fontWeight: "bold",
+                                                                    marginTop: "10px",
+                                                                }}
+                                                            >
+                                                                {pendingOrder.packing_admin_name ||
+                                                                    "Another admin"}{" "}
+                                                                is currently packing
+                                                                this order
+                                                            </Typography>
+                                                        </Grid>
+                                                    )}
+                                                </>
                                             )}
                                             {pendingOrder.status ===
                                                 "Ready for Pickup" && (
@@ -531,48 +717,6 @@ export const TeamPendingOrderTable = () => {
                                                         disableElevation
                                                     >
                                                         Edit Order
-                                                    </Button>
-                                                </Grid>
-                                            )}
-                                            {pendingOrder.status === "Submitted" && (
-                                                <Grid item>
-                                                    <Button
-                                                        color="primary"
-                                                        variant="contained"
-                                                        type="submit"
-                                                        disableElevation
-                                                        data-testid={`complete-button-${pendingOrder.id}`}
-                                                        disabled={
-                                                            isLoading ||
-                                                            // Check if all quantity fields are zero
-                                                            Object.keys(props.values)
-                                                                .filter((key) =>
-                                                                    key.endsWith(
-                                                                        "-quantity"
-                                                                    )
-                                                                )
-                                                                .every(
-                                                                    (key) =>
-                                                                        props.values[
-                                                                            key
-                                                                        ] === "0"
-                                                                ) ||
-                                                            // Check if no checkbox is selected
-                                                            Object.keys(props.values)
-                                                                .filter((key) =>
-                                                                    key.endsWith(
-                                                                        "-checkbox"
-                                                                    )
-                                                                )
-                                                                .every(
-                                                                    (key) =>
-                                                                        !props.values[
-                                                                            key
-                                                                        ]
-                                                                )
-                                                        }
-                                                    >
-                                                        Complete Order
                                                     </Button>
                                                 </Grid>
                                             )}
@@ -652,6 +796,34 @@ export const TeamPendingOrderTable = () => {
                         color="primary"
                     >
                         Confirm Cancellation
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Concurrency Error Dialog - shown when another admin already claimed the order */}
+            <Dialog
+                open={showConcurrencyError}
+                onClose={handleConcurrencyErrorClose}
+                aria-labelledby="concurrency-error-dialog-title"
+                aria-describedby="concurrency-error-dialog-description"
+            >
+                <DialogTitle id="concurrency-error-dialog-title">
+                    Order Already Being Packed
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="concurrency-error-dialog-description">
+                        {concurrencyErrorMsg ||
+                            "Another admin is already packing this order. Please select a different order."}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleConcurrencyErrorClose}
+                        color="primary"
+                        variant="contained"
+                        autoFocus
+                    >
+                        Go to Orders
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -17,6 +17,13 @@ import { isTestUserSelector } from "slices/users/userSlice";
 import { projectDescriptionSelector } from "slices/event/teamSlice";
 import { getCreditsUsedSelector } from "slices/order/orderSlice";
 import {
+    fetchLockStatus,
+    isLoadingSelector as isLockLoadingSelector,
+    ordersLockedSelector,
+} from "slices/hardware/orderLockSlice";
+import { AppDispatch } from "slices/store";
+import { displaySnackbar } from "slices/ui/uiSlice";
+import {
     hardwareSignOutEndDate,
     hardwareSignOutStartDate,
     maxTeamSize,
@@ -33,13 +40,28 @@ const CartSummary = () => {
     const subtotalCredits = useSelector(subtotalCreditsSelector);
     const creditsUsed = useSelector(getCreditsUsedSelector);
     const creditsAvailable = useSelector(teamSelector)?.credits;
+    const ordersLocked = useSelector(ordersLockedSelector);
+    const isLockLoading = useSelector(isLockLoadingSelector);
     const projectedCredits = creditsAvailable
         ? creditsAvailable - creditsUsed - subtotalCredits
         : 0;
     const teamSizeValid = teamSize >= minTeamSize && teamSize <= maxTeamSize;
-    const dispatch = useDispatch();
-    const onSubmit = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const onSubmit = async () => {
         if (cartQuantity > 0) {
+            // Check lock status before submitting
+            const lockStatus = await dispatch(fetchLockStatus()).unwrap();
+            if (lockStatus.orders_locked) {
+                dispatch(
+                    displaySnackbar({
+                        message: "Orders are currently locked! Refreshing page...",
+                        options: {
+                            variant: "error",
+                        },
+                    })
+                );
+                return;
+            }
             dispatch(submitOrder());
         }
     };
@@ -78,12 +100,15 @@ const CartSummary = () => {
                 className={styles.btn}
                 disabled={
                     cartQuantity === 0 ||
+                    cartQuantity === 0 ||
                     cartOrderLoading ||
+                    isLockLoading ||
                     !teamSizeValid ||
                     !projectDescription || // Checks if projectDescription is null, undefined, or an empty string
                     (projectDescription &&
                         projectDescription.length < minProjectDescriptionLength) ||
                     (!isTestUser && isOutsideSignOutPeriod) ||
+                    (!isTestUser && ordersLocked) ||
                     projectedCredits < 0
                 }
                 onClick={onSubmit}

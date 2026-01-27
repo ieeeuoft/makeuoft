@@ -103,12 +103,12 @@ export interface ProfileWithUser extends ProfileWithoutTeamNumber {
 /** Orders API */
 export type OrderStatus =
     | "Submitted"
+    | "In Progress" // new status for tracking order packing
     | "Ready for Pickup"
     | "Picked Up"
     | "Cancelled"
     | "Returned"
-    | "Pending"
-    | "In Progress";
+    | "Pending";
 
 export type PartReturnedHealth =
     | "Healthy"
@@ -132,6 +132,8 @@ export interface Order {
     total_credits: number;
     created_at: string;
     updated_at: string;
+    packing_admin_id?: number | null; // track which admin is packing this order
+    packing_admin_name?: string | null; // admin's full name for display
 }
 
 export type OrderOrdering = "" | "created_at" | "-created_at";
@@ -157,6 +159,8 @@ export interface OrderInTable {
     status: OrderStatus;
     createdTime: string;
     updatedTime: string;
+    packing_admin_id?: number | null; // track which admin is packing this order
+    packing_admin_name?: string | null; // admin's full name for display
 }
 
 export type ReturnedItem = ItemsInOrder & { quantity: number; time: string };
@@ -198,4 +202,12 @@ export interface Incident {
     team_id: string;
     created_at: string;
     updated_at: string;
+}
+
+/** Order Lock API */
+export interface OrderLockStatus {
+    orders_locked: boolean;
+    locked_by: string | null;
+    locked_at: string | null;
+    reason: string;
 }

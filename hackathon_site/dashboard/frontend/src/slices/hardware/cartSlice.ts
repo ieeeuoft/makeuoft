@@ -6,7 +6,7 @@ import {
     PayloadAction,
     Update,
 } from "@reduxjs/toolkit";
-import { AppDispatch, RootState } from "slices/store";
+import { RootState } from "slices/store";
 import { CartItem } from "api/types";
 import { post } from "api/api";
 import { push } from "connected-react-router";
@@ -57,7 +57,7 @@ export interface OrderResponse {
 export const submitOrder = createAsyncThunk<
     OrderResponse,
     void,
-    { state: RootState; rejectValue: RejectValue; dispatch: AppDispatch }
+    { state: RootState; rejectValue: RejectValue }
 >(
     `${cartReducerName}/submitOrder`,
     async (_, { dispatch, getState, rejectWithValue }) => {

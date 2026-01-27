@@ -99,6 +99,14 @@ const OrdersTable = ({ ordersData }: OrdersTableProps) => {
             minWidth: 250,
             renderCell: (params) => <OrderStateIcon status={params.value} />,
         },
+        {
+            // show which admin is currently packing this order to prevent double-packing
+            field: "packing_admin_name",
+            headerName: "Packing Admin",
+            flex: 1,
+            minWidth: 150,
+            valueGetter: (params) => params.value || "-",
+        },
         { field: "updated_at", headerName: "Updated At" },
         { field: "request", headerName: "Request" },
     ];

@@ -13,7 +13,7 @@ from import_export.admin import ImportMixin
 from import_export.widgets import ManyToManyWidget
 from import_export.fields import Field
 
-from hardware.models import Hardware, Category, Order, Incident, OrderItem
+from hardware.models import Hardware, Category, Order, Incident, OrderItem, OrderLockConfig
 
 
 class OrderInline(admin.TabularInline):
@@ -330,3 +330,30 @@ class IncidentAdmin(admin.ModelAdmin):
         return (
             obj.order_item.order.team.team_code if obj.order_item.order.team else None
         )
+
+
+@admin.register(OrderLockConfig)
+class OrderLockConfigAdmin(admin.ModelAdmin):
+    list_display = ("orders_locked", "locked_by", "locked_at", "updated_at")
+    readonly_fields = ("locked_by", "locked_at", "created_at", "updated_at")
+    fieldsets = (
+        (None, {
+            "fields": ("orders_locked", "reason")
+        }),
+        ("Lock Information", {
+            "fields": ("locked_by", "locked_at"),
+            "classes": ("collapse",)
+        }),
+        ("Timestamps", {
+            "fields": ("created_at", "updated_at"),
+            "classes": ("collapse",)
+        }),
+    )
+    
+    def has_add_permission(self, request):
+        # Only allow one instance (singleton pattern)
+        return not OrderLockConfig.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        # Don't allow deletion of the singleton instance
+        return False

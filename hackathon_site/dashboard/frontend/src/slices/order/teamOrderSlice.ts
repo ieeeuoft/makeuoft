@@ -5,7 +5,7 @@ import {
     createSlice,
 } from "@reduxjs/toolkit";
 import { OrderStatus } from "api/types";
-import { AppDispatch, RootState } from "slices/store";
+import { RootState } from "slices/store";
 import { get, post, patch } from "api/api";
 import {
     APIListResponse,
@@ -59,7 +59,7 @@ interface RejectValue {
 export const getAdminTeamOrders = createAsyncThunk<
     APIListResponse<Order>,
     string,
-    { state: RootState; rejectValue: RejectValue; dispatch: AppDispatch }
+    { state: RootState; rejectValue: RejectValue }
 >(
     `${teamOrderReducerName}/getAdminTeamOrders`,
     async (team_code, { rejectWithValue, dispatch }) => {
@@ -114,7 +114,7 @@ export interface ReturnOrderResponse {
 export const returnItems = createAsyncThunk<
     ReturnOrderResponse,
     ReturnOrderRequest,
-    { state: RootState; rejectValue: RejectValue; dispatch: AppDispatch }
+    { state: RootState; rejectValue: RejectValue }
 >(
     `${teamOrderReducerName}/returnItems`,
     async (returnItemsData, { rejectWithValue, dispatch }) => {
@@ -157,7 +157,7 @@ export const returnItems = createAsyncThunk<
 export const updateOrderStatus = createAsyncThunk<
     Order,
     UpdateOrderAttributes,
-    { state: RootState; rejectValue: RejectValue; dispatch: AppDispatch }
+    { state: RootState; rejectValue: RejectValue }
 >(
     `${teamOrderReducerName}/updateOrderStatus`,
     async (updateOrderData, { rejectWithValue, dispatch }) => {
@@ -182,14 +182,19 @@ export const updateOrderStatus = createAsyncThunk<
                 e.response.statusText === "Not Found"
                     ? `Could not update order status: Error ${e.response.status}`
                     : `Something went wrong: Error ${e.response.status}`;
-            dispatch(
-                displaySnackbar({
-                    message,
-                    options: {
-                        variant: "error",
-                    },
-                })
-            );
+            const isConcurrencyError =
+                updateOrderData.status === "In Progress" && e.response.status === 400;
+
+            if (!isConcurrencyError) {
+                dispatch(
+                    displaySnackbar({
+                        message,
+                        options: {
+                            variant: "error",
+                        },
+                    })
+                );
+            }
             return rejectWithValue({
                 status: e.response.status,
                 message: e.response.message ?? e.response.data,
@@ -201,7 +206,11 @@ export const updateOrderStatus = createAsyncThunk<
 const teamOrderSlice = createSlice({
     name: teamOrderReducerName,
     initialState,
-    reducers: {},
+    reducers: {
+        clearError: (state) => {
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(getAdminTeamOrders.pending, (state) => {
             state.isLoading = true;
@@ -356,6 +365,8 @@ const teamOrderSlice = createSlice({
                     changes: {
                         status: payload.status,
                         hardwareInTableRow,
+                        packing_admin_id: payload.packing_admin_id,
+                        packing_admin_name: payload.packing_admin_name,
                     },
                 };
             } else {
@@ -363,13 +374,26 @@ const teamOrderSlice = createSlice({
                     id: payload.id,
                     changes: {
                         status: payload.status,
+                        packing_admin_id: payload.packing_admin_id,
+                        packing_admin_name: payload.packing_admin_name,
                     },
                 };
             }
             teamOrders.updateOne(state, updateObject);
         });
-        builder.addCase(updateOrderStatus.rejected, (state, { payload }) => {
+        builder.addCase(updateOrderStatus.rejected, (state, { payload, meta }) => {
             state.isLoading = false;
+
+            // Retrieve the arguments used in the dispatch
+            const { status } = meta.arg;
+
+            // If it's a concurrency error (status 400) when trying to "Start Packing" (In Progress),
+            // do NOT set the global error state. This allows the component (TeamPendingOrderTable)
+            // to remain mounted and show its own concurrency error dialog.
+            if (status === "In Progress" && payload?.status === 400) {
+                return;
+            }
+
             state.error =
                 payload?.message ??
                 "There was a problem retrieving orders. If this continues please contact hackathon organizers.";
@@ -378,6 +402,7 @@ const teamOrderSlice = createSlice({
 });
 
 export const { actions, reducer } = teamOrderSlice;
+export const { clearError } = actions;
 export default reducer;
 
 // Selectors
@@ -410,7 +435,9 @@ export const pendingOrdersSelector = createSelector(
     (orders) =>
         orders.filter(
             (order) =>
-                order.status === "Submitted" || order.status === "Ready for Pickup"
+                order.status === "Submitted" ||
+                order.status === "In Progress" ||
+                order.status === "Ready for Pickup"
         )
 );
 

@@ -23,6 +23,7 @@ import hardware3dReducer, {
 import orderReducer, { orderReducerName } from "slices/order/orderSlice";
 import categoryReducer, { categoryReducerName } from "slices/hardware/categorySlice";
 import cartReducer, { cartReducerName } from "slices/hardware/cartSlice";
+import orderLockReducer, { orderLockReducerName } from "slices/hardware/orderLockSlice";
 import teamReducer, { teamReducerName } from "slices/event/teamSlice";
 import teamAdminReducer, { teamAdminReducerName } from "slices/event/teamAdminSlice";
 import teamDetailReducer, { teamDetailReducerName } from "slices/event/teamDetailSlice";
@@ -33,6 +34,7 @@ export const history = createBrowserHistory();
 
 const reducers = {
     [cartReducerName]: cartReducer,
+    [orderLockReducerName]: orderLockReducer,
     [teamReducerName]: teamReducer,
     [teamOrderReducerName]: teamOrderReducer,
     [teamDetailReducerName]: teamDetailReducer,
