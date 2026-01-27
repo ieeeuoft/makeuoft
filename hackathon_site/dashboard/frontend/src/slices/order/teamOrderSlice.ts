@@ -131,7 +131,7 @@ export const returnItems = createAsyncThunk<
                     },
                 })
             );
-            // dispatch(getAdminTeamOrders(response.data.team_code));
+            dispatch(getAdminTeamOrders(response.data.team_code));
             return response.data;
         } catch (e: any) {
             const message =
@@ -380,6 +380,12 @@ const teamOrderSlice = createSlice({
                 };
             }
             teamOrders.updateOne(state, updateObject);
+
+            // Update creditsUsed when order is cancelled
+            if (payload.status === "Cancelled") {
+                state.creditsUsed -= payload.total_credits || 0;
+                if (state.creditsUsed < 0) state.creditsUsed = 0;
+            }
         });
         builder.addCase(updateOrderStatus.rejected, (state, { payload, meta }) => {
             state.isLoading = false;

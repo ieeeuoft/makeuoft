@@ -310,12 +310,17 @@ class TeamDetailView(
             data = request.data
             if not isinstance(data, dict):
                 raise ValueError("Invalid request data format")
-            valid_fields = {"project_description"}
+            valid_fields = {"project_description", "credits"}
             for field in data:
                 if field not in valid_fields:
                     raise ValueError(f'"{field}" is not a valid field for update')
                 if field == "project_description" and not isinstance(data[field], str):
                     raise ValueError("project_description must be a string")
+                if field == "credits":
+                    if not isinstance(data[field], int):
+                        raise ValueError("credits must be an integer")
+                    if data[field] < 0:
+                        raise ValueError("credits cannot be negative")
             return self.partial_update(request, *args, **kwargs)
         except ValueError as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)

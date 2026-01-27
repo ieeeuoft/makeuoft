@@ -146,6 +146,52 @@ export const updateProjectDescription = createAsyncThunk<
     }
 );
 
+interface UpdateTeamCreditsParams {
+    teamCode: string;
+    credits: number;
+}
+
+export const updateTeamCredits = createAsyncThunk<
+    Team,
+    UpdateTeamCreditsParams,
+    { state: RootState; rejectValue: RejectValue; dispatch: AppDispatch }
+>(
+    `${teamDetailReducerName}/updateTeamCredits`,
+    async ({ teamCode, credits }, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await patch<Team>(`/api/event/teams/${teamCode}/`, {
+                credits,
+            });
+            dispatch(
+                displaySnackbar({
+                    message: `Team credits updated to ${credits}.`,
+                    options: {
+                        variant: "success",
+                    },
+                })
+            );
+            return response.data;
+        } catch (e: any) {
+            const message =
+                e.response.statusText === "Not Found"
+                    ? `Could not update team credits: Error ${e.response.status}`
+                    : `Something went wrong: Error ${e.response.status}`;
+            dispatch(
+                displaySnackbar({
+                    message,
+                    options: {
+                        variant: "error",
+                    },
+                })
+            );
+            return rejectWithValue({
+                status: e.response.status,
+                message,
+            });
+        }
+    }
+);
+
 const teamDetailSlice = createSlice({
     name: teamDetailReducerName,
     initialState,
@@ -202,6 +248,19 @@ const teamDetailSlice = createSlice({
             state.isTeamInfoLoading = false;
             state.teamInfoError = payload?.message ?? "Something went wrong";
             state.projectDescription = null;
+        });
+        builder.addCase(updateTeamCredits.pending, (state) => {
+            state.isTeamInfoLoading = true;
+            state.teamInfoError = null;
+        });
+        builder.addCase(updateTeamCredits.fulfilled, (state, { payload }) => {
+            state.isTeamInfoLoading = false;
+            state.teamInfoError = null;
+            state.credits = payload.credits;
+        });
+        builder.addCase(updateTeamCredits.rejected, (state, { payload }) => {
+            state.isTeamInfoLoading = false;
+            state.teamInfoError = payload?.message ?? "Something went wrong";
         });
     },
 });
