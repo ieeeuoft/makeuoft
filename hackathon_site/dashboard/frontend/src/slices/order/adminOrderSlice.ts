@@ -26,10 +26,23 @@ interface adminOrderExtraState {
     numStatuses: numStatuses;
 }
 
+// Filter bug fix
+const FILTERS_KEY = "adminOrderFilters";
+const loadSavedFilters = (): OrderFilters => {
+    console.log("Setting filters");
+    try {
+        const raw = localStorage.getItem(FILTERS_KEY);
+        return raw ? (JSON.parse(raw) as OrderFilters) : ({} as OrderFilters);
+    } catch {
+        return {} as OrderFilters;
+    }
+};
+
 const extraState: adminOrderExtraState = {
     isLoading: false,
     error: null,
-    filters: {} as OrderFilters,
+    // filters: {} as OrderFilters,  // Filter bug fix
+    filters: loadSavedFilters(),
     needNumStatuses: true,
     numStatuses: {},
 };
@@ -44,6 +57,37 @@ interface RejectValue {
     status: number;
     message: any;
 }
+
+// Filter Bug Fix
+export const getOrderStatusCounts = createAsyncThunk<
+    APIListResponse<Order>,
+    undefined,
+    { state: RootState; rejectValue: RejectValue; dispatch: AppDispatch }
+>(
+    `${adminOrderReducerName}/getOrderStatusCounts`,
+    async (_, { rejectWithValue, dispatch }) => {
+        try {
+            // IMPORTANT: no filters here
+            const response = await get<APIListResponse<Order>>(
+                "/api/hardware/orders/",
+                {}
+            );
+            response.data.results = response.data.results.filter((o) => o?.team_code);
+            return response.data;
+        } catch (e: any) {
+            dispatch(
+                displaySnackbar({
+                    message: e.response.message,
+                    options: { variant: "error" },
+                })
+            );
+            return rejectWithValue({
+                status: e.response.status,
+                message: e.response.message ?? e.response.data,
+            });
+        }
+    }
+);
 
 export const getOrdersWithFilters = createAsyncThunk<
     APIListResponse<Order>,
@@ -100,6 +144,7 @@ const adminOrderSlice = createSlice({
                 ...(search && { search }),
                 ...(limit && { limit }),
             };
+            localStorage.setItem(FILTERS_KEY, JSON.stringify(state.filters)); // Filter bug fix
         },
 
         clearFilters: (
@@ -114,9 +159,42 @@ const adminOrderSlice = createSlice({
             if (payload?.saveSearch && search) {
                 state.filters.search = search;
             }
+            localStorage.setItem(FILTERS_KEY, JSON.stringify(state.filters));
         },
     },
     extraReducers: (builder) => {
+        builder.addCase(getOrderStatusCounts.fulfilled, (state, { payload }) => {
+            function numOrdersByStatus(status: OrderStatus, orders: Order[]) {
+                let count = 0;
+                orders.forEach((order) => {
+                    if (order.status === status) count++;
+                });
+                return count;
+            }
+
+            state.needNumStatuses = false;
+            state.numStatuses["Submitted"] = numOrdersByStatus(
+                "Submitted",
+                payload.results
+            );
+            state.numStatuses["Ready for Pickup"] = numOrdersByStatus(
+                "Ready for Pickup",
+                payload.results
+            );
+            state.numStatuses["Picked Up"] = numOrdersByStatus(
+                "Picked Up",
+                payload.results
+            );
+            state.numStatuses["Cancelled"] = numOrdersByStatus(
+                "Cancelled",
+                payload.results
+            );
+            state.numStatuses["Returned"] = numOrdersByStatus(
+                "Returned",
+                payload.results
+            );
+        });
+
         builder.addCase(getOrdersWithFilters.pending, (state) => {
             state.isLoading = true;
             state.error = null;

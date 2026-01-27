@@ -19,6 +19,8 @@ import Orders from "pages/Orders/Orders";
 import Teams from "pages/Teams/Teams";
 import Reports from "pages/Reports/Reports";
 import Inventory from "pages/Inventory/Inventory";
+import Threedprinting from "pages/Threedprinting/Threedprinting";
+// import ThreeDPrinting from "pages/ThreeDPrinting/ThreeDPrinting"
 import Cart from "pages/Cart/Cart";
 import IncidentForm from "pages/IncidentForm/IncidentForm";
 import NotFound from "pages/NotFound/NotFound";
@@ -83,6 +85,11 @@ const UnconnectedApp = () => {
                         exact
                         path="/inventory"
                         component={withUserCheck("both", Inventory)}
+                    />
+                    <Route
+                        exact
+                        path="/threedprinting"
+                        component={withUserCheck("both", Threedprinting)}
                     />
                     <Route
                         exact
