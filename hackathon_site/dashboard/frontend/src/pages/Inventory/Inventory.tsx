@@ -65,24 +65,26 @@ const Inventory = () => {
         dispatch(getHardwareWithFilters());
     };
 
-    // Track if initial fetch has been done
-    const hasFetchedRef = React.useRef(false);
+    // Track if initial hardware fetch has been done
+    const hasInitialFetchRef = React.useRef(false);
 
     // On mount: clear filters and fetch categories
     useEffect(() => {
-        hasFetchedRef.current = false; // Reset on mount
+        hasInitialFetchRef.current = false; // Reset on mount
         dispatch(clearFilters());
         dispatch(getCategories());
     }, [dispatch]);
 
-    // Once categories are loaded, set up filter and fetch hardware
+    // Once categories are loaded, apply the exclude filter and fetch hardware (only once)
     useEffect(() => {
-        if (threeDPrintingIdArray && threeDPrintingIdArray.length > 0) {
+        if (
+            threeDPrintingIdArray &&
+            threeDPrintingIdArray.length > 0 &&
+            !hasInitialFetchRef.current
+        ) {
             dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
-            if (!hasFetchedRef.current) {
-                dispatch(getHardwareWithFilters());
-                hasFetchedRef.current = true;
-            }
+            dispatch(getHardwareWithFilters());
+            hasInitialFetchRef.current = true;
         }
     }, [dispatch, threeDPrintingIdArray]);
 
@@ -93,9 +95,9 @@ const Inventory = () => {
         currentFilters.exclude_category_ids.length > 0;
 
     useEffect(() => {
-        // Only run after initial fetch is done (to avoid race condition on mount)
+        // Only run after initial fetch is done and when exclude filter is missing
         if (
-            hasFetchedRef.current &&
+            hasInitialFetchRef.current &&
             !hasExcludeFilter &&
             threeDPrintingIdArray &&
             threeDPrintingIdArray.length > 0
