@@ -65,29 +65,45 @@ const Inventory = () => {
         dispatch(getHardwareWithFilters());
     };
 
+    // Track if initial fetch has been done
+    const hasFetchedRef = React.useRef(false);
+
     // On mount: clear filters and fetch categories
     useEffect(() => {
+        hasFetchedRef.current = false; // Reset on mount
         dispatch(clearFilters());
         dispatch(getCategories());
     }, [dispatch]);
 
-    // Watch filters to detect when exclude filter is cleared (e.g., by Clear All button)
+    // Once categories are loaded, set up filter and fetch hardware
+    useEffect(() => {
+        if (threeDPrintingIdArray && threeDPrintingIdArray.length > 0) {
+            dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
+            if (!hasFetchedRef.current) {
+                dispatch(getHardwareWithFilters());
+                hasFetchedRef.current = true;
+            }
+        }
+    }, [dispatch, threeDPrintingIdArray]);
+
+    // Watch for when exclude filter is cleared (e.g., by Clear All button) and re-apply
     const currentFilters = useSelector(hardwareFiltersSelector);
     const hasExcludeFilter =
         currentFilters.exclude_category_ids &&
         currentFilters.exclude_category_ids.length > 0;
 
-    // Whenever threeDPrintingIdArray is available and exclude filter is missing, re-apply it
     useEffect(() => {
+        // Only run after initial fetch is done (to avoid race condition on mount)
         if (
+            hasFetchedRef.current &&
+            !hasExcludeFilter &&
             threeDPrintingIdArray &&
-            threeDPrintingIdArray.length > 0 &&
-            !hasExcludeFilter
+            threeDPrintingIdArray.length > 0
         ) {
             dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
             dispatch(getHardwareWithFilters());
         }
-    }, [dispatch, threeDPrintingIdArray, hasExcludeFilter]);
+    }, [dispatch, hasExcludeFilter, threeDPrintingIdArray]);
 
     // Participant-specific data (separate from hardware)
     useEffect(() => {
