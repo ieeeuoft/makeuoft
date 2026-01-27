@@ -6,7 +6,7 @@ import TeamActionTable from "components/teamDetail/TeamActionTable/TeamActionTab
 
 import { RouteComponentProps } from "react-router-dom";
 import Header from "components/general/Header/Header";
-import { Grid, Divider, TextField, Button, IconButton } from "@material-ui/core";
+import { Grid, Divider, TextField, IconButton } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import EditIcon from "@material-ui/icons/Edit";
 import SaveIcon from "@material-ui/icons/Save";

@@ -22,6 +22,7 @@ import {
     toggleCheckedOutTable,
     togglePendingTable,
     toggleReturnedTable,
+    displaySnackbar,
 } from "slices/ui/uiSlice";
 import {
     getUpdatedHardwareDetails,
@@ -35,6 +36,7 @@ import {
     returnedOrdersSelector,
     cancelOrderThunk,
     cancelOrderLoadingSelector,
+    getTeamOrders,
 } from "slices/order/orderSlice";
 import {
     GeneralOrderTitle,
@@ -236,7 +238,6 @@ export const PendingTables = () => {
     const isVisible = useSelector(isPendingTableVisibleSelector);
     const isCancelOrderLoading = useSelector(cancelOrderLoadingSelector);
     const toggleVisibility = () => dispatch(togglePendingTable());
-    const cancelOrder = (orderId: number) => dispatch(cancelOrderThunk(orderId));
     const [showCancelOrderModal, setShowCancelOrderModal] = useState(false);
     const [orderId, setorderId] = useState(null);
 
@@ -244,9 +245,27 @@ export const PendingTables = () => {
         setShowCancelOrderModal(false);
     };
 
-    const submitCancelOrderModal = (cancelOrderId: number | null) => {
+    const submitCancelOrderModal = async (cancelOrderId: number | null) => {
         if (cancelOrderId != null) {
-            cancelOrder(cancelOrderId); // Perform Cancellation
+            // Refresh orders first to get latest status
+            await dispatch(getTeamOrders());
+
+            // Find the order with the latest status from state
+            const currentOrder = unsorted_orders.find((o) => o.id === cancelOrderId);
+
+            // Only proceed if order is still Submitted
+            if (currentOrder && currentOrder.status === "Submitted") {
+                dispatch(cancelOrderThunk(cancelOrderId));
+            } else {
+                // Order status changed, show error message via snackbar
+                dispatch(
+                    displaySnackbar({
+                        message:
+                            "Cannot cancel order - it is no longer in Submitted status. The order may be being packed.",
+                        options: { variant: "error" },
+                    })
+                );
+            }
             setShowCancelOrderModal(false);
         }
     };
@@ -282,7 +301,7 @@ export const PendingTables = () => {
                         data-updated-time={`pending-order-time-${pendingOrder.updatedTime}`}
                     >
                         <GeneralPendingTable {...{ pendingOrder }} />
-                        {pendingOrder.status !== "Ready for Pickup" && (
+                        {pendingOrder.status === "Submitted" && (
                             <div
                                 style={{
                                     display: "flex",

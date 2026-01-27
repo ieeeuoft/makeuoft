@@ -48,7 +48,7 @@ export const ChipStatus = ({
                 <>
                     <Chip
                         icon={<WatchLater />}
-                        label="In progress"
+                        label="Submitted"
                         className={`${styles.chipOrange} ${styles.chip}`}
                     />
                     {overLimit && (
@@ -59,6 +59,14 @@ export const ChipStatus = ({
                         />
                     )}
                 </>
+            );
+        case "In Progress":
+            return (
+                <Chip
+                    icon={<WatchLater />}
+                    label="Being Packed"
+                    className={`${styles.chipBlue} ${styles.chip}`}
+                />
             );
         case "Error":
             return (
