@@ -178,6 +178,10 @@ const adminOrderSlice = createSlice({
                 "Submitted",
                 payload.results
             );
+            state.numStatuses["In Progress"] = numOrdersByStatus(
+                "In Progress",
+                payload.results
+            );
             state.numStatuses["Ready for Pickup"] = numOrdersByStatus(
                 "Ready for Pickup",
                 payload.results
