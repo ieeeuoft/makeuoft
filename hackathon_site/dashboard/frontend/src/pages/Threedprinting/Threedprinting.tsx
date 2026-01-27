@@ -1,96 +1,132 @@
-import Button from "@material-ui/core/Button";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Divider from "@material-ui/core/Divider";
-import Drawer from "@material-ui/core/Drawer";
-import Hidden from "@material-ui/core/Hidden";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import CloseIcon from "@material-ui/icons/Close";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import AlertBox from "components/general/AlertBox/AlertBox";
-import InventorySearch from "components/inventory/InventorySearch/InventorySearch";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Drawer from "@material-ui/core/Drawer";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
+import Hidden from "@material-ui/core/Hidden";
+import Button from "@material-ui/core/Button";
+import RefreshIcon from "@material-ui/icons/Refresh";
+import CloseIcon from "@material-ui/icons/Close";
+import FilterListIcon from "@material-ui/icons/FilterList";
+import AlertBox from "components/general/AlertBox/AlertBox";
+import InventorySearch from "components/inventory/InventorySearch/InventorySearch";
+import InventorySearch3D from "components/inventory/InventorySearch3D/InventorySearch3D";
 
+import CircularProgress from "@material-ui/core/CircularProgress";
+
+import styles from "./Threedprinting.module.scss";
 import Header from "components/general/Header/Header";
 import InventoryFilter from "components/inventory/InventoryFilter/InventoryFilter";
 import InventoryGrid from "components/inventory/InventoryGrid/InventoryGrid";
-import ProductOverview from "components/inventory/ProductOverview/ProductOverview";
-import styles from "./Inventory.module.scss";
+import InventoryGrid3D from "components/inventory/InventoryGrid3D/InventoryGrid3D";
 
-import { Grid } from "@material-ui/core";
-import DateRestrictionAlert from "components/general/DateRestrictionAlert/DateRestrictionAlert";
-import { getCurrentTeam } from "slices/event/teamSlice";
+import ProductOverview from "components/inventory/ProductOverview/ProductOverview";
+import ProductOverview3D from "components/inventory/ProductOverview3D/ProductOverview3D";
+
+// import {
+//     clearFilters,
+//     getHardwareWithFilters,
+//     getHardwareNextPage,
+//     hardwareCountSelector,
+//     hardwareSelectors,
+//     isMoreLoadingSelector,
+//     isLoadingSelector,
+//     setFilters,
+// } from "slices/hardware/hardwareSlice";
+
+import {
+    clear3dClearFilters,
+    getHardware3dWithFilters,
+    getHardware3dNextPage,
+    hardware3dCountSelector,
+    hardware3dSelectors,
+    is3dMoreLoadingSelector,
+    is3dLoadingSelector,
+    set3dFilters,
+} from "slices/hardware/hardware3dSlice";
+
 import {
     getCategories,
-    selectThreeDPrintingIdAsArray,
+    categorySelectorsFiltered,
+    selectThreeDPrintingId,
 } from "slices/hardware/categorySlice";
-import {
-    clearFilters,
-    getHardwareNextPage,
-    getHardwareWithFilters,
-    hardwareCountSelector,
-    hardwareSelectors,
-    isLoadingSelector,
-    isMoreLoadingSelector,
-    setFilters,
-} from "slices/hardware/hardwareSlice";
-import { getTeamOrders } from "slices/order/orderSlice";
+import { Grid } from "@material-ui/core";
 import { userTypeSelector } from "slices/users/userSlice";
+import DateRestrictionAlert from "components/general/DateRestrictionAlert/DateRestrictionAlert";
+import { getCurrentTeam } from "slices/event/teamSlice";
+import { getTeamOrders } from "slices/order/orderSlice";
 
-const Inventory = () => {
+const Threedprinting = () => {
     const dispatch = useDispatch();
-    const itemsInStore = useSelector(hardwareSelectors.selectTotal);
-    const count = useSelector(hardwareCountSelector);
-    const isMoreLoading = useSelector(isMoreLoadingSelector);
-    const isLoading = useSelector(isLoadingSelector);
+    const itemsInStore = useSelector(hardware3dSelectors.selectTotal);
+    const count = useSelector(hardware3dCountSelector);
+    const isMoreLoading = useSelector(is3dMoreLoadingSelector);
+    const isLoading = useSelector(is3dLoadingSelector);
     const userType = useSelector(userTypeSelector);
+
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const toggleFilter = () => {
         setMobileOpen(!mobileOpen);
     };
 
     const getMoreHardware = () => {
-        dispatch(getHardwareNextPage());
+        dispatch(getHardware3dNextPage());
     };
 
     const refreshHardware = () => {
-        if (threeDPrintingIdArray !== undefined) {
-            dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
+        if (threeDPrintingId !== undefined) {
+            dispatch(set3dFilters({ category_ids: [threeDPrintingId] }));
         }
-        dispatch(getHardwareWithFilters());
+        dispatch(getHardware3dWithFilters());
     };
+
+    // When the page is loaded, clear filters and fetch fresh inventory data
+    // useEffect(() => {
+    //     dispatch(clearFilters());
+    //     if(threeDPrintingId != undefined){
+    //         dispatch(set3dFilters({ category_ids: [threeDPrintingId] }));
+    //     }
+    //     dispatch(getHardware3dWithFilters());
+    //     dispatch(getCategories());
+    //     // Reload team-related data for participants on page reload for accurate credit usage
+    //     if (userType === "participant") {
+    //         dispatch(getCurrentTeam());
+    //         dispatch(getTeamOrders());
+    //     }
+    // }, [dispatch, userType]);
 
     useEffect(() => {
         dispatch(getCategories());
     }, [dispatch]);
 
-    const threeDPrintingIdArray = useSelector(selectThreeDPrintingIdAsArray);
-    console.log("3D Printing ID to exclude: ", threeDPrintingIdArray);
+    const threeDPrintingId = useSelector(selectThreeDPrintingId);
+    console.log("ThreeDprinting ID is ", threeDPrintingId);
 
     useEffect(() => {
-        if (threeDPrintingIdArray && threeDPrintingIdArray.length > 0) {
-            dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
-            dispatch(getHardwareWithFilters());
+        if (threeDPrintingId) {
+            // dispatch(clearFilters());
+            dispatch(set3dFilters({ category_ids: [threeDPrintingId] }));
+            dispatch(getHardware3dWithFilters());
         }
         if (userType === "participant") {
             dispatch(getCurrentTeam());
             dispatch(getTeamOrders());
         }
-    }, [dispatch, userType, threeDPrintingIdArray]);
+    }, [dispatch, userType, threeDPrintingId]);
 
     return (
         <>
             <Header />
-            <ProductOverview showAddToCartButton={userType === "participant"} />
-            <div className={styles.inventory}>
-                <Drawer
-                    className={styles.inventoryFilterDrawer}
+            {/* <ProductOverview showAddToCartButton={userType === "participant"} /> */}
+            <ProductOverview3D showAddToCartButton={userType === "participant"} />
+            <div className={styles.threedprinting}>
+                {/* <Drawer
+                    className={styles.threedprintingFilterDrawer}
                     open={mobileOpen}
                     onClose={toggleFilter}
                 >
-                    <div className={styles.inventoryFilterDrawerTop}>
+                    <div className={styles.threedprintingFilterDrawerTop}>
                         <Typography variant="h2">Filters</Typography>
                         <IconButton
                             color="inherit"
@@ -101,46 +137,32 @@ const Inventory = () => {
                         </IconButton>
                     </div>
                     <InventoryFilter />
-                </Drawer>
+                </Drawer> */}
 
-                <Typography variant="h1">Hardware Inventory</Typography>
-                <AlertBox
-                    title={"Disclaimer"}
-                    error={
-                        "Note: Hardware picture and links may not be accurate to distributed parts. Substitutions may be made on the day of the event."
-                    }
-                    type={"info"}
-                />
-                <AlertBox
-                    title={"For 3D Printing"}
-                    error={
-                        'Note: Please go to the "3D Printing Services" tab for 3D Printer usage booking. Thank you!'
-                    }
-                    type={"info"}
-                />
+                <Typography variant="h1">3D Printing Services</Typography>
 
                 {userType === "participant" && <DateRestrictionAlert />}
 
-                <Grid container spacing={2} className={styles.inventoryBody}>
-                    <Grid item md={3} xl={2}>
+                <Grid container spacing={2} className={styles.threedprintingBody}>
+                    {/* <Grid item md={3} xl={2}>
                         <Hidden implementation="css" smDown>
-                            <InventoryFilter />
+                            <threedprintingFilter />
                         </Hidden>
-                    </Grid>
+                    </Grid> */}
 
-                    <Grid item md={9} xl={10}>
-                        <div className={styles.inventoryBodyToolbar}>
-                            <div className={styles.inventoryBodyToolbarDiv}>
-                                <InventorySearch />
+                    <Grid item xs={12} md={12} xl={12}>
+                        <div className={styles.threedprintingBodyToolbar}>
+                            <div className={styles.threedprintingBodyToolbarDiv}>
+                                <InventorySearch3D />
                             </div>
 
                             <Divider
                                 orientation="vertical"
-                                className={styles.inventoryBodyToolbarDivider}
+                                className={styles.threedprintingBodyToolbarDivider}
                                 flexItem
                             />
 
-                            <div className={styles.inventoryBodyToolbarDiv}>
+                            <div className={styles.threedprintingBodyToolbarDiv}>
                                 <Hidden implementation="css" mdUp>
                                     <Button
                                         aria-label="Filter"
@@ -151,7 +173,9 @@ const Inventory = () => {
                                     </Button>
                                 </Hidden>
 
-                                <div className={styles.inventoryBodyToolbarRefresh}>
+                                <div
+                                    className={styles.threedprintingBodyToolbarRefresh}
+                                >
                                     <Typography variant="body2">
                                         {count} results
                                     </Typography>
@@ -166,11 +190,11 @@ const Inventory = () => {
                                 </div>
                             </div>
                         </div>
-                        <InventoryGrid />
+                        <InventoryGrid3D />
                         {count > 0 && (
                             <Divider
-                                className={styles.inventoryLoadDivider}
-                                data-testid="inventoryCountDivider"
+                                className={styles.threedprintingLoadDivider}
+                                data-testid="threedprintingCountDivider"
                             />
                         )}
                         <Typography
@@ -211,4 +235,4 @@ const Inventory = () => {
     );
 };
 
-export default Inventory;
+export default Threedprinting;

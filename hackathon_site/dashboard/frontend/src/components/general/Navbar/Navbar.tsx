@@ -5,6 +5,7 @@ import { connect, useSelector } from "react-redux";
 // Images and logos
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import LocalMallIcon from "@material-ui/icons/LocalMall";
+import CategoryIcon from "@material-ui/icons/Category";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import ListAlt from "@material-ui/icons/ListAlt";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -115,6 +116,23 @@ export const UnconnectedNavbar = ({ logout, pathname }: NavBarProps) => {
                             startIcon={<Inventory fill="currentColor" width="20px" />}
                         >
                             Inventory
+                        </Button>
+                    </Link>
+                )}
+                {isParticipantOrAdmin && (
+                    <Link to={"/threedprinting"}>
+                        <Button
+                            className={
+                                pathname === "/threedprinting"
+                                    ? styles.navActive
+                                    : styles.navBtn
+                            }
+                            aria-label="threedprinting"
+                            startIcon={
+                                <CategoryIcon fill="currentColor" width="20px" />
+                            }
+                        >
+                            3D Printing Services
                         </Button>
                     </Link>
                 )}

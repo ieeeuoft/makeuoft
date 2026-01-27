@@ -1,21 +1,22 @@
-import React from "react";
-import { Formik, Field, FieldProps, FormikValues } from "formik";
-import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import Chip from "@material-ui/core/Chip";
-import Paper from "@material-ui/core/Paper";
-import Divider from "@material-ui/core/Divider";
 import Checkbox from "@material-ui/core/Checkbox";
+import Chip from "@material-ui/core/Chip";
+import Divider from "@material-ui/core/Divider";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormGroup from "@material-ui/core/FormGroup";
+import Paper from "@material-ui/core/Paper";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { OrderOrdering, OrderStatus, OrderFilters } from "api/types";
+import Typography from "@material-ui/core/Typography";
+import { OrderFilters, OrderOrdering, OrderStatus } from "api/types";
 import styles from "components/sharedStyles/Filter.module.scss";
+import { Field, FieldProps, Formik, FormikValues } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import {
+    adminOrderFiltersSelector,
     adminOrderNumStatusesSelector,
     clearFilters,
+    getOrderStatusCounts,
     getOrdersWithFilters,
     setFilters,
 } from "slices/order/adminOrderSlice";
@@ -165,6 +166,7 @@ const OrderFilter = ({ handleReset, handleSubmit }: FormikValues) => {
 
 export const EnhancedOrderFilter = () => {
     const dispatch = useDispatch();
+    const savedFilters = useSelector(adminOrderFiltersSelector); // Filter Bug Fix
 
     const handleSubmit = ({ ordering, status }: OrderFilters) => {
         const limit = 1000;
@@ -179,15 +181,19 @@ export const EnhancedOrderFilter = () => {
 
     const handleReset = () => {
         dispatch(clearFilters({ saveSearch: true }));
+        dispatch(getOrderStatusCounts());
         dispatch(getOrdersWithFilters());
     };
 
     return (
         <Formik
             initialValues={{
-                ordering: "",
-                status: [],
-                limit: 1000,
+                // ordering: "",
+                // status: [],
+                // limit: 1000,
+                ordering: savedFilters.ordering ?? "",
+                status: savedFilters.status ?? [],
+                limit: savedFilters.limit ?? 1000,
             }}
             onSubmit={handleSubmit}
             onReset={handleReset}

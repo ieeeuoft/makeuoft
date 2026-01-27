@@ -34,6 +34,7 @@ export interface HardwareFilters {
     in_stock?: boolean;
     hardware_ids?: number[];
     category_ids?: number[];
+    exclude_category_ids?: number[];
     search?: string;
     ordering?: HardwareOrdering;
 }

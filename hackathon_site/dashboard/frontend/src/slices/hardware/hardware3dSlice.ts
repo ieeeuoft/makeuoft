@@ -1,14 +1,14 @@
 import {
-    createSlice,
-    createEntityAdapter,
-    PayloadAction,
-    createSelector,
     createAsyncThunk,
+    createEntityAdapter,
+    createSelector,
+    createSlice,
+    PayloadAction,
 } from "@reduxjs/toolkit";
-import { RootState, AppDispatch } from "slices/store";
+import { AppDispatch, RootState } from "slices/store";
 
-import { APIListResponse, Hardware, HardwareFilters } from "api/types";
 import { get, stripHostnameReturnFilters } from "api/api";
+import { APIListResponse, Hardware, HardwareFilters } from "api/types";
 import { displaySnackbar } from "slices/ui/uiSlice";
 
 interface HardwareExtraState {
@@ -33,7 +33,9 @@ const extraState: HardwareExtraState = {
     hardwareIdInProductOverview: null,
 };
 
-export const hardwareReducerName = "hardware";
+// export const hardwareReducerName = "hardware";
+export const hardwareReducerName = "hardware3d";
+
 const hardwareAdapter = createEntityAdapter<Hardware>();
 export const initialState = hardwareAdapter.getInitialState(extraState);
 export type HardwareState = typeof initialState;
@@ -44,14 +46,14 @@ interface RejectValue {
     message: any;
 }
 
-export const getHardwareWithFilters = createAsyncThunk<
+export const getHardware3dWithFilters = createAsyncThunk<
     APIListResponse<Hardware>,
     { keepOld?: boolean } | undefined,
     { state: RootState; rejectValue: RejectValue; dispatch: AppDispatch }
 >(
-    `${hardwareReducerName}/getHardwareWithFilters`,
+    `${hardwareReducerName}/getHardware3dWithFilters`,
     async (_, { dispatch, getState, rejectWithValue }) => {
-        const filters = hardwareFiltersSelector(getState());
+        const filters = hardware3dFiltersSelector(getState());
 
         try {
             const response = await get<APIListResponse<Hardware>>(
@@ -74,15 +76,15 @@ export const getHardwareWithFilters = createAsyncThunk<
     }
 );
 
-export const getHardwareNextPage = createAsyncThunk<
+export const getHardware3dNextPage = createAsyncThunk<
     APIListResponse<Hardware> | null,
     void,
     { state: RootState; rejectValue: RejectValue; dispatch: AppDispatch }
 >(
-    `${hardwareReducerName}/getHardwareNextPage`,
+    `${hardwareReducerName}/getHardware3dNextPage`,
     async (_, { dispatch, getState, rejectWithValue }) => {
         try {
-            const nextFromState = hardwareNextSelector(getState());
+            const nextFromState = hardware3dNextSelector(getState());
             if (nextFromState) {
                 const { path, filters } = stripHostnameReturnFilters(nextFromState);
                 const response = await get<APIListResponse<Hardware>>(path, filters);
@@ -105,7 +107,7 @@ export const getHardwareNextPage = createAsyncThunk<
     }
 );
 
-export const getUpdatedHardwareDetails = createAsyncThunk<
+export const getUpdatedHardware3dDetails = createAsyncThunk<
     Hardware | null,
     number,
     { state: RootState; rejectValue: RejectValue; dispatch: AppDispatch }
@@ -146,14 +148,7 @@ const hardwareSlice = createSlice({
             state: HardwareState,
             { payload }: PayloadAction<HardwareFilters>
         ) => {
-            const {
-                in_stock,
-                hardware_ids,
-                category_ids,
-                exclude_category_ids,
-                search,
-                ordering,
-            } = {
+            const { in_stock, hardware_ids, category_ids, search, ordering } = {
                 ...state.filters,
                 ...payload,
             };
@@ -163,8 +158,6 @@ const hardwareSlice = createSlice({
                 ...(in_stock && { in_stock }),
                 ...(hardware_ids && hardware_ids.length > 0 && { hardware_ids }),
                 ...(category_ids && category_ids.length > 0 && { category_ids }),
-                ...(exclude_category_ids &&
-                    exclude_category_ids.length > 0 && { exclude_category_ids }),
                 ...(search && { search }),
                 ...(ordering && { ordering }),
             };
@@ -172,21 +165,14 @@ const hardwareSlice = createSlice({
 
         clearFilters: (
             state: HardwareState,
-            {
-                payload,
-            }: PayloadAction<
-                { saveSearch?: boolean; saveExcludeCategories?: boolean } | undefined
-            >
+            { payload }: PayloadAction<{ saveSearch?: boolean } | undefined>
         ) => {
-            const { search, exclude_category_ids } = state.filters;
+            const { search } = state.filters;
 
             state.filters = {};
 
             if (payload?.saveSearch && search) {
                 state.filters.search = search;
-            }
-            if (payload?.saveExcludeCategories && exclude_category_ids) {
-                state.filters.exclude_category_ids = exclude_category_ids;
             }
         },
 
@@ -195,13 +181,13 @@ const hardwareSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(getHardwareWithFilters.pending, (state) => {
+        builder.addCase(getHardware3dWithFilters.pending, (state) => {
             state.isLoading = true;
             state.error = null;
         });
 
         builder.addCase(
-            getHardwareWithFilters.fulfilled,
+            getHardware3dWithFilters.fulfilled,
             (state, { payload, meta }) => {
                 state.isLoading = false;
                 state.error = null;
@@ -216,18 +202,18 @@ const hardwareSlice = createSlice({
             }
         );
 
-        builder.addCase(getHardwareWithFilters.rejected, (state, { payload }) => {
+        builder.addCase(getHardware3dWithFilters.rejected, (state, { payload }) => {
             state.isMoreLoading = false;
             state.error = payload?.message || "Something went wrong";
         });
 
-        builder.addCase(getHardwareNextPage.pending, (state) => {
+        builder.addCase(getHardware3dNextPage.pending, (state) => {
             state.isLoading = false;
             state.isMoreLoading = true;
             state.error = null;
         });
 
-        builder.addCase(getHardwareNextPage.fulfilled, (state, { payload }) => {
+        builder.addCase(getHardware3dNextPage.fulfilled, (state, { payload }) => {
             state.isMoreLoading = false;
             state.error = null;
             if (payload) {
@@ -237,16 +223,16 @@ const hardwareSlice = createSlice({
             }
         });
 
-        builder.addCase(getHardwareNextPage.rejected, (state, { payload }) => {
+        builder.addCase(getHardware3dNextPage.rejected, (state, { payload }) => {
             state.isMoreLoading = false;
             state.error = payload?.message || "Something went wrong";
         });
 
-        builder.addCase(getUpdatedHardwareDetails.pending, (state) => {
+        builder.addCase(getUpdatedHardware3dDetails.pending, (state) => {
             state.isUpdateDetailsLoading = true;
         });
 
-        builder.addCase(getUpdatedHardwareDetails.fulfilled, (state, { payload }) => {
+        builder.addCase(getUpdatedHardware3dDetails.fulfilled, (state, { payload }) => {
             if (payload) {
                 state.isUpdateDetailsLoading = false;
                 state.hardwareIdInProductOverview = payload.id;
@@ -257,7 +243,7 @@ const hardwareSlice = createSlice({
             }
         });
 
-        builder.addCase(getUpdatedHardwareDetails.rejected, (state, { payload }) => {
+        builder.addCase(getUpdatedHardware3dDetails.rejected, (state, { payload }) => {
             state.isUpdateDetailsLoading = false;
         });
     },
@@ -266,50 +252,57 @@ const hardwareSlice = createSlice({
 export const { actions, reducer } = hardwareSlice;
 export default reducer;
 
-export const { setFilters, clearFilters, removeProductOverviewItem } = actions;
+// export const { setFilters, clearFilters, removeProductOverviewItem } = actions;
 
 // Selectors
+
+export const {
+    setFilters: set3dFilters,
+    clearFilters: clear3dClearFilters,
+    removeProductOverviewItem: remove3dProductOverviewItem,
+} = actions;
+
 export const hardwareSliceSelector = (state: RootState) => state[hardwareReducerName];
+export const hardware3dSelectors = hardwareAdapter.getSelectors(hardwareSliceSelector);
+// export const hardware3dSelectors = hardware3dSelectors;
 
-export const hardwareSelectors = hardwareAdapter.getSelectors(hardwareSliceSelector);
-
-export const isLoadingSelector = createSelector(
+export const is3dLoadingSelector = createSelector(
     [hardwareSliceSelector],
     (hardwareSlice) => hardwareSlice.isLoading
 );
 
-export const isMoreLoadingSelector = createSelector(
+export const is3dMoreLoadingSelector = createSelector(
     [hardwareSliceSelector],
     (hardwareSlice) => hardwareSlice.isMoreLoading
 );
 
-export const isUpdateDetailsLoading = createSelector(
+export const is3dUpdateDetailsLoading = createSelector(
     [hardwareSliceSelector],
     (hardwareSlice) => hardwareSlice.isUpdateDetailsLoading
 );
 
-export const hardwareCountSelector = createSelector(
+export const hardware3dCountSelector = createSelector(
     [hardwareSliceSelector],
     (hardwareSlice) => hardwareSlice.count
 );
 
-export const hardwareFiltersSelector = createSelector(
+export const hardware3dFiltersSelector = createSelector(
     [hardwareSliceSelector],
     (hardwareSlice) => hardwareSlice.filters
 );
 
-export const hardwareNextSelector = createSelector(
+export const hardware3dNextSelector = createSelector(
     [hardwareSliceSelector],
     (hardwareSlice) => hardwareSlice.next
 );
 
 export const selectHardwareByIds = createSelector(
-    [hardwareSelectors.selectEntities, (state: RootState, ids: number[]) => ids],
+    [hardware3dSelectors.selectEntities, (state: RootState, ids: number[]) => ids],
     (entities, ids) => ids.map((id) => entities?.[id])
 );
 
-export const hardwareInProductOverviewSelector = createSelector(
-    [hardwareSelectors.selectEntities, hardwareSliceSelector],
+export const hardware3dInProductOverviewSelector = createSelector(
+    [hardware3dSelectors.selectEntities, hardwareSliceSelector],
     (entities, hardwareSlice) =>
         hardwareSlice.hardwareIdInProductOverview
             ? entities[hardwareSlice.hardwareIdInProductOverview]

@@ -112,3 +112,28 @@ export const selectCategoriesByIds = createSelector(
     [categorySelectors.selectEntities, (state: RootState, ids: number[]) => ids],
     (entities, ids) => ids.map((id) => entities?.[id])
 );
+
+export const categorySelectorsFiltered = createSelector(
+    [categorySelectors.selectAll],
+    (categories) => categories.filter((cat) => cat.name !== "3D Printing")
+);
+
+export const selectThreeDPrintingId = createSelector(
+    [categorySelectors.selectAll],
+    (categories) => categories.find((c) => c.name === "3D Printing")?.id
+);
+
+export const selectThreeDPrintingIdAsArray = createSelector(
+    [selectThreeDPrintingId],
+    (id) => (id !== undefined ? [id] : undefined)
+);
+
+export const selectNonThreeDCategoryIds = createSelector(
+    categorySelectorsFiltered,
+    (categories) => {
+        const threeD = categories.find((c) => c.name === "3D Printing");
+        const threeDId = threeD?.id;
+
+        return categories.filter((c) => c.id !== threeDId).map((c) => c.id);
+    }
+);

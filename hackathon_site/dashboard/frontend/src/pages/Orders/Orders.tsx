@@ -12,6 +12,7 @@ import styles from "./Orders.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
     adminOrderSelectors,
+    getOrderStatusCounts,
     getOrdersWithFilters,
     clearFilters,
 } from "slices/order/adminOrderSlice";
@@ -26,7 +27,8 @@ const Orders = () => {
     };
 
     useEffect(() => {
-        dispatch(clearFilters());
+        // dispatch(clearFilters()); // Filter Bug Fix
+        dispatch(getOrderStatusCounts()); // Filter Bug Fix
         dispatch(getOrdersWithFilters());
     }, [dispatch]);
 
