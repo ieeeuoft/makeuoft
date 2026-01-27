@@ -14,7 +14,6 @@ import {
     adminOrderSelectors,
     getOrderStatusCounts,
     getOrdersWithFilters,
-    clearFilters,
 } from "slices/order/adminOrderSlice";
 import { OrdersTable } from "components/orders/OrdersTable/OrdersTable";
 
