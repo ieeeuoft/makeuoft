@@ -8,9 +8,17 @@ interface OrderProps {
     time: string;
     id: number;
     status: string;
+    packingAdminName?: string | null; // display who is packing this order
 }
 
-const OrderCard = ({ teamCode, orderQuantity, time, id, status }: OrderProps) => {
+const OrderCard = ({
+    teamCode,
+    orderQuantity,
+    time,
+    id,
+    status,
+    packingAdminName,
+}: OrderProps) => {
     const date = new Date(time);
     const month = date.toLocaleString("default", { month: "short" });
     const day = date.getDate();
@@ -25,6 +33,10 @@ const OrderCard = ({ teamCode, orderQuantity, time, id, status }: OrderProps) =>
         { title: "Order Qty", value: orderQuantity },
         { title: "Time", value: `${month} ${day}, ${hoursAndMinutes}` },
         { title: "ID", value: id },
+        // show which admin is packing this order when status is "In Progress"
+        ...(status === "In Progress" && packingAdminName
+            ? [{ title: "Packing Admin", value: packingAdminName }]
+            : []),
     ];
 
     return (

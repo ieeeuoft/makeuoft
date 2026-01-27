@@ -22,7 +22,7 @@ from hardware.api_filters import (
     IncidentFilter,
     OrderItemFilter,
 )
-from hardware.models import Hardware, Category, Order, Incident, OrderItem
+from hardware.models import Hardware, Category, Order, Incident, OrderItem, OrderLockConfig
 
 from hardware.serializers import (
     CategorySerializer,
@@ -42,6 +42,7 @@ from hardware.serializers import (
 logger = logging.getLogger(__name__)
 
 ORDER_STATUS_MSG = {
+    "In Progress": "is currently being packed!",  # new status for tracking order packing
     "Ready for Pickup": "is Ready for Pickup!",
     "Picked Up": "has been Picked Up!",
     "Cancelled": f"was Cancelled by a {settings.HACKATHON_NAME} Exec.",
@@ -49,6 +50,7 @@ ORDER_STATUS_MSG = {
 }
 
 ORDER_STATUS_CLOSING_MSG = {
+    "In Progress": "Your order is currently being prepared by our team. You will receive another notification when it's ready for pickup.",
     "Ready for Pickup": "After the opening ceremony concludes on February 15th at around 11 am, please make your way to the Hardware Distribution Room at MYHAL 320 to retrieve your order.",
     "Picked Up": "Take good care of your hardware and Happy Hacking! Remember to return the items when you are finished using them.",
     "Cancelled": f"A {settings.HACKATHON_NAME} exec will be in contact with you shortly. If you don't hear back from them soon, please go to the Hardware Distribution Room for more information on why your order was cancelled.",
@@ -432,3 +434,45 @@ class OrderItemReturnView(generics.GenericAPIView):
             finally:
                 connection.close()
         return Response(create_response, status=status.HTTP_201_CREATED)
+
+
+class OrderLockView(generics.GenericAPIView):
+    """
+    API endpoint to get and toggle order submission lock status.
+    GET: Returns current lock status (accessible to all authenticated users)
+    POST: Toggles lock status (admin only)
+    """
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [UserIsAdmin()]
+        return [permissions.IsAuthenticated()]
+
+    def get(self, request, *args, **kwargs):
+        """Get current lock status"""
+        lock_config = OrderLockConfig.get_lock_status()
+        return Response({
+            "orders_locked": lock_config.orders_locked,
+            "locked_by": lock_config.locked_by.email if lock_config.locked_by else None,
+            "locked_at": lock_config.locked_at,
+            "reason": lock_config.reason,
+        })
+
+    def post(self, request, *args, **kwargs):
+        """Toggle lock status (admin only)"""
+        from django.utils import timezone
+        
+        lock_config = OrderLockConfig.get_lock_status()
+        new_lock_state = request.data.get("orders_locked", False)
+        
+        lock_config.orders_locked = new_lock_state
+        lock_config.locked_by = request.user if new_lock_state else None
+        lock_config.locked_at = timezone.now() if new_lock_state else None
+        lock_config.reason = request.data.get("reason", "")
+        lock_config.save()
+        
+        return Response({
+            "orders_locked": lock_config.orders_locked,
+            "locked_by": lock_config.locked_by.email if lock_config.locked_by else None,
+            "locked_at": lock_config.locked_at,
+            "reason": lock_config.reason,
+        })

@@ -40,6 +40,7 @@ import {
 } from "slices/order/teamOrderSlice";
 import { hardwareSelectors } from "slices/hardware/hardwareSlice";
 import { teamStartingCreditsSelector } from "slices/event/teamDetailSlice";
+import { userSelector } from "slices/users/userSlice"; // get current user to track who is packing
 
 const createDropdownList = (number: number) => {
     let entry = [];
@@ -79,6 +80,7 @@ export const TeamPendingOrderTable = () => {
     const [showRejectDialog, setShowRejectDialog] = useState<boolean>(false);
     const [cancelMsg, setCancelMsg] = useState<string>("");
     const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+    const currentUser = useSelector(userSelector); // get current user to check if they're packing
 
     const [selectedQuantities, setSelectedQuantities] = useState<
         Record<number, number>
@@ -188,6 +190,23 @@ export const TeamPendingOrderTable = () => {
                                             component={Paper}
                                             elevation={2}
                                             square={true}
+                                            style={{
+                                                // highlight orders being packed by current user
+                                                border:
+                                                    pendingOrder.status ===
+                                                        "In Progress" &&
+                                                    pendingOrder.packing_admin_id ===
+                                                        currentUser?.id
+                                                        ? "3px solid #ffa000"
+                                                        : "none",
+                                                backgroundColor:
+                                                    pendingOrder.status ===
+                                                        "In Progress" &&
+                                                    pendingOrder.packing_admin_id ===
+                                                        currentUser?.id
+                                                        ? "#fff9f0"
+                                                        : "inherit",
+                                            }}
                                         >
                                             <Table
                                                 className={styles.table}
@@ -498,22 +517,154 @@ export const TeamPendingOrderTable = () => {
                                                 </Typography>
                                             </Grid>
                                             {pendingOrder.status === "Submitted" && (
-                                                <Grid item>
-                                                    <Button
-                                                        onClick={() => {
-                                                            setSelectedOrderId(
-                                                                pendingOrder.id
-                                                            );
-                                                            setShowRejectDialog(true);
-                                                        }}
-                                                        disabled={isLoading}
-                                                        color="secondary"
-                                                        variant="text"
-                                                        disableElevation
-                                                    >
-                                                        Reject Order
-                                                    </Button>
-                                                </Grid>
+                                                <>
+                                                    <Grid item>
+                                                        <Button
+                                                            onClick={() => {
+                                                                setSelectedOrderId(
+                                                                    pendingOrder.id
+                                                                );
+                                                                setShowRejectDialog(
+                                                                    true
+                                                                );
+                                                            }}
+                                                            disabled={isLoading}
+                                                            color="secondary"
+                                                            variant="text"
+                                                            disableElevation
+                                                        >
+                                                            Reject Order
+                                                        </Button>
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <Button
+                                                            onClick={() =>
+                                                                updateOrder(
+                                                                    pendingOrder.id,
+                                                                    "In Progress"
+                                                                )
+                                                            }
+                                                            disabled={isLoading}
+                                                            color="primary"
+                                                            variant="outlined"
+                                                            disableElevation
+                                                            style={{
+                                                                backgroundColor:
+                                                                    "#ffe3b4",
+                                                                borderColor: "#ffa000",
+                                                            }}
+                                                        >
+                                                            Start Packing
+                                                        </Button>
+                                                    </Grid>
+                                                </>
+                                            )}
+                                            {/* show different buttons when order is being packed */}
+                                            {pendingOrder.status === "In Progress" && (
+                                                <>
+                                                    {/* check if current user is the one packing this order */}
+                                                    {pendingOrder.packing_admin_id ===
+                                                    currentUser?.id ? (
+                                                        <>
+                                                            <Grid item>
+                                                                <Typography
+                                                                    variant="body2"
+                                                                    style={{
+                                                                        color: "#ffa000",
+                                                                        fontWeight:
+                                                                            "bold",
+                                                                        marginTop:
+                                                                            "10px",
+                                                                    }}
+                                                                >
+                                                                    You are currently
+                                                                    packing this order
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <Button
+                                                                    onClick={() =>
+                                                                        updateOrder(
+                                                                            pendingOrder.id,
+                                                                            "Submitted"
+                                                                        )
+                                                                    }
+                                                                    disabled={isLoading}
+                                                                    color="secondary"
+                                                                    variant="text"
+                                                                    disableElevation
+                                                                >
+                                                                    Stop Packing
+                                                                </Button>
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <Button
+                                                                    color="primary"
+                                                                    variant="contained"
+                                                                    type="submit"
+                                                                    disableElevation
+                                                                    data-testid={`complete-button-${pendingOrder.id}`}
+                                                                    disabled={
+                                                                        isLoading ||
+                                                                        // Check if all quantity fields are zero
+                                                                        Object.keys(
+                                                                            props.values
+                                                                        )
+                                                                            .filter(
+                                                                                (key) =>
+                                                                                    key.endsWith(
+                                                                                        "-quantity"
+                                                                                    )
+                                                                            )
+                                                                            .every(
+                                                                                (key) =>
+                                                                                    props
+                                                                                        .values[
+                                                                                        key
+                                                                                    ] ===
+                                                                                    "0"
+                                                                            ) ||
+                                                                        // Check if no checkbox is selected
+                                                                        Object.keys(
+                                                                            props.values
+                                                                        )
+                                                                            .filter(
+                                                                                (key) =>
+                                                                                    key.endsWith(
+                                                                                        "-checkbox"
+                                                                                    )
+                                                                            )
+                                                                            .every(
+                                                                                (key) =>
+                                                                                    !props
+                                                                                        .values[
+                                                                                        key
+                                                                                    ]
+                                                                            )
+                                                                    }
+                                                                >
+                                                                    Complete Packing
+                                                                </Button>
+                                                            </Grid>
+                                                        </>
+                                                    ) : (
+                                                        <Grid item>
+                                                            <Typography
+                                                                variant="body2"
+                                                                style={{
+                                                                    color: "#ffa000",
+                                                                    fontWeight: "bold",
+                                                                    marginTop: "10px",
+                                                                }}
+                                                            >
+                                                                {pendingOrder.packing_admin_name ||
+                                                                    "Another admin"}{" "}
+                                                                is currently packing
+                                                                this order
+                                                            </Typography>
+                                                        </Grid>
+                                                    )}
+                                                </>
                                             )}
                                             {pendingOrder.status ===
                                                 "Ready for Pickup" && (
@@ -531,48 +682,6 @@ export const TeamPendingOrderTable = () => {
                                                         disableElevation
                                                     >
                                                         Edit Order
-                                                    </Button>
-                                                </Grid>
-                                            )}
-                                            {pendingOrder.status === "Submitted" && (
-                                                <Grid item>
-                                                    <Button
-                                                        color="primary"
-                                                        variant="contained"
-                                                        type="submit"
-                                                        disableElevation
-                                                        data-testid={`complete-button-${pendingOrder.id}`}
-                                                        disabled={
-                                                            isLoading ||
-                                                            // Check if all quantity fields are zero
-                                                            Object.keys(props.values)
-                                                                .filter((key) =>
-                                                                    key.endsWith(
-                                                                        "-quantity"
-                                                                    )
-                                                                )
-                                                                .every(
-                                                                    (key) =>
-                                                                        props.values[
-                                                                            key
-                                                                        ] === "0"
-                                                                ) ||
-                                                            // Check if no checkbox is selected
-                                                            Object.keys(props.values)
-                                                                .filter((key) =>
-                                                                    key.endsWith(
-                                                                        "-checkbox"
-                                                                    )
-                                                                )
-                                                                .every(
-                                                                    (key) =>
-                                                                        !props.values[
-                                                                            key
-                                                                        ]
-                                                                )
-                                                        }
-                                                    >
-                                                        Complete Order
                                                     </Button>
                                                 </Grid>
                                             )}

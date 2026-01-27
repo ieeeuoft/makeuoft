@@ -9,6 +9,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import Header from "components/general/Header/Header";
 import CartCard from "components/cart/CartCard/CartCard";
 import CartSummary from "components/cart/CartSummary/CartSummary";
+import OrderLockAlert from "components/general/OrderLockAlert/OrderLockAlert";
 import {
     clearFilters,
     getHardwareWithFilters,
@@ -19,6 +20,7 @@ import {
 import { RootState } from "slices/store";
 import { cartSelectors, cartTotalSelector } from "slices/hardware/cartSlice";
 import { getCategories } from "slices/hardware/categorySlice";
+import { fetchLockStatus } from "slices/hardware/orderLockSlice";
 import CartErrorBox from "components/cart/CartErrorBox/CartErrorBox";
 import { getCurrentTeam } from "slices/event/teamSlice";
 import { getTeamOrders } from "slices/order/orderSlice";
@@ -39,6 +41,7 @@ const Cart = () => {
     useEffect(() => {
         dispatch(getCurrentTeam());
         dispatch(getTeamOrders());
+        dispatch(fetchLockStatus());
     }, [dispatch]);
 
     useEffect(() => {
@@ -72,6 +75,7 @@ const Cart = () => {
         <>
             <Header />
             <Typography variant="h1">Cart</Typography>
+            <OrderLockAlert />
             <CartErrorBox />
             <Grid direction="row" spacing={6} className={styles.cart} container>
                 <Grid xs={12} sm={12} md={7} item>

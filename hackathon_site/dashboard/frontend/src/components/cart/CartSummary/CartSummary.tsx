@@ -16,6 +16,7 @@ import { teamSelector, teamSizeSelector } from "slices/event/teamSlice";
 import { isTestUserSelector } from "slices/users/userSlice";
 import { projectDescriptionSelector } from "slices/event/teamSlice";
 import { getCreditsUsedSelector } from "slices/order/orderSlice";
+import { ordersLockedSelector } from "slices/hardware/orderLockSlice";
 import {
     hardwareSignOutEndDate,
     hardwareSignOutStartDate,
@@ -33,6 +34,7 @@ const CartSummary = () => {
     const subtotalCredits = useSelector(subtotalCreditsSelector);
     const creditsUsed = useSelector(getCreditsUsedSelector);
     const creditsAvailable = useSelector(teamSelector)?.credits;
+    const ordersLocked = useSelector(ordersLockedSelector);
     const projectedCredits = creditsAvailable
         ? creditsAvailable - creditsUsed - subtotalCredits
         : 0;
@@ -84,6 +86,7 @@ const CartSummary = () => {
                     (projectDescription &&
                         projectDescription.length < minProjectDescriptionLength) ||
                     (!isTestUser && isOutsideSignOutPeriod) ||
+                    (!isTestUser && ordersLocked) ||
                     projectedCredits < 0
                 }
                 onClick={onSubmit}
