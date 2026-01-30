@@ -322,15 +322,15 @@ REGISTRATION_OPEN_DATE = datetime(2025, 12, 10, tzinfo=TZ_INFO)
 REGISTRATION_CLOSE_DATE = datetime(2026, 1, 28, 23, 59, 0, tzinfo=TZ_INFO)
 EVENT_START_DATE = datetime(2026, 2, 14, 8, 0, 0, tzinfo=TZ_INFO)
 EVENT_END_DATE = datetime(2026, 2, 15, 17, 0, 0, tzinfo=TZ_INFO)
-HARDWARE_SIGN_OUT_START_DATE = datetime(2026, 1, 14, 6, 0, tzinfo=TZ_INFO)
-HARDWARE_SIGN_OUT_END_DATE = datetime(2026, 2, 15, 11, 0, tzinfo=TZ_INFO)
+HARDWARE_SIGN_OUT_START_DATE = datetime(2026, 2, 8, 23, 59, 0, tzinfo=TZ_INFO)
+HARDWARE_SIGN_OUT_END_DATE = datetime(2026, 2, 15, 9, 0, tzinfo=TZ_INFO)
 
 # Registration user requirements
 MINIMUM_AGE = 17
 
 # Registration settings
 ACCOUNT_ACTIVATION_DAYS = 7
-RSVP_DAYS = 1
+RSVP_DAYS = 4
 
 # Team requirements
 MIN_MEMBERS = 2
@@ -350,7 +350,7 @@ PARTICIPANT_PACKAGE_LINK = "https://docs.google.com/document/d/1Ui_ymFZ0fvkTWRea
 
 # Note this is in the form (chat_room_name, chat_room_link)
 # Chat room name is such as the following: Slack, Discord
-CHAT_ROOM = ("Discord", "https://discord.gg/rRCpjtQUaZ")
+CHAT_ROOM = ("Discord", "https://discord.gg/3K9YV7Tc")
 
 # Enable/Disable certain Features
 TEAMS = True
