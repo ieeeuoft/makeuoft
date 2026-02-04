@@ -73,6 +73,11 @@ const Dashboard = () => {
             <div className={styles.dashboard}>
                 {/* TODO: MOVE CREDIT TO NAVBAR */}
                 <Typography variant="h1">{hackathonName} Hardware Dashboard</Typography>
+                <AlertBox
+                    type="warning"
+                    title="Cart Checking"
+                    error="Your cart is not shared with teammates. Please coordinate with your team to submit a single consolidated order and avoid ordering duplicate items."
+                />
                 <DateRestrictionAlert />
                 {isTeamLoading || areOrdersLoading ? (
                     <LinearProgress

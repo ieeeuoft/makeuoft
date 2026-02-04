@@ -9,6 +9,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import Header from "components/general/Header/Header";
 import CartCard from "components/cart/CartCard/CartCard";
 import CartSummary from "components/cart/CartSummary/CartSummary";
+import AlertBox from "components/general/AlertBox/AlertBox";
 import OrderLockAlert from "components/general/OrderLockAlert/OrderLockAlert";
 import {
     clearFilters,
@@ -75,6 +76,11 @@ const Cart = () => {
         <>
             <Header />
             <Typography variant="h1">Cart</Typography>
+            <AlertBox
+                type="warning"
+                title="Cart Checking"
+                error="Your cart is not shared with teammates. Please coordinate with your team to submit a single consolidated order and avoid ordering duplicate items."
+            />
             <OrderLockAlert />
             <CartErrorBox />
             <Grid direction="row" spacing={6} className={styles.cart} container>

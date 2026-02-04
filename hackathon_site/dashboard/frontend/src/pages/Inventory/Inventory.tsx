@@ -140,6 +140,11 @@ const Inventory = () => {
 
                 <Typography variant="h1">Hardware Inventory</Typography>
                 <AlertBox
+                    type="warning"
+                    title="Cart Checking"
+                    error="Your cart is not shared with teammates. Please coordinate with your team to submit a single consolidated order and avoid ordering duplicate items."
+                />
+                <AlertBox
                     title={"Disclaimer"}
                     error={
                         "Note: Hardware picture and links may not be accurate to distributed parts. Substitutions may be made on the day of the event."

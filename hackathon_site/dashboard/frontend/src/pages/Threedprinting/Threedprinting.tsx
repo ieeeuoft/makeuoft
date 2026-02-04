@@ -7,6 +7,7 @@ import Hidden from "@material-ui/core/Hidden";
 import Button from "@material-ui/core/Button";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import AlertBox from "components/general/AlertBox/AlertBox";
 import InventorySearch3D from "components/inventory/InventorySearch3D/InventorySearch3D";
 
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -117,6 +118,11 @@ const Threedprinting = () => {
                 </Drawer> */}
 
                 <Typography variant="h1">3D Printing Services</Typography>
+                <AlertBox
+                    type="warning"
+                    title="Cart Checking"
+                    error="Your cart is not shared with teammates. Please coordinate with your team to submit a single consolidated order and avoid ordering duplicate items."
+                />
 
                 {userType === "participant" && <DateRestrictionAlert />}
 
