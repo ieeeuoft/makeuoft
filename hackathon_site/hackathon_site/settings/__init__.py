@@ -330,7 +330,7 @@ MINIMUM_AGE = 17
 
 # Registration settings
 ACCOUNT_ACTIVATION_DAYS = 7
-RSVP_DAYS = 4
+RSVP_DAYS = 3
 
 # Team requirements
 MIN_MEMBERS = 2
@@ -350,7 +350,7 @@ PARTICIPANT_PACKAGE_LINK = "https://docs.google.com/document/d/1Ui_ymFZ0fvkTWRea
 
 # Note this is in the form (chat_room_name, chat_room_link)
 # Chat room name is such as the following: Slack, Discord
-CHAT_ROOM = ("Discord", "https://discord.gg/3K9YV7Tc")
+CHAT_ROOM = ("Discord", "https://discord.gg/WkbFbbD4Vn")
 
 # Enable/Disable certain Features
 TEAMS = True
