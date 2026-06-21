@@ -95,17 +95,30 @@ jobs:
           echo 'REDIS_URI=${{ secrets.REDIS_URI }}' >> .env
           echo 'RECAPTCHA_PUBLIC_KEY=${{ secrets.RECAPTCHA_PUBLIC_KEY }}' >> .env
           echo 'RECAPTCHA_PRIVATE_KEY=${{ secrets.RECAPTCHA_PRIVATE_KEY }}' >> .env
-      - name: Decode SSH key into workspace
+      - name: Decode SSH deploy key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > "${{ github.workspace }}/deploy_key"
-          chmod 600 "${{ github.workspace }}/deploy_key"
+          # appleboy/scp-action runs inside a container as a non-root user and cannot
+          # read a key file written into the workspace by the runner (mode 600 gives
+          # "permission denied"). Provide the key via the action's `key:` input instead,
+          # which is delivered through the INPUT_KEY env var and avoids the filesystem.
+          DEPLOY_KEY="$(echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d)"
+          # Mask every line of the decoded key so it can never surface in logs.
+          printf '%s\n' "$DEPLOY_KEY" | while IFS= read -r line; do
+            [ -z "$line" ] || echo "::add-mask::$line"
+          done || true
+          {
+            echo "SSH_DEPLOY_KEY<<__SSH_KEY_EOF__"
+            printf '%s\n' "$DEPLOY_KEY"
+            echo "__SSH_KEY_EOF__"
+          } >> "$GITHUB_ENV"
       - name: Transfer static files to the Swarm manager
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SWARM_MANAGER_IP }}
           username: ${{ secrets.SSH_USER }}
-          # File lives in the repo workspace, which the action's container mounts at /github/workspace
-          key_path: /github/workspace/deploy_key
+          # Pass the key contents directly (delivered via INPUT_KEY) to avoid the
+          # container "permission denied" that key_path hits when reading the workspace.
+          key: ${{ env.SSH_DEPLOY_KEY }}
           overwrite: true
           # scp-action doesn't obey working-directory, runs at repo root
           source: "hackathon_site/static/"
@@ -122,8 +135,9 @@ jobs:
         with:
           host: ${{ secrets.SWARM_MANAGER_IP }}
           username: ${{ secrets.SSH_USER }}
-          # File lives in the repo workspace, which the action's container mounts at /github/workspace
-          key_path: /github/workspace/deploy_key
+          # Pass the key contents directly (delivered via INPUT_KEY) to avoid the
+          # container "permission denied" that key_path hits when reading the workspace.
+          key: ${{ env.SSH_DEPLOY_KEY }}
           overwrite: true
           # scp-action doesn't obey working-directory, runs at repo root
           source: "hackathon_site/dashboard/frontend/build/"
