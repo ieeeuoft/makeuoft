@@ -95,16 +95,17 @@ jobs:
           echo 'REDIS_URI=${{ secrets.REDIS_URI }}' >> .env
           echo 'RECAPTCHA_PUBLIC_KEY=${{ secrets.RECAPTCHA_PUBLIC_KEY }}' >> .env
           echo 'RECAPTCHA_PRIVATE_KEY=${{ secrets.RECAPTCHA_PRIVATE_KEY }}' >> .env
-      - name: Decode SSH key
+      - name: Decode SSH key into workspace
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > /tmp/deploy_key
-          chmod 600 /tmp/deploy_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > "${{ github.workspace }}/deploy_key"
+          chmod 600 "${{ github.workspace }}/deploy_key"
       - name: Transfer static files to the Swarm manager
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SWARM_MANAGER_IP }}
           username: ${{ secrets.SSH_USER }}
-          key_path: /tmp/deploy_key
+          # File lives in the repo workspace, which the action's container mounts at /github/workspace
+          key_path: /github/workspace/deploy_key
           overwrite: true
           # scp-action doesn't obey working-directory, runs at repo root
           source: "hackathon_site/static/"
@@ -121,7 +122,8 @@ jobs:
         with:
           host: ${{ secrets.SWARM_MANAGER_IP }}
           username: ${{ secrets.SSH_USER }}
-          key_path: /tmp/deploy_key
+          # File lives in the repo workspace, which the action's container mounts at /github/workspace
+          key_path: /github/workspace/deploy_key
           overwrite: true
           # scp-action doesn't obey working-directory, runs at repo root
           source: "hackathon_site/dashboard/frontend/build/"
