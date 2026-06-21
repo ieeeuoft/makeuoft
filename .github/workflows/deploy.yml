@@ -96,13 +96,30 @@ jobs:
           echo 'RECAPTCHA_PUBLIC_KEY=${{ secrets.RECAPTCHA_PUBLIC_KEY }}' >> .env
           echo 'RECAPTCHA_PRIVATE_KEY=${{ secrets.RECAPTCHA_PRIVATE_KEY }}' >> .env
       - name: Decode SSH deploy key
+        env:
+          # Pass the secret through the environment (not inline ${{ }}) to avoid any
+          # quoting/script-injection issues; GitHub masks it automatically.
+          RAW_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           # appleboy/scp-action runs inside a container as a non-root user and cannot
           # read a key file written into the workspace by the runner (mode 600 gives
-          # "permission denied"). Provide the key via the action's `key:` input instead,
-          # which is delivered through the INPUT_KEY env var and avoids the filesystem.
-          DEPLOY_KEY="$(echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d)"
-          # Mask every line of the decoded key so it can never surface in logs.
+          # "permission denied"). We instead hand the key contents to the action's
+          # `key:` input via an env var, which avoids the container filesystem entirely.
+          #
+          # The SSH_PRIVATE_KEY secret may be stored either as a raw PEM key or as
+          # base64. Detect which, normalise to PEM, and fail loudly if the result is
+          # not a valid private key, so we never pass garbage to the action (which
+          # otherwise surfaces as the cryptic "ssh: no key found").
+          if printf '%s' "$RAW_SSH_KEY" | head -n1 | grep -qa -- '-----BEGIN'; then
+            DEPLOY_KEY="$RAW_SSH_KEY"
+          else
+            DEPLOY_KEY="$(printf '%s' "$RAW_SSH_KEY" | base64 -d 2>/dev/null || true)"
+          fi
+          if ! printf '%s' "$DEPLOY_KEY" | head -n1 | grep -qa -- '-----BEGIN'; then
+            echo "::error::SSH_PRIVATE_KEY is not a valid PEM private key (neither as-is nor base64-decoded). Re-create the secret from an unencrypted OpenSSH private key — see the deploy notes."
+            exit 1
+          fi
+          # Mask every line of the key so it can never surface in logs.
           printf '%s\n' "$DEPLOY_KEY" | while IFS= read -r line; do
             [ -z "$line" ] || echo "::add-mask::$line"
           done || true
@@ -128,7 +145,9 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -t ed25519 ${{ secrets.SWARM_MANAGER_IP }} >> ~/.ssh/known_hosts
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > ~/.ssh/id_ed25519
+          # Reuse the key normalised/validated in the "Decode SSH deploy key" step
+          # so the docker-over-SSH connection below uses the exact same material.
+          printf '%s\n' "$SSH_DEPLOY_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
       - name: Transfer frontend files to server
         uses: appleboy/scp-action@v0.1.7
