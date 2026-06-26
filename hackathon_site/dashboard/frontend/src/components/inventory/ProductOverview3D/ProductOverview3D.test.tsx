@@ -24,6 +24,7 @@ import { SnackbarProvider } from "notistack";
 import SnackbarNotifier from "components/general/SnackbarNotifier/SnackbarNotifier";
 import { get } from "api/api";
 import { getUpdatedHardwareDetails } from "slices/hardware/hardwareSlice";
+import { getUpdatedHardware3dDetails } from "slices/hardware/hardware3dSlice";
 
 jest.mock("api/api", () => ({
     ...jest.requireActual("api/api"),
@@ -132,7 +133,7 @@ describe("<ProductOverview />", () => {
             { store }
         );
 
-        store.dispatch(getUpdatedHardwareDetails(1));
+        store.dispatch(getUpdatedHardware3dDetails(1));
 
         await waitFor(() => {
             expect(queryByTestId("circular-progress")).toBeInTheDocument();
@@ -280,7 +281,11 @@ describe("<ProductOverview />", () => {
         });
 
         expect(cartSelectors.selectAll(store.getState())).toEqual([
-            { hardware_id: mockHardware[0].id, quantity: 1 },
+            {
+                hardware_id: mockHardware[0].id,
+                quantity: 1,
+                credits: mockHardware[0].credits,
+            },
         ]);
         expect(
             getByText(`Added 1 ${mockHardware[0].name} item(s) to your cart.`)

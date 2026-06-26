@@ -24,22 +24,16 @@ describe("IncidentForm", () => {
     // });
 
     it("renders IncidentFormRender when searchParams is not empty", () => {
-        const mockSearchParams: any = {
-            get: jest.fn(() =>
-                JSON.stringify({ id: 10, quantityRequested: 3, quantityGranted: 2 })
-            ),
-            toString: jest.fn(() => "mockQueryString"),
-        };
-
-        jest.spyOn(global, "URLSearchParams").mockImplementation(
-            () => mockSearchParams
-        );
-
-        render(<IncidentForm />);
-
-        // Assert that mockSearchParams methods are called
-        expect(mockSearchParams.toString).toHaveBeenCalled();
-        expect(mockSearchParams.get).toHaveBeenCalledWith("data");
+        // Drive a real route so `useLocation().search` carries the `data` query
+        // param the component reads (it parses `?data=<json>` from the URL).
+        const data = JSON.stringify({
+            id: 10,
+            quantityRequested: 3,
+            quantityGranted: 2,
+        });
+        render(<IncidentForm />, {
+            routerEntries: [`/incident-form?data=${encodeURIComponent(data)}`],
+        });
 
         // Assert that the component renders IncidentFormRender
         expect(screen.queryByText("Item Incident Form")).toBeInTheDocument(); // Update the text according to your component's content

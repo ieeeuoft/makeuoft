@@ -40,11 +40,11 @@ export const teamOrderListSerialization = (
             const hardwareItems: Record<number, OrderItemTableRow> = {};
             const hardwareRequested: Record<number, number> = {};
             const returnedItems: Record<string, ReturnedItem> = {};
-            order.request.forEach(
+            (order.request ?? []).forEach(
                 (hardware) =>
                     (hardwareRequested[hardware.id] = hardware.requested_quantity)
             );
-            order.items.forEach(({ id, hardware_id, part_returned_health }) => {
+            (order.items ?? []).forEach(({ id, hardware_id, part_returned_health }) => {
                 if (part_returned_health && part_returned_health !== "Rejected") {
                     const returnItemKey = `${hardware_id}-${part_returned_health}`;
                     if (returnedItems[returnItemKey])
@@ -92,7 +92,7 @@ export const teamOrderListSerialization = (
             const hardwareInTableRow = Object.values(hardwareItems);
 
             // Check if ALL order items have a part_returned_health status (i.e., they are all returned or rejected)
-            const allItemsReturnedOrRejected = order.items.every(
+            const allItemsReturnedOrRejected = (order.items ?? []).every(
                 (item) => item.part_returned_health !== null
             );
 
