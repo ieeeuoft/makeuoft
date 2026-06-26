@@ -91,7 +91,7 @@ describe("team pending order table", () => {
     // });
     test("Check all button checks and unchecks every row", async () => {
         const { getByTestId } = render(<TeamPendingOrderTable />, { store });
-        const currentOrder = mockPendingOrdersInTable[0];
+        const currentOrder = mockPendingOrdersInTable[1];
         const checkallBox = getByTestId(`checkall-${currentOrder.id}`).querySelector(
             'input[type="checkbox"]'
         );

@@ -63,13 +63,15 @@ export const mockHardwareSignOutDates = (
 
 describe("Render cartQuantity", () => {
     it(`Renders correctly when it reads the number ${cartQuantity}`, async () => {
-        const { getByText } = render(
+        const { getByTestId } = render(
             <Provider store={store}>
                 <CartSummary />
             </Provider>
         );
         await waitFor(() => {
-            expect(getByText(cartQuantity.toString())).toBeInTheDocument();
+            expect(getByTestId("cart-quantity-total")).toHaveTextContent(
+                cartQuantity.toString()
+            );
         });
     });
     // TODO: fix failing test case

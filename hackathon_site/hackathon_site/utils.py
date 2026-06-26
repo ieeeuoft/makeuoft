@@ -1,7 +1,22 @@
+import platform
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
+
+
+def strftime(dt, fmt):
+    """
+    Cross-platform ``datetime.strftime``.
+
+    glibc (Linux/macOS) supports the ``%-d`` / ``%-I`` "strip leading zero"
+    directives, but the Windows C runtime rejects them and expects ``%#d`` /
+    ``%#I``. Translate on Windows so the same format strings render identically
+    on every platform. Production runs on Linux, where this is a no-op.
+    """
+    if platform.system() == "Windows":
+        fmt = fmt.replace("%-", "%#")
+    return dt.strftime(fmt)
 
 
 class NoEventOccurringException(Exception):

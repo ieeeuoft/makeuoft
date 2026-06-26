@@ -82,7 +82,7 @@ describe("<ProductOverview />", () => {
         // Check if the main section, detailInfoSection, and add to cart section works
         expect(getByText("Category")).toBeInTheDocument();
         expect(getByText("Datasheet")).toBeInTheDocument();
-        expect(getByText("Add to cart")).toBeInTheDocument();
+        expect(getByText(/Add to cart/)).toBeInTheDocument();
     });
 
     test("Category label doesn't appear when there are no categories", async () => {
@@ -170,7 +170,7 @@ describe("<ProductOverview />", () => {
         // Check if the main section, detailInfoSection, and add to cart section works
         expect(getByText("Category")).toBeInTheDocument();
         expect(getByText("Datasheet")).toBeInTheDocument();
-        expect(getByText("Add to cart")).toBeInTheDocument();
+        expect(getByText(/Add to cart/)).toBeInTheDocument();
         expect(queryByText("Notes")).not.toBeInTheDocument();
     });
 
@@ -273,7 +273,7 @@ describe("<ProductOverview />", () => {
         );
 
         // by default, quantity is 1
-        const button = getByText("Add to cart");
+        const button = getByText(/Add to cart/);
 
         await waitFor(() => {
             fireEvent.click(button);
@@ -320,7 +320,7 @@ describe("<ProductOverview />", () => {
         );
 
         // by default, quantity is 1
-        const button = getByText("Add to cart");
+        const button = getByText(/Add to cart/);
 
         await waitFor(() => {
             fireEvent.click(button);
@@ -403,12 +403,13 @@ describe("<EnhancedAddToCartForm />", () => {
             <EnhancedAddToCartForm
                 quantityRemaining={0}
                 maxPerTeam={null}
+                credits={5}
                 hardwareId={1}
                 name="Arduino"
             />
         );
 
-        const button = getByText("Add to cart").closest("button");
+        const button = getByText(/Add to cart/).closest("button");
         const select = getByLabelText("Qty");
 
         expect(button).toBeDisabled();
@@ -420,12 +421,13 @@ describe("<EnhancedAddToCartForm />", () => {
             <EnhancedAddToCartForm
                 quantityRemaining={3}
                 maxPerTeam={0}
+                credits={5}
                 hardwareId={1}
                 name="Arduino"
             />
         );
 
-        const button = getByText("Add to cart").closest("button");
+        const button = getByText(/Add to cart/).closest("button");
         const select = getByLabelText("Qty");
 
         expect(button).toBeDisabled();
@@ -437,6 +439,7 @@ describe("<EnhancedAddToCartForm />", () => {
             <EnhancedAddToCartForm
                 quantityRemaining={3}
                 maxPerTeam={2}
+                credits={5}
                 hardwareId={1}
                 name="Arduino"
             />
@@ -453,6 +456,7 @@ describe("<EnhancedAddToCartForm />", () => {
             <EnhancedAddToCartForm
                 quantityRemaining={3}
                 maxPerTeam={null}
+                credits={5}
                 hardwareId={1}
                 name="Arduino"
             />
@@ -469,12 +473,13 @@ describe("<EnhancedAddToCartForm />", () => {
             <EnhancedAddToCartForm
                 quantityRemaining={3}
                 maxPerTeam={5}
+                credits={5}
                 hardwareId={1}
                 name="Arduino"
             />
         );
 
-        const button = getByText("Add to cart").closest("button");
+        const button = getByText(/Add to cart/).closest("button");
         expect(button).toBeDisabled();
     });
 });

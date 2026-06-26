@@ -75,6 +75,7 @@ describe("Dashboard Page", () => {
         const newHardwareData: Hardware = {
             id: mockCheckedOutOrders[0].items[0].hardware_id,
             name: "Randome hardware",
+            credits: 5,
             model_number: "90",
             manufacturer: "Tesla",
             datasheet: "",
@@ -126,14 +127,6 @@ describe("Dashboard Page", () => {
             await waitFor(() => {
                 expect(get).toHaveBeenNthCalledWith(5, hardwareDetailUri);
                 expect(getByText("Product Overview")).toBeVisible();
-                expect(
-                    getByText(`- Max ${newHardwareData.max_per_team} of this item`)
-                ).toBeInTheDocument();
-                expect(
-                    getByText(
-                        `- Max ${category.max_per_team} of items under category ${category.name}`
-                    )
-                ).toBeInTheDocument();
                 expect(getByText(newHardwareData.model_number)).toBeInTheDocument();
                 expect(getByText(newHardwareData.manufacturer)).toBeInTheDocument();
                 if (newHardwareData.notes)

@@ -20,6 +20,7 @@ from hackathon_site.utils import (
     is_hackathon_happening,
     NoEventOccurringException,
     get_curr_sign_in_time,
+    strftime,
 )
 from registration.forms import JoinTeamForm, SignInForm
 from registration.models import Team as RegistrationTeam, User, Application
@@ -135,9 +136,10 @@ class DashboardView(LoginRequiredMixin, FormView):
                     review.decision_sent_date + timedelta(days=settings.RSVP_DAYS),
                     datetime.max.time(),  # 11:59PM
                 )
-                context["rsvp_deadline"] = settings.TZ_INFO.localize(
-                    rsvp_deadline
-                ).strftime("%B %-d, %Y, %-I:%M %p %Z")
+                context["rsvp_deadline"] = strftime(
+                    settings.TZ_INFO.localize(rsvp_deadline),
+                    "%B %-d, %Y, %-I:%M %p %Z",
+                )
         else:
             context["review"] = None
 

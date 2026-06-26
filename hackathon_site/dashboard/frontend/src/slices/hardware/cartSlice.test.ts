@@ -65,19 +65,21 @@ describe("addToCart action", () => {
     test("addToCart with new items", async () => {
         const store = makeStore();
 
-        store.dispatch(addToCart({ hardware_id: 1, quantity: 2 }));
+        store.dispatch(addToCart({ hardware_id: 1, quantity: 2, credits: 5 }));
 
-        store.dispatch(addToCart({ hardware_id: 2, quantity: 3 }));
+        store.dispatch(addToCart({ hardware_id: 2, quantity: 3, credits: 5 }));
 
         await waitFor(() => {
             expect(cartSelectors.selectIds(store.getState())).toEqual([1, 2]);
             expect(cartSelectors.selectById(store.getState(), 1)).toEqual({
                 hardware_id: 1,
                 quantity: 2,
+                credits: 5,
             });
             expect(cartSelectors.selectById(store.getState(), 2)).toEqual({
                 hardware_id: 2,
                 quantity: 3,
+                credits: 5,
             });
         });
     });
@@ -85,19 +87,21 @@ describe("addToCart action", () => {
     test("addToCart updates existing item", async () => {
         const store = makeStore();
 
-        store.dispatch(addToCart({ hardware_id: 1, quantity: 2 }));
-        store.dispatch(addToCart({ hardware_id: 2, quantity: 3 }));
-        store.dispatch(addToCart({ hardware_id: 1, quantity: 3 }));
+        store.dispatch(addToCart({ hardware_id: 1, quantity: 2, credits: 5 }));
+        store.dispatch(addToCart({ hardware_id: 2, quantity: 3, credits: 5 }));
+        store.dispatch(addToCart({ hardware_id: 1, quantity: 3, credits: 5 }));
 
         await waitFor(() => {
             expect(cartSelectors.selectIds(store.getState())).toEqual([1, 2]);
             expect(cartSelectors.selectById(store.getState(), 1)).toEqual({
                 hardware_id: 1,
                 quantity: 5,
+                credits: 5,
             });
             expect(cartSelectors.selectById(store.getState(), 2)).toEqual({
                 hardware_id: 2,
                 quantity: 3,
+                credits: 5,
             });
         });
     });
@@ -116,10 +120,12 @@ describe("removeFromCart action", () => {
             expect(cartSelectors.selectById(store.getState(), 1)).toEqual({
                 hardware_id: 1,
                 quantity: 3,
+                credits: 5,
             });
             expect(cartSelectors.selectById(store.getState(), 3)).toEqual({
                 hardware_id: 3,
                 quantity: 2,
+                credits: 5,
             });
             expect(cartSelectors.selectById(store.getState(), 2)).toEqual(undefined);
         });
@@ -143,6 +149,7 @@ describe("updateCart action", () => {
             expect(cartSelectors.selectById(store.getState(), 1)).toEqual({
                 hardware_id: mockCartItems[0].hardware_id,
                 quantity: 25,
+                credits: 5,
             });
         });
     });

@@ -9,6 +9,7 @@ from hackathon_site.utils import (
     is_registration_open,
     get_sign_in_interval,
     get_curr_sign_in_time,
+    strftime,
 )
 
 
@@ -49,4 +50,6 @@ def environment(**options):
             "sign_in_times": settings.SIGN_IN_TIMES,
         }
     )
+    # Cross-platform date formatting filter: localtime(x)|strftime("%b %-d, %Y")
+    env.filters["strftime"] = strftime
     return env

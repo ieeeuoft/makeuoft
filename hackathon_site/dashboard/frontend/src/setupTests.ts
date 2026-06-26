@@ -14,3 +14,9 @@ window.matchMedia =
             removeListener: function () {},
         };
     };
+
+// Keep tests isolated: some features persist state to localStorage
+// (e.g. admin order filters), which would otherwise leak between tests.
+afterEach(() => {
+    window.localStorage.clear();
+});
