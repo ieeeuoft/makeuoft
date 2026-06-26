@@ -247,6 +247,10 @@ export const PendingTables = () => {
 
     const submitCancelOrderModal = async (cancelOrderId: number | null) => {
         if (cancelOrderId != null) {
+            // Close the modal immediately (matching the "Go Back" dismiss path) so it
+            // never gets stuck open if the order refresh below is slow or fails.
+            setShowCancelOrderModal(false);
+
             // Refresh orders first to get latest status
             await dispatch(getTeamOrders());
 
@@ -266,7 +270,6 @@ export const PendingTables = () => {
                     })
                 );
             }
-            setShowCancelOrderModal(false);
         }
     };
 

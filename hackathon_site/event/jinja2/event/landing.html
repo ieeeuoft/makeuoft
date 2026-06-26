@@ -4,9 +4,9 @@
 
 {% block head_extends %}
 <script>
-    const registrationOpenDate = new Date("{{ localtime(registration_open_date).strftime('%b %-d, %Y, %H:%M:%S') }}");
-    const registrationCloseDate = new Date("{{ localtime(registration_close_date).strftime('%b %-d, %Y, %H:%M:%S') }}");
-    const eventStartDate = new Date("{{ localtime(event_start_date).strftime('%b %-d, %Y, %H:%M:%S') }}");
+    const registrationOpenDate = new Date("{{ localtime(registration_open_date)|strftime('%b %-d, %Y, %H:%M:%S') }}");
+    const registrationCloseDate = new Date("{{ localtime(registration_close_date)|strftime('%b %-d, %Y, %H:%M:%S') }}");
+    const eventStartDate = new Date("{{ localtime(event_start_date)|strftime('%b %-d, %Y, %H:%M:%S') }}");
 </script>
 {% endblock %}
 
@@ -23,13 +23,13 @@
 
 {% block body %}
 <!-- MLH Badge -->
-<a id="mlh-trust-badge" style="display:block;max-width:100px;min-width:60px;position:fixed;right:50px;top:0;width:10%;z-index:10000" href="https://mlh.io/seasons/2026/events" target="_blank"><img src="https://s3.amazonaws.com/logged-assets/trust-badge/2026/mlh-trust-badge-2026-white.svg" alt="Major League Hacking 2026 Hackathon Season" style="width:100%"></a>
+<a id="mlh-trust-badge" style="display:block;max-width:100px;min-width:60px;position:fixed;right:50px;top:0;width:10%;z-index:10000" href="https://mlh.io/seasons/2027/events" target="_blank"><img src="https://s3.amazonaws.com/logged-assets/trust-badge/2027/mlh-trust-badge-2027-white.svg" alt="Major League Hacking 2027 Hackathon Season" style="width:100%"></a>
 <div class="wrapper">
     <div class="landingBackground">
         <div class="container">
             <div class="section row" id="landing">
                 <div class="col container s12 m12 l7">
-                    <h1 class="row header">MakeUofT 2026</h1>
+                    <h1 class="row header">MakeUofT 2027</h1>
                     <div class="row">
                         <h4 class="header s12">Canada's Largest Makeathon</h4>
                         <div class="definition">
@@ -42,8 +42,7 @@
                     <div class="row">
                         <h5>University of Toronto</h5>
                         <h5>
-                            {# Update this logic if your event ends in a different month or year #}
-                            {{ localtime(event_start_date).strftime("%B %d") }}-{{ localtime(event_end_date).strftime("%d, %Y") }}
+                            TBD, 2027
                         </h5>
                         <button
                             class="btn-small waves-effect waves-light colorBtn"
@@ -78,7 +77,7 @@
                     <h3 class="center">About us</h3>
 
                     <p class="center">
-                        Join us at MakeUofT to transform your ideas into reality! This year, the themes for MakeUofT are: Valentines Day, Audio/Music, and Survival (D-day)!
+                        Join us at MakeUofT to transform your ideas into reality! This year (2026), the themes for MakeUofT are: Valentines Day, Audio/Music, and Survival (D-day)!
                     </p>
                     <p class="center">
                         Our in-person makeathon is designed for everyone to participate, from beginners to experts. To help facilitate your learning experience, we will have mentors available throughout the event to assist you! You will also be able to interact with some of the top companies in the industry through our networking booths.
@@ -112,7 +111,7 @@
         <div class="section scrollspy" id="schedule">
             <div class="row schedule">
                 <div class="m12 center">
-                    <h3 class="center">Schedule</h3>
+                    <h3 class="center">Schedule (2026)</h3>
                 </div>
                 <div class="col s12 m6 l6">
                     <h4 class="white-text" style="text-align:center; flex-grow:1;">
@@ -226,7 +225,7 @@
                             </div>
                             <div class="collapsible-body">
                                 <span>
-                                    Yes! Once you are accepted, each team will be able to select and sign out a wide range of hardware on our Hardware Signout Site <a href="https://hardware.makeuoft.ca" target="_blank">hardware.makeuoft.ca</a>. The site opens for ordering on February 14th, 2026, you must be in a team of 2 to 4 to order from our inventory.
+                                    Yes! Once you are accepted, each team will be able to select and sign out a wide range of hardware on our Hardware Signout Site <a href="https://hardware.makeuoft.ca" target="_blank">hardware.makeuoft.ca</a>. The site opens for ordering on the first day of the hackathon, you must be in a team of 2 to 4 to order from our inventory.
                                 </span>
                             </div>
                         </li>
@@ -253,7 +252,7 @@
                             </div>
                             <div class="collapsible-body">
                                 <span>
-                                    We're welcoming any students pursuing post-secondary education! Applications open on December 10th, 2025 and close at 11:59 PM EST on January 20th, 2026. Acceptances will be internally decided on a rolling basis, so apply early to maximize your chances of getting accepted!
+                                    We're welcoming any students pursuing post-secondary education! Applications will open later this year. Acceptances will be internally decided on a rolling basis, so apply early to maximize your chances of getting accepted!
                                 </span>
                             </div>
                         </li>
@@ -284,7 +283,7 @@
                             </div>
                             <div class="collapsible-body">
                                 <span>
-                                    This year, MakeUofT will be fully in person. The event will be hosted at the University of Toronto St.George Campus in Myhal Centre for Engineering Innovation and Entrepreneurship (MY).
+                                    This year (2026), MakeUofT will be fully in person. The event will be hosted at the University of Toronto St.George Campus in Myhal Centre for Engineering Innovation and Entrepreneurship (MY).
                                 </span>
                             </div>
                         </li>

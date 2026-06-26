@@ -68,24 +68,30 @@ export const EnhancedOrderSearch = ({
     // const initialValues = {
     //     search: "",
     // };
+    // Seed the search box from the persisted admin order filters (loaded from
+    // localStorage at store init). This is read once on mount; we intentionally
+    // do NOT use Formik's `enableReinitialize` here, because reinitializing on
+    // every filter change makes Formik fire `onReset`, which would clobber the
+    // search the user just submitted.
     const savedFilters = useSelector(adminOrderFiltersSelector);
     const initialValues = {
         search: savedFilters.search ?? "",
-    }; // Filter Bux Fix
+    };
 
     const onSubmit = ({ search }: SearchValues) => {
         setFilters({ search });
         getOrdersWithFilters();
     };
 
+    // Clearing the search box removes the search filter while preserving any
+    // other active filters (status, ordering, etc.).
     const onReset = () => {
-        setFilters(initialValues);
+        setFilters({ search: "" });
         getOrdersWithFilters();
     };
 
     return (
         <Formik
-            enableReinitialize
             initialValues={initialValues}
             onSubmit={onSubmit}
             onReset={onReset}

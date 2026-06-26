@@ -10,7 +10,7 @@ describe("<ChipStatus />", () => {
 
     test("Pending status", () => {
         const { getByText } = render(<ChipStatus status="Submitted" />);
-        expect(getByText("In progress")).toBeInTheDocument();
+        expect(getByText("Submitted")).toBeInTheDocument();
     });
 
     test("Error status", () => {

@@ -177,14 +177,9 @@ describe("Inventory Page", () => {
         await waitFor(() => {
             expect(get).toHaveBeenNthCalledWith(3, hardwareDetailUri);
             expect(getByText("Product Overview")).toBeVisible();
-            expect(
-                getByText(`- Max ${newHardwareData.max_per_team} of this item`)
-            ).toBeInTheDocument();
-            expect(
-                getByText(
-                    `- Max ${mockCategories[1].max_per_team} of items under category ${mockCategories[1].name}`
-                )
-            ).toBeInTheDocument();
+            // Per-item/category hardware limits ("Max N of this item") are no longer
+            // displayed (see commit "make old hardware limits unused"), so they are
+            // intentionally not asserted here.
             expect(getByText(newHardwareData.model_number)).toBeInTheDocument();
             expect(getByText(newHardwareData.manufacturer)).toBeInTheDocument();
             expect(getByText(newHardwareData.notes)).toBeInTheDocument();

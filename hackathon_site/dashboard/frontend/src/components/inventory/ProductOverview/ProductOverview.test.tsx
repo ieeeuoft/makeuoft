@@ -82,7 +82,7 @@ describe("<ProductOverview />", () => {
         // Check if the main section, detailInfoSection, and add to cart section works
         expect(getByText("Category")).toBeInTheDocument();
         expect(getByText("Datasheet")).toBeInTheDocument();
-        expect(getByText("Add to cart")).toBeInTheDocument();
+        expect(getByText(/Add to cart/)).toBeInTheDocument();
     });
 
     test("Category label doesn't appear when there are no categories", async () => {
@@ -170,7 +170,7 @@ describe("<ProductOverview />", () => {
         // Check if the main section, detailInfoSection, and add to cart section works
         expect(getByText("Category")).toBeInTheDocument();
         expect(getByText("Datasheet")).toBeInTheDocument();
-        expect(getByText("Add to cart")).toBeInTheDocument();
+        expect(getByText(/Add to cart/)).toBeInTheDocument();
         expect(queryByText("Notes")).not.toBeInTheDocument();
     });
 
@@ -273,14 +273,18 @@ describe("<ProductOverview />", () => {
         );
 
         // by default, quantity is 1
-        const button = getByText("Add to cart");
+        const button = getByText(/Add to cart/);
 
         await waitFor(() => {
             fireEvent.click(button);
         });
 
         expect(cartSelectors.selectAll(store.getState())).toEqual([
-            { hardware_id: mockHardware[0].id, quantity: 1 },
+            {
+                hardware_id: mockHardware[0].id,
+                quantity: 1,
+                credits: mockHardware[0].credits,
+            },
         ]);
         expect(
             getByText(`Added 1 ${mockHardware[0].name} item(s) to your cart.`)
@@ -320,7 +324,7 @@ describe("<ProductOverview />", () => {
         );
 
         // by default, quantity is 1
-        const button = getByText("Add to cart");
+        const button = getByText(/Add to cart/);
 
         await waitFor(() => {
             fireEvent.click(button);
@@ -402,13 +406,14 @@ describe("<EnhancedAddToCartForm />", () => {
         const { getByText, getByLabelText } = render(
             <EnhancedAddToCartForm
                 quantityRemaining={0}
+                credits={5}
                 maxPerTeam={null}
                 hardwareId={1}
                 name="Arduino"
             />
         );
 
-        const button = getByText("Add to cart").closest("button");
+        const button = getByText(/Add to cart/).closest("button");
         const select = getByLabelText("Qty");
 
         expect(button).toBeDisabled();
@@ -419,13 +424,14 @@ describe("<EnhancedAddToCartForm />", () => {
         const { getByText, getByLabelText } = render(
             <EnhancedAddToCartForm
                 quantityRemaining={3}
+                credits={5}
                 maxPerTeam={0}
                 hardwareId={1}
                 name="Arduino"
             />
         );
 
-        const button = getByText("Add to cart").closest("button");
+        const button = getByText(/Add to cart/).closest("button");
         const select = getByLabelText("Qty");
 
         expect(button).toBeDisabled();
@@ -436,6 +442,7 @@ describe("<EnhancedAddToCartForm />", () => {
         const { queryByText, getByText, getByRole } = render(
             <EnhancedAddToCartForm
                 quantityRemaining={3}
+                credits={5}
                 maxPerTeam={2}
                 hardwareId={1}
                 name="Arduino"
@@ -452,6 +459,7 @@ describe("<EnhancedAddToCartForm />", () => {
         const { getByText, getByRole } = render(
             <EnhancedAddToCartForm
                 quantityRemaining={3}
+                credits={5}
                 maxPerTeam={null}
                 hardwareId={1}
                 name="Arduino"
@@ -468,13 +476,14 @@ describe("<EnhancedAddToCartForm />", () => {
         const { getByText } = render(
             <EnhancedAddToCartForm
                 quantityRemaining={3}
+                credits={5}
                 maxPerTeam={5}
                 hardwareId={1}
                 name="Arduino"
             />
         );
 
-        const button = getByText("Add to cart").closest("button");
+        const button = getByText(/Add to cart/).closest("button");
         expect(button).toBeDisabled();
     });
 });

@@ -71,9 +71,7 @@ describe("<OrdersFilter />", () => {
         fireEvent.click(resetButton);
 
         // check default filters are checked, nothing else
-        const expectedFilters: OrderFilters = {
-            status: [],
-        };
+        const expectedFilters: OrderFilters = {};
 
         await waitFor(() => {
             expect(store.getState()["adminOrder"]["filters"]).toEqual(expectedFilters);

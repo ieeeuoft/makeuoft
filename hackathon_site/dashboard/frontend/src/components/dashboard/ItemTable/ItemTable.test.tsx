@@ -23,7 +23,7 @@ describe("<PendingTables />", () => {
         });
         const { getByText, queryByText } = render(<PendingTables />, { store });
         expect(getByText(/pending orders/i)).toBeInTheDocument();
-        expect(queryByText("In progress")).toBeInTheDocument();
+        expect(queryByText("Submitted")).toBeInTheDocument();
         mockPendingOrdersInTable.map(({ id }) => {
             expect(getByText(`Order #${id}`)).toBeInTheDocument();
         });

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { DeepPartial } from "@reduxjs/toolkit";
 import {
@@ -24,6 +24,11 @@ import {
     HardwareState,
     initialState as hardwareInitialState,
 } from "slices/hardware/hardwareSlice";
+import {
+    hardwareReducerName as hardware3dReducerName,
+    HardwareState as Hardware3dState,
+    initialState as hardware3dInitialState,
+} from "slices/hardware/hardware3dSlice";
 import {
     categoryReducerName,
     CategoryState,
@@ -81,6 +86,10 @@ export const withStoreAndRouter = (
 interface RenderOptions {
     preloadedState?: DeepPartial<RootState>;
     store?: RootStore;
+    // When provided, the component is wrapped in a MemoryRouter seeded with these
+    // entries instead of a BrowserRouter. Use this to drive `useLocation()` (e.g.
+    // to seed query params) without touching the global window location.
+    routerEntries?: string[];
     options?: Omit<RtlRenderOptions, "queries">;
 }
 
@@ -89,13 +98,20 @@ const customRender = (
     {
         preloadedState = {},
         store = makeStore(preloadedState),
+        routerEntries,
         ...renderOptions
     }: RenderOptions = {}
 ) => {
+    const Router = ({ children }: any) =>
+        routerEntries ? (
+            <MemoryRouter initialEntries={routerEntries}>{children}</MemoryRouter>
+        ) : (
+            <BrowserRouter>{children}</BrowserRouter>
+        );
     const wrapper = ({ children }: any) => (
         <Provider store={store}>
             <SnackbarProvider>
-                <BrowserRouter>{children}</BrowserRouter>
+                <Router>{children}</Router>
             </SnackbarProvider>
         </Provider>
     );
@@ -175,9 +191,30 @@ export const makeStoreWithEntities = (entities: StoreEntities) => {
         }
 
         preloadedState[hardwareReducerName] = hardwareState;
+
+        // The 3D-printing views (e.g. ProductOverview3D) read from a parallel
+        // "hardware3d" slice. Mirror the same entities + state into it so tests
+        // can seed either view through the single `hardware` entity list.
+        const hardware3dState: Hardware3dState = {
+            ...hardware3dInitialState,
+            ...entities.hardwareState,
+            ids: [],
+            entities: {},
+        };
+
+        for (const hardware of entities.hardware) {
+            hardware3dState.ids.push(hardware.id);
+            hardware3dState.entities[hardware.id] = hardware;
+        }
+
+        preloadedState[hardware3dReducerName] = hardware3dState;
     } else if (entities.hardwareState) {
         preloadedState[hardwareReducerName] = {
             ...hardwareInitialState,
+            ...entities.hardwareState,
+        };
+        preloadedState[hardware3dReducerName] = {
+            ...hardware3dInitialState,
             ...entities.hardwareState,
         };
     }

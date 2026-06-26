@@ -31,7 +31,6 @@ import {
     getHardwareNextPage,
     getHardwareWithFilters,
     hardwareCountSelector,
-    hardwareFiltersSelector,
     hardwareSelectors,
     isLoadingSelector,
     isMoreLoadingSelector,
@@ -65,47 +64,23 @@ const Inventory = () => {
         dispatch(getHardwareWithFilters());
     };
 
-    // Track if initial hardware fetch has been done
-    const hasInitialFetchRef = React.useRef(false);
-
-    // On mount: clear filters and fetch categories
+    // On mount: clear filters, then fetch categories and hardware. The hardware
+    // fetch is unconditional so the inventory always loads, even if the
+    // "3D Printing" category doesn't exist (or its fetch is slow/fails).
     useEffect(() => {
-        hasInitialFetchRef.current = false; // Reset on mount
         dispatch(clearFilters());
         dispatch(getCategories());
+        dispatch(getHardwareWithFilters());
     }, [dispatch]);
 
-    // Once categories are loaded, apply the exclude filter and fetch hardware (only once)
+    // Once the "3D Printing" category is known, exclude it from the inventory
+    // and refetch. If there is no such category, the inventory stays as-is.
     useEffect(() => {
-        if (
-            threeDPrintingIdArray &&
-            threeDPrintingIdArray.length > 0 &&
-            !hasInitialFetchRef.current
-        ) {
+        if (threeDPrintingIdArray && threeDPrintingIdArray.length > 0) {
             dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
             dispatch(getHardwareWithFilters());
-            hasInitialFetchRef.current = true;
         }
     }, [dispatch, threeDPrintingIdArray]);
-
-    // Watch for when exclude filter is cleared (e.g., by Clear All button) and re-apply
-    const currentFilters = useSelector(hardwareFiltersSelector);
-    const hasExcludeFilter =
-        currentFilters.exclude_category_ids &&
-        currentFilters.exclude_category_ids.length > 0;
-
-    useEffect(() => {
-        // Only run after initial fetch is done and when exclude filter is missing
-        if (
-            hasInitialFetchRef.current &&
-            !hasExcludeFilter &&
-            threeDPrintingIdArray &&
-            threeDPrintingIdArray.length > 0
-        ) {
-            dispatch(setFilters({ exclude_category_ids: threeDPrintingIdArray }));
-            dispatch(getHardwareWithFilters());
-        }
-    }, [dispatch, hasExcludeFilter, threeDPrintingIdArray]);
 
     // Participant-specific data (separate from hardware)
     useEffect(() => {

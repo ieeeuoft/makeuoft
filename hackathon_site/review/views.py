@@ -11,6 +11,7 @@ from django.core import mail
 from review.forms import MailerForm
 from review.models import Review
 from hackathon_site import settings
+from hackathon_site.utils import strftime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -61,9 +62,10 @@ class MailerView(UserPassesTestMixin, FormView):
                 render_to_string_context = {
                     "user": review.application.user,
                     "request": self.request,
-                    "rsvp_deadline": (
-                        current_date + timedelta(days=settings.RSVP_DAYS)
-                    ).strftime("%B %-d %Y"),
+                    "rsvp_deadline": strftime(
+                        current_date + timedelta(days=settings.RSVP_DAYS),
+                        "%B %-d %Y",
+                    ),
                 }
 
                 review.application.user.email_user(

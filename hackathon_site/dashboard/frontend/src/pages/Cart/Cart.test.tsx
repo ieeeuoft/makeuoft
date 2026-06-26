@@ -113,11 +113,11 @@ describe("Cart Page", () => {
     test("No items in the cart", async () => {
         const store = makeStoreWithEntities({ hardware: mockHardware });
 
-        const { getByText } = render(<Cart />, { store });
+        const { getByText, getByTestId } = render(<Cart />, { store });
 
         expect(getByText(/no items in cart/i)).toBeInTheDocument();
         // Test for quantity
-        expect(getByText(0)).toBeInTheDocument();
+        expect(getByTestId("cart-quantity-total")).toHaveTextContent("0");
     });
 
     test("removeFromCart button", async () => {
