@@ -4,28 +4,48 @@ $(document).scroll(function () {
     $nav.toggleClass("scrolled", $(this).scrollTop() > $nav.height());
 });
 
+// Pick a readable font colour (dark or light) for a given hex background, so the
+// text colour is always derived from the section's actual background. This
+// replaces a hard-coded per-index colour list, which silently desynced whenever
+// a section was added/removed/reordered (e.g. leaving white text on a white panel).
+function contrastFontColor(hex) {
+    let c = (hex || "").replace("#", "");
+    if (c.length === 3) {
+        c = c.replace(/(.)/g, "$1$1"); // expand shorthand e.g. "fff" -> "ffffff"
+    }
+    if (c.length !== 6) {
+        return "#333";
+    }
+    const r = parseInt(c.substr(0, 2), 16);
+    const g = parseInt(c.substr(2, 2), 16);
+    const b = parseInt(c.substr(4, 2), 16);
+    // Perceived luminance (ITU-R BT.601); bright backgrounds get dark text.
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    return luminance > 150 ? "#333" : "#FFF";
+}
+
 // Background color changing
 $(window)
     .scroll(function () {
         let $window = $(window),
             $wrapper = $(".wrapper"),
-            $colorScrollPanel = $(".colorScroll"),
-            fontColors = ["#333", "#FFF", "#FFF", "#333", "#333"];
+            $colorScrollPanel = $(".colorScroll");
 
         // Change 40% earlier than scroll position so colour is there when you arrive.
         let scroll = $window.scrollTop() + $window.height() * 0.4;
         if ($window.scrollTop() < 300) {
             $wrapper.css("background-color", "#fff");
         }
-        $colorScrollPanel.each(function (i) {
+        $colorScrollPanel.each(function () {
             let $this = $(this);
 
             if (
                 $this.position().top <= scroll &&
                 $this.position().top + $this.height() > scroll
             ) {
-                $wrapper.css("background-color", $(this).attr("data-background-color"));
-                $colorScrollPanel.css("color", fontColors[i]);
+                let bg = $this.attr("data-background-color");
+                $wrapper.css("background-color", bg);
+                $colorScrollPanel.css("color", contrastFontColor(bg));
             }
         });
     })

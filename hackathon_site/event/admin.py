@@ -4,7 +4,13 @@ from django.db.models import Count
 from import_export import resources
 from import_export.admin import ExportMixin
 
-from event.models import Profile, Team as EventTeam, User, UserActivity
+from event.models import (
+    InterestSubmission,
+    Profile,
+    Team as EventTeam,
+    User,
+    UserActivity,
+)
 from hardware.admin import OrderInline
 
 admin.site.unregister(User)
@@ -118,6 +124,46 @@ class UserActivityAdmin(ExportMixin, admin.ModelAdmin):
 
     def get_export_queryset(self, request):
         return super().get_queryset(request).select_related("user")
+
+
+class InterestSubmissionResource(resources.ModelResource):
+    class Meta:
+        model = InterestSubmission
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "age",
+            "phone_number",
+            "school",
+            "study_level",
+            "country",
+            "conduct_agree",
+            "logistics_agree",
+            "email_agree",
+            "created_at",
+        )
+        export_order = tuple(fields)
+
+
+@admin.register(InterestSubmission)
+class InterestSubmissionAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = InterestSubmissionResource
+    list_display = (
+        "get_full_name",
+        "email",
+        "school",
+        "study_level",
+        "country",
+        "created_at",
+    )
+    search_fields = ("first_name", "last_name", "email", "school")
+    list_filter = ("country", "study_level", "email_agree")
+
+    def get_full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"
+
+    get_full_name.short_description = "Name"
 
 
 # Register your models here.

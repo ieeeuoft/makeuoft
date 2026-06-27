@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 
-from event.models import Profile, User, Team as EventTeam
+from event.models import Profile, User, Team as EventTeam, InterestSubmission
 from hackathon_site.tests import SetupUserMixin
 from registration.models import Team as RegistrationTeam, Application
 
@@ -133,6 +133,67 @@ class IndexViewTestCase(SetupUserMixin, TestCase):
         mock_is_registration_open.return_value = False
         response = self.client.get(self.view)
         self.assertNotContains(response, reverse("registration:signup"))
+
+    def test_interest_form_renders(self):
+        """The public MLH interest form and its checkboxes render on the page."""
+        response = self.client.get(self.view)
+        self.assertContains(response, "Register Your Interest")
+        self.assertContains(response, "MLH code of conduct")
+        self.assertContains(response, 'name="conduct_agree"')
+        self.assertContains(response, 'name="logistics_agree"')
+        self.assertContains(response, 'name="email_agree"')
+
+
+class InterestSubmissionViewTestCase(TestCase):
+    """Tests for the public, ungated MLH interest form on the landing page."""
+
+    def setUp(self):
+        self.view = reverse("event:index")
+        self.valid_data = {
+            "first_name": "Foo",
+            "last_name": "Bar",
+            "email": "foo@bar.com",
+            "age": 18,
+            "phone_number": "+1 (123) 456-7890",
+            "school": "University of Toronto",
+            "study_level": "graduate",
+            "country": "Canada",
+            "conduct_agree": "on",
+            "logistics_agree": "on",
+            "email_agree": "on",
+        }
+
+    def test_valid_submission_creates_record_and_redirects(self):
+        response = self.client.post(self.view, data=self.valid_data)
+        self.assertRedirects(response, self.view)
+        self.assertEqual(InterestSubmission.objects.count(), 1)
+        submission = InterestSubmission.objects.first()
+        self.assertEqual(submission.email, "foo@bar.com")
+        # phone number is stripped down to digits on save
+        self.assertEqual(submission.phone_number, "11234567890")
+
+    def test_missing_required_checkboxes_is_invalid(self):
+        data = {**self.valid_data}
+        del data["conduct_agree"]
+        del data["logistics_agree"]
+        response = self.client.post(self.view, data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(InterestSubmission.objects.count(), 0)
+
+    def test_email_agree_is_optional(self):
+        data = {**self.valid_data}
+        del data["email_agree"]
+        response = self.client.post(self.view, data=data)
+        self.assertRedirects(response, self.view)
+        self.assertEqual(InterestSubmission.objects.count(), 1)
+        self.assertFalse(InterestSubmission.objects.first().email_agree)
+
+    def test_missing_required_field_is_invalid(self):
+        data = {**self.valid_data}
+        del data["school"]
+        response = self.client.post(self.view, data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(InterestSubmission.objects.count(), 0)
 
 
 class DashboardTestCase(SetupUserMixin, TestCase):

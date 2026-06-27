@@ -22,6 +22,7 @@ from hackathon_site.utils import (
     get_curr_sign_in_time,
     strftime,
 )
+from event.forms import InterestForm
 from registration.forms import JoinTeamForm, SignInForm
 from registration.models import Team as RegistrationTeam, User, Application
 
@@ -35,8 +36,10 @@ def _now():
     return datetime.now().replace(tzinfo=settings.TZ_INFO)
 
 
-class IndexView(TemplateView):
+class IndexView(FormView):
     template_name = "event/landing.html"
+    form_class = InterestForm
+    success_url = reverse_lazy("event:index")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -49,6 +52,15 @@ class IndexView(TemplateView):
         context["user"] = self.request.user
         context["application"] = getattr(self.request.user, "application", None)
         return context
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(
+            self.request,
+            "Thanks! We've recorded your interest and will email you when "
+            "registration opens.",
+        )
+        return super().form_valid(form)
 
 
 class DashboardView(LoginRequiredMixin, FormView):

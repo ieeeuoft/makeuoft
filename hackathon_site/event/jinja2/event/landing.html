@@ -1,4 +1,5 @@
 {% extends "event/base.html" %}
+{% from "event/form_macros.html" import render_field, render_checkbox_field %}
 
 {% block nav_background_color %}{% endblock %}
 
@@ -8,6 +9,37 @@
     const registrationCloseDate = new Date("{{ localtime(registration_close_date)|strftime('%b %-d, %Y, %H:%M:%S') }}");
     const eventStartDate = new Date("{{ localtime(event_start_date)|strftime('%b %-d, %Y, %H:%M:%S') }}");
 </script>
+<!-- Select2 CSS (MLH interest form) -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="{{ static('event/styles/css/select2.css') }}"/>
+<style>
+    /* Fade each section's text colour in step with the wrapper's 0.3s background
+       fade, so the text never momentarily mismatches its background (e.g. white
+       text appearing before the blue background has finished fading in). */
+    .colorScroll {
+        transition: color 0.3s ease-out;
+    }
+    /* Interest form collapsible: centre the title + arrow and flip the arrow when open. */
+    #interest .collapsible-header {
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+    #interest .interest-title {
+        margin: 0.5rem 0;
+    }
+    #interest .interest-toggle {
+        font-size: 1.4rem;
+        font-weight: 600;
+    }
+    #interest .interest-arrow {
+        margin-left: 0.5rem;
+        transition: transform 0.2s ease;
+    }
+    #interest .active .interest-arrow {
+        transform: rotate(180deg);
+    }
+</style>
 {% endblock %}
 
 {% block nav_links %}
@@ -46,7 +78,7 @@
                         </h5>
                         <button
                             class="btn-small waves-effect waves-light colorBtn"
-                            onclick="window.open('http://mlh.io/code-of-conduct', '_blank')">
+                            onclick="window.open('https://github.com/MLH/mlh-policies/blob/main/code-of-conduct.md', '_blank')">
                             View MLH Code of Conduct
                         </button>
                     </div>
@@ -106,6 +138,74 @@
         </div>
     </div>
     <br /><br /><br />
+
+    <div class="container colorScroll" data-background-color="#fff">
+        <div class="section scrollspy" id="interest">
+            {% set msgs = get_messages(request) %}
+            {# Open the panel automatically when there's feedback to show. #}
+            {% set open_form = form.errors or msgs %}
+            <div class="row">
+                <div class="col s12 center">
+                    <h3 class="center interest-title">Register Your Interest</h3>
+                    <p class="center">
+                        MakeUofT 2027 is on its way! Leave your info below and we'll email you as soon as applications open.
+                    </p>
+                </div>
+                <div class="col s12">
+                    <ul class="collapsible expandable">
+                        <li {% if open_form %}class="active"{% endif %}>
+                            <div class="collapsible-header">
+                                <span class="interest-toggle">Sign up for updates</span>
+                                <i class="material-icons interest-arrow">expand_more</i>
+                            </div>
+                            <div class="collapsible-body">
+                                {% if msgs %}
+                                    {% for message in msgs %}
+                                        <p class="center primaryText">{{ message }}</p>
+                                    {% endfor %}
+                                {% endif %}
+
+                                <form action="{{ url('event:index') }}" method="post">
+                                    {{ csrf_input }}
+                                    <div class="row">
+                                        {% if form.non_field_errors() %}
+                                            <div class="col s12">
+                                                {% for error in form.non_field_errors() %}
+                                                    <span class="formError">{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+
+                                        {{ render_field(form.first_name, size="s12 m6") }}
+                                        {{ render_field(form.last_name, size="s12 m6") }}
+                                        {{ render_field(form.email, size="s12 m6") }}
+                                        {{ render_field(form.phone_number, size="s12 m6") }}
+                                        {{ render_field(form.age, size="s12 m6 select2-wrapper") }}
+                                        {{ render_field(form.study_level, show_help_text_as_label=True, size="s12 m6 select2-wrapper") }}
+                                        {{ render_field(form.school, size="s12 m6 select2-wrapper") }}
+                                        {{ render_field(form.country, size="s12 m6 select2-wrapper") }}
+
+                                        <div class="col s12">
+                                            <p>We are currently in the process of partnering with MLH. The following 3 checkboxes are for this partnership. If we do not end up partnering with MLH, your information will not be shared.</p>
+                                            <br/>
+                                        </div>
+
+                                        {{ render_checkbox_field(form.conduct_agree) }}
+                                        {{ render_checkbox_field(form.logistics_agree) }}
+                                        {{ render_checkbox_field(form.email_agree) }}
+
+                                        <div class="input-field col s12 center">
+                                            <button type="submit" class="btn-small waves-effect waves-light colorBtn">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="container colorScroll" data-background-color="#035E8A">
         <div class="section scrollspy" id="schedule">
@@ -399,4 +499,85 @@
 <script src="{{ static('event/js/sponsors-data.js') }}"></script>
 <script src="{{ static('event/js/sponsors-component.js') }}"></script>
 <script src="{{ static('event/js/landing.js') }}"></script>
+
+<!-- Select2 JS for the MLH interest form -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const selects = $("#interest select");
+        // width:'100%' so Select2 sizes from CSS, not the (initially hidden,
+        // zero-width) collapsible body it lives in.
+        selects.not(".select2-school-select").select2({width: "100%"});
+        $(".select2-school-select").select2({tags: true, width: "100%"});  // Allow custom school options
+
+        // Properly style any pre-filled selects
+        $.each(selects, (i, e) => {
+            if (e.value) {
+                $(e).siblings("label").addClass("label-active");
+            }
+        });
+
+        selects.on("select2:opening", function () {
+            $(this).siblings("label").addClass("label-active");
+        });
+
+        selects.on("select2:closing", function (e) {
+            if (!this.value) {
+                $(this).siblings("label").removeClass("label-active");
+            }
+            // steal focus during close - only capture once and stop propagation
+            // https://stackoverflow.com/a/49261426/3882202
+            $(e.target).data("select2").$selection.one("focus focusin", function (e) {
+                e.stopPropagation();
+            });
+        });
+
+        // on first focus (bubbles up to document), open the menu
+        $(document).on('focus', '#interest .select2-selection.select2-selection--single', function () {
+            $(this).closest(".select2-container").siblings('select:enabled').select2('open');
+        });
+
+        {% if open_form %}
+        // Expand the interest form when there are validation errors or a
+        // success message so the feedback isn't hidden behind the collapsed panel.
+        $("#interest .collapsible").collapsible("open", 0);
+        {% endif %}
+    });
+
+    $.get("https://raw.githubusercontent.com/MLH/mlh-policies/master/schools.csv", (data) => {
+        /* Populate the school list with MLH's list of recognized schools.
+        *  Because `tags: true` is set, applicants can enter a custom option as well. */
+        let schools = data.split("\n").slice(1);
+        let select2Data = [];
+
+        for (let school of schools) {
+            school = school.trim().replace(/["]/g, "");
+            select2Data.push({
+                id: school,
+                text: school
+            });
+        }
+
+        let select2Elem = $(".select2-school-select");
+
+        select2Elem.select2({
+            data: select2Data,
+            tags: true,
+            width: "100%",
+        });
+
+        {% if form.school.value() is not none and form.school.value() %}
+            const selectedSchool = "{{ form.school.value() }}";
+
+            if (select2Elem.find(`option[value='${selectedSchool}']`).length) {
+                select2Elem.val(selectedSchool).trigger("change");
+            } else {
+                const newOption = new Option(selectedSchool, selectedSchool, true, true);
+                select2Elem.append(newOption).trigger("change");
+            }
+
+            select2Elem.siblings("label").addClass("label-active");
+        {% endif %}
+    });
+</script>
 {% endblock %}
