@@ -12,6 +12,34 @@
 <!-- Select2 CSS (MLH interest form) -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
 <link rel="stylesheet" type="text/css" href="{{ static('event/styles/css/select2.css') }}"/>
+<style>
+    /* Fade each section's text colour in step with the wrapper's 0.3s background
+       fade, so the text never momentarily mismatches its background (e.g. white
+       text appearing before the blue background has finished fading in). */
+    .colorScroll {
+        transition: color 0.3s ease-out;
+    }
+    /* Interest form collapsible: centre the title + arrow and flip the arrow when open. */
+    #interest .collapsible-header {
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+    #interest .interest-title {
+        margin: 0.5rem 0;
+    }
+    #interest .interest-toggle {
+        font-size: 1.4rem;
+        font-weight: 600;
+    }
+    #interest .interest-arrow {
+        margin-left: 0.5rem;
+        transition: transform 0.2s ease;
+    }
+    #interest .active .interest-arrow {
+        transform: rotate(180deg);
+    }
+</style>
 {% endblock %}
 
 {% block nav_links %}
@@ -117,18 +145,20 @@
             {# Open the panel automatically when there's feedback to show. #}
             {% set open_form = form.errors or msgs %}
             <div class="row">
+                <div class="col s12 center">
+                    <h3 class="center interest-title">Register Your Interest</h3>
+                    <p class="center">
+                        MakeUofT 2027 is on its way! Leave your info below and we'll email you as soon as applications open.
+                    </p>
+                </div>
                 <div class="col s12">
                     <ul class="collapsible expandable">
                         <li {% if open_form %}class="active"{% endif %}>
-                            <div class="collapsible-header" style="display:block; text-align:center;">
-                                <h4 style="margin:0;">Register Your Interest</h4>
-                                <span class="helper-text">Click to sign up for MakeUofT 2027 updates</span>
+                            <div class="collapsible-header">
+                                <span class="interest-toggle">Sign up for updates</span>
+                                <i class="material-icons interest-arrow">expand_more</i>
                             </div>
                             <div class="collapsible-body">
-                                <p class="center">
-                                    MakeUofT 2027 is on its way! Leave your info below and we'll email you as soon as applications open.
-                                </p>
-
                                 {% if msgs %}
                                     {% for message in msgs %}
                                         <p class="center primaryText">{{ message }}</p>
@@ -506,6 +536,12 @@
         $(document).on('focus', '#interest .select2-selection.select2-selection--single', function () {
             $(this).closest(".select2-container").siblings('select:enabled').select2('open');
         });
+
+        {% if open_form %}
+        // Expand the interest form when there are validation errors or a
+        // success message so the feedback isn't hidden behind the collapsed panel.
+        $("#interest .collapsible").collapsible("open", 0);
+        {% endif %}
     });
 
     $.get("https://raw.githubusercontent.com/MLH/mlh-policies/master/schools.csv", (data) => {
