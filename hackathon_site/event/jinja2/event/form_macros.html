@@ -1,0 +1,52 @@
+{# Standalone form-rendering macros.
+
+   These mirror the macros defined inline in event/form_base.html, extracted
+   here so templates that do NOT extend form_base.html (e.g. the landing page)
+   can `{% from "event/form_macros.html" import ... %}` them. This file must not
+   `{% extends %}` anything — importing an extending template forces its base to
+   render, which fails outside a full request context. #}
+
+{% macro render_field(field, show_help_text=False, show_label=True, show_help_text_as_label=False, size="s12", id="") %}
+    <div class="input-field row col {{ size }}" id="{{ id }}">
+        {{ field }}
+        {% if show_label %}
+            {% if show_help_text_as_label %}
+                <label for="{{ field.id_for_label }}">{{ field.help_text|safe or field.label}}</label>
+            {% else %}
+                {{ field.label_tag() }}
+            {% endif %}
+        {% endif %}
+        {% if show_help_text %}
+            <span class="helper-text">{{ field.help_text|safe }}</span>
+        {% endif %}
+        {% if field.errors %}
+            <span class="formFieldError col s12">
+            {% for error in field.errors %}
+                {{ error }}
+                <br />
+            {% endfor %}
+            </span>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro render_checkbox_field(field, size="s12") %}
+    <div class="row col {{ size }}" style="padding-top: 0.5em; padding-bottom: 0.5em;">
+        <label>
+            <input
+                type="checkbox"
+                class="filled-in"
+                {% if field.value() %}checked="checked" {% endif %}
+                name="{{ field.name }}"
+                id="{{ field.id_for_label }}">
+            <span>{{ field.help_text|safe }}</span>
+        </label>
+        {% if field.errors %}
+            <span class="formFieldError col s12">
+            {% for error in field.errors %}
+                {{ error }}
+            {% endfor %}
+            </span>
+        {% endif %}
+    </div>
+{% endmacro %}
