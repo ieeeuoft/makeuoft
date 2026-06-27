@@ -79,9 +79,7 @@ class InterestForm(forms.ModelForm):
 
     def save(self, commit=True):
         self.instance = super().save(commit=False)
-        self.instance.phone_number = re.sub(
-            "[^0-9]", "", self.instance.phone_number
-        )
+        self.instance.phone_number = re.sub("[^0-9]", "", self.instance.phone_number)
         if commit:
             self.instance.save()
         return self.instance

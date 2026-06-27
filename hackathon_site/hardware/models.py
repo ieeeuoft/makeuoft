@@ -127,7 +127,11 @@ class Order(models.Model):
     request = models.JSONField(null=False)
     # track which admin is currently packing this order to prevent double-packing
     packing_admin = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="packing_orders"
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="packing_orders",
     )
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
@@ -182,9 +186,14 @@ class OrderLockConfig(models.Model):
     Admins can toggle this to prevent/allow order submissions without redeployment.
     Superusers can bypass the lock for emergency situations.
     """
+
     orders_locked = models.BooleanField(default=False)
     locked_by = models.ForeignKey(
-        User, null=True, blank=True, on_delete=models.SET_NULL, related_name="order_locks"
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="order_locks",
     )
     locked_at = models.DateTimeField(null=True, blank=True)
     reason = models.TextField(blank=True, default="")

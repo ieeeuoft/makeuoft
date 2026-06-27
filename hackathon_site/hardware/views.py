@@ -22,7 +22,14 @@ from hardware.api_filters import (
     IncidentFilter,
     OrderItemFilter,
 )
-from hardware.models import Hardware, Category, Order, Incident, OrderItem, OrderLockConfig
+from hardware.models import (
+    Hardware,
+    Category,
+    Order,
+    Incident,
+    OrderItem,
+    OrderLockConfig,
+)
 
 from hardware.serializers import (
     CategorySerializer,
@@ -302,9 +309,9 @@ class OrderDetailView(generics.GenericAPIView, mixins.UpdateModelMixin):
 
                 # Add the cancellation message to the context if one was provided.
                 if cancellation_message:
-                    render_to_string_context[
-                        "cancellation_message"
-                    ] = cancellation_message
+                    render_to_string_context["cancellation_message"] = (
+                        cancellation_message
+                    )
 
                 send_mail(
                     subject=render_to_string(
@@ -332,13 +339,16 @@ class OrderDetailView(generics.GenericAPIView, mixins.UpdateModelMixin):
                     }
                     profile.user.email_user(
                         subject=render_to_string(
-                            self.update_order_email_subject_template, context,
+                            self.update_order_email_subject_template,
+                            context,
                         ),
                         message=render_to_string(
-                            self.update_order_email_template_participant, context,
+                            self.update_order_email_template_participant,
+                            context,
                         ),
                         html_message=render_to_string(
-                            self.update_order_email_template_participant, context,
+                            self.update_order_email_template_participant,
+                            context,
                         ),
                         from_email=settings.DEFAULT_FROM_EMAIL,
                         connection=connection,
@@ -442,6 +452,7 @@ class OrderLockView(generics.GenericAPIView):
     GET: Returns current lock status (accessible to all authenticated users)
     POST: Toggles lock status (admin only)
     """
+
     def get_permissions(self):
         if self.request.method == "POST":
             return [UserIsAdmin()]
@@ -450,29 +461,37 @@ class OrderLockView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         """Get current lock status"""
         lock_config = OrderLockConfig.get_lock_status()
-        return Response({
-            "orders_locked": lock_config.orders_locked,
-            "locked_by": lock_config.locked_by.email if lock_config.locked_by else None,
-            "locked_at": lock_config.locked_at,
-            "reason": lock_config.reason,
-        })
+        return Response(
+            {
+                "orders_locked": lock_config.orders_locked,
+                "locked_by": (
+                    lock_config.locked_by.email if lock_config.locked_by else None
+                ),
+                "locked_at": lock_config.locked_at,
+                "reason": lock_config.reason,
+            }
+        )
 
     def post(self, request, *args, **kwargs):
         """Toggle lock status (admin only)"""
         from django.utils import timezone
-        
+
         lock_config = OrderLockConfig.get_lock_status()
         new_lock_state = request.data.get("orders_locked", False)
-        
+
         lock_config.orders_locked = new_lock_state
         lock_config.locked_by = request.user if new_lock_state else None
         lock_config.locked_at = timezone.now() if new_lock_state else None
         lock_config.reason = request.data.get("reason", "")
         lock_config.save()
-        
-        return Response({
-            "orders_locked": lock_config.orders_locked,
-            "locked_by": lock_config.locked_by.email if lock_config.locked_by else None,
-            "locked_at": lock_config.locked_at,
-            "reason": lock_config.reason,
-        })
+
+        return Response(
+            {
+                "orders_locked": lock_config.orders_locked,
+                "locked_by": (
+                    lock_config.locked_by.email if lock_config.locked_by else None
+                ),
+                "locked_at": lock_config.locked_at,
+                "reason": lock_config.reason,
+            }
+        )

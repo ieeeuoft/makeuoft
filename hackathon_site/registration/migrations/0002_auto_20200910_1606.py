@@ -15,9 +15,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="application", name="mlh_conduct_agree",),
-        migrations.RemoveField(model_name="application", name="mlh_data_agree",),
-        migrations.RemoveField(model_name="application", name="preferred_name",),
+        migrations.RemoveField(
+            model_name="application",
+            name="mlh_conduct_agree",
+        ),
+        migrations.RemoveField(
+            model_name="application",
+            name="mlh_data_agree",
+        ),
+        migrations.RemoveField(
+            model_name="application",
+            name="preferred_name",
+        ),
         migrations.AddField(
             model_name="application",
             name="conduct_agree",

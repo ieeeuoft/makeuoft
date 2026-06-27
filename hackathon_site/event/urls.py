@@ -19,7 +19,11 @@ urlpatterns = [
         ),
         name="login",
     ),
-    path("accounts/logout/", auth_views.LogoutView.as_view(), name="logout",),
+    path(
+        "accounts/logout/",
+        auth_views.LogoutView.as_view(),
+        name="logout",
+    ),
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("dashboard/qrscan/", QRScannerView.as_view(), name="qr-scanner"),
     path(

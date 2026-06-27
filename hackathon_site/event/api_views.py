@@ -163,7 +163,10 @@ class LeaveTeamView(generics.GenericAPIView):
         # Construct response data
         response_serializer = TeamSerializer(profile.team)
         response_data = response_serializer.data
-        return Response(data=response_data, status=status.HTTP_201_CREATED,)
+        return Response(
+            data=response_data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class JoinTeamView(generics.GenericAPIView, mixins.RetrieveModelMixin):
@@ -200,7 +203,10 @@ class JoinTeamView(generics.GenericAPIView, mixins.RetrieveModelMixin):
             current_team.delete()
         response_serializer = TeamSerializer(profile.team)
         response_data = response_serializer.data
-        return Response(data=response_data, status=status.HTTP_200_OK,)
+        return Response(
+            data=response_data,
+            status=status.HTTP_200_OK,
+        )
 
 
 class TeamIncidentListView(
@@ -295,7 +301,9 @@ class TeamDetailView(
     def delete(self, request, *args, **kwargs):
         team = self.get_object()
         active_orders = Order.objects.filter(
-            Q(team=team), ~Q(status="Cancelled"), ~Q(status="Returned"),
+            Q(team=team),
+            ~Q(status="Cancelled"),
+            ~Q(status="Returned"),
         )
         if active_orders.exists():
             raise ValidationError(

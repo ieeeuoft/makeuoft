@@ -247,7 +247,9 @@ class ApplicationForm(forms.ModelForm):
         return cleaned_data
 
     def clean_age(self):
-        user_age = self.cleaned_data["age"]
+        user_age = self.cleaned_data.get("age")
+        if user_age is None:
+            return user_age
         # Check if the age is "22+"
         if user_age == "22+":
             return user_age
@@ -259,8 +261,8 @@ class ApplicationForm(forms.ModelForm):
         return user_age
 
     def handle_free_response_pronouns(self):
-        user_pronouns = self.cleaned_data["pronouns"]
-        user_free_response_pronouns = self.cleaned_data["free_response_pronouns"]
+        user_pronouns = self.cleaned_data.get("pronouns")
+        user_free_response_pronouns = self.cleaned_data.get("free_response_pronouns")
         if user_pronouns == "other" and not user_free_response_pronouns:
             raise forms.ValidationError(
                 _(
@@ -270,8 +272,8 @@ class ApplicationForm(forms.ModelForm):
             )
 
     def handle_free_response_gender(self):
-        user_gender = self.cleaned_data["gender"]
-        user_free_response_gender = self.cleaned_data["free_response_gender"]
+        user_gender = self.cleaned_data.get("gender")
+        user_free_response_gender = self.cleaned_data.get("free_response_gender")
         if user_gender == "prefer-to-self-describe" and not user_free_response_gender:
             raise forms.ValidationError(
                 _(
@@ -281,10 +283,10 @@ class ApplicationForm(forms.ModelForm):
             )
 
     def handle_free_response_dietary_restrictions(self):
-        user_dietary_restrictions = self.cleaned_data["dietary_restrictions"]
-        user_free_response_dietary_restrictions = self.cleaned_data[
+        user_dietary_restrictions = self.cleaned_data.get("dietary_restrictions")
+        user_free_response_dietary_restrictions = self.cleaned_data.get(
             "free_response_dietary_restrictions"
-        ]
+        )
         if (
             user_dietary_restrictions == "allergies"
             or user_dietary_restrictions == "other"
@@ -295,10 +297,10 @@ class ApplicationForm(forms.ModelForm):
             )
 
     def handle_free_response_sexual_identity(self):
-        user_sexual_identity = self.cleaned_data["sexual_identity"]
-        user_free_response_sexual_identity = self.cleaned_data[
+        user_sexual_identity = self.cleaned_data.get("sexual_identity")
+        user_free_response_sexual_identity = self.cleaned_data.get(
             "free_response_sexual_identity"
-        ]
+        )
         if (
             user_sexual_identity == "different-identity"
             and not user_free_response_sexual_identity
@@ -311,10 +313,12 @@ class ApplicationForm(forms.ModelForm):
             )
 
     def handle_highest_formal_education(self):
-        user_highest_formal_education = self.cleaned_data["highest_formal_education"]
-        user_free_response_highest_formal_education = self.cleaned_data[
+        user_highest_formal_education = self.cleaned_data.get(
+            "highest_formal_education"
+        )
+        user_free_response_highest_formal_education = self.cleaned_data.get(
             "free_response_highest_formal_education"
-        ]
+        )
         if (
             user_highest_formal_education == "other"
             and not user_free_response_highest_formal_education

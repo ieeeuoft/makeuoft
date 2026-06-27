@@ -10,7 +10,14 @@ from rest_framework import status, serializers
 from rest_framework.test import APITestCase
 
 from event.models import Team, User, Profile
-from hardware.models import Hardware, Category, Order, OrderItem, Incident, OrderLockConfig
+from hardware.models import (
+    Hardware,
+    Category,
+    Order,
+    OrderItem,
+    Incident,
+    OrderLockConfig,
+)
 from hardware.serializers import (
     HardwareSerializer,
     CategorySerializer,
@@ -269,6 +276,7 @@ class HardwareDetailViewTestCase(SetupUserMixin, APITestCase):
         expected_response = {
             "id": self.hardware.id,
             "name": "name",
+            "credits": 0,
             "categories": [category.id for category in self.hardware.categories.all()],
             "model_number": "model",
             "manufacturer": "manufacturer",
@@ -371,11 +379,13 @@ class IncidentListViewTestCase(SetupUserMixin, APITestCase):
             picture="/picture/location/other",
         )
         self.order_item = OrderItem.objects.create(
-            order=self.order, hardware=self.hardware,
+            order=self.order,
+            hardware=self.hardware,
         )
 
         self.order_item2 = OrderItem.objects.create(
-            order=self.order, hardware=self.other_hardware,
+            order=self.order,
+            hardware=self.other_hardware,
         )
 
         self.incident = Incident.objects.create(
@@ -492,10 +502,12 @@ class OrderListViewGetTestCase(SetupUserMixin, APITestCase):
             picture="/picture/location/other",
         )
         OrderItem.objects.create(
-            order=self.order, hardware=self.hardware,
+            order=self.order,
+            hardware=self.hardware,
         )
         OrderItem.objects.create(
-            order=self.order, hardware=self.other_hardware,
+            order=self.order,
+            hardware=self.other_hardware,
         )
         self.order_2 = Order.objects.create(
             status="Submitted",
@@ -503,10 +515,12 @@ class OrderListViewGetTestCase(SetupUserMixin, APITestCase):
             request={"hardware": [{"id": 1, "quantity": 2}, {"id": 2, "quantity": 3}]},
         )
         OrderItem.objects.create(
-            order=self.order_2, hardware=self.hardware,
+            order=self.order_2,
+            hardware=self.hardware,
         )
         OrderItem.objects.create(
-            order=self.order_2, hardware=self.other_hardware,
+            order=self.order_2,
+            hardware=self.other_hardware,
         )
         self.order_3 = Order.objects.create(
             status="Cancelled",
@@ -514,7 +528,8 @@ class OrderListViewGetTestCase(SetupUserMixin, APITestCase):
             request={"hardware": [{"id": 1, "quantity": 2}, {"id": 2, "quantity": 3}]},
         )
         OrderItem.objects.create(
-            order=self.order_3, hardware=self.hardware,
+            order=self.order_3,
+            hardware=self.hardware,
         )
         self.order_4 = Order.objects.create(
             status="Submitted",
@@ -522,7 +537,8 @@ class OrderListViewGetTestCase(SetupUserMixin, APITestCase):
             request={"hardware": [{"id": 1, "quantity": 2}, {"id": 2, "quantity": 3}]},
         )
         OrderItem.objects.create(
-            order=self.order_4, hardware=self.hardware,
+            order=self.order_4,
+            hardware=self.hardware,
         )
         self.view_permissions = Permission.objects.filter(
             content_type__app_label="hardware", codename="view_order"
@@ -683,10 +699,12 @@ class OrderItemListViewGetTestCase(SetupUserMixin, APITestCase):
             picture="/picture/location/other",
         )
         self.order_item_1 = OrderItem.objects.create(
-            order=self.order, hardware=self.hardware,
+            order=self.order,
+            hardware=self.hardware,
         )
         self.order_item_2 = OrderItem.objects.create(
-            order=self.order, hardware=self.other_hardware,
+            order=self.order,
+            hardware=self.other_hardware,
         )
         self.order_2 = Order.objects.create(
             status="Submitted",
@@ -694,10 +712,12 @@ class OrderItemListViewGetTestCase(SetupUserMixin, APITestCase):
             request={"hardware": [{"id": 1, "quantity": 2}, {"id": 2, "quantity": 3}]},
         )
         self.order_item_3 = OrderItem.objects.create(
-            order=self.order_2, hardware=self.hardware,
+            order=self.order_2,
+            hardware=self.hardware,
         )
         self.order_item_4 = OrderItem.objects.create(
-            order=self.order_2, hardware=self.other_hardware,
+            order=self.order_2,
+            hardware=self.other_hardware,
         )
         self.order_3 = Order.objects.create(
             status="Cancelled",
@@ -705,7 +725,8 @@ class OrderItemListViewGetTestCase(SetupUserMixin, APITestCase):
             request={"hardware": [{"id": 1, "quantity": 2}, {"id": 2, "quantity": 3}]},
         )
         self.order_item_5 = OrderItem.objects.create(
-            order=self.order_3, hardware=self.hardware,
+            order=self.order_3,
+            hardware=self.hardware,
         )
         self.order_4 = Order.objects.create(
             status="Submitted",
@@ -713,7 +734,8 @@ class OrderItemListViewGetTestCase(SetupUserMixin, APITestCase):
             request={"hardware": [{"id": 1, "quantity": 2}, {"id": 2, "quantity": 3}]},
         )
         self.order_item_6 = OrderItem.objects.create(
-            order=self.order_4, hardware=self.hardware,
+            order=self.order_4,
+            hardware=self.hardware,
         )
         self.view_permissions = Permission.objects.filter(
             content_type__app_label="hardware", codename="view_orderitem"
@@ -830,7 +852,8 @@ class IncidentListViewPostTestCase(SetupUserMixin, APITestCase):
         )
 
         self.order_item = OrderItem.objects.create(
-            order=self.order, hardware=self.hardware,
+            order=self.order,
+            hardware=self.hardware,
         )
 
         self.request_data = {
@@ -888,7 +911,8 @@ class IncidentDetailViewGetTestCase(SetupUserMixin, APITestCase):
         )
 
         self.order_item = OrderItem.objects.create(
-            order=self.order, hardware=self.hardware,
+            order=self.order,
+            hardware=self.hardware,
         )
 
         self.incident = Incident.objects.create(
@@ -955,7 +979,8 @@ class IncidentDetailViewPatchTestCase(SetupUserMixin, APITestCase):
         )
 
         self.order_item = OrderItem.objects.create(
-            order=self.order, hardware=self.hardware,
+            order=self.order,
+            hardware=self.hardware,
         )
 
         self.incident = Incident.objects.create(
@@ -1018,6 +1043,9 @@ class IncidentDetailViewPatchTestCase(SetupUserMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+@override_settings(
+    HARDWARE_SIGN_OUT_END_DATE=datetime.now(settings.TZ_INFO) + relativedelta(days=1)
+)
 class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
     def setUp(self):
         super().setUp()
@@ -1083,7 +1111,11 @@ class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
         self.order = Order.objects.create(
             status="Cart",
             team=self.team,
-            request={"hardware": [{"id": 1, "quantity": 2},]},
+            request={
+                "hardware": [
+                    {"id": 1, "quantity": 2},
+                ]
+            },
         )
 
         self.category1 = Category.objects.create(name="category1", max_per_team=4)
@@ -1174,7 +1206,13 @@ class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
 
         expected_response = {
             "order_id": 1,
-            "hardware": [{"hardware_id": simple_hardware.id, "quantity_fulfilled": 1}],
+            "hardware": [
+                {
+                    "hardware_id": simple_hardware.id,
+                    "hardware_name": "name",
+                    "quantity_fulfilled": 1,
+                }
+            ],
             "errors": [],
         }
 
@@ -1207,7 +1245,13 @@ class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
 
         expected_response = {
             "order_id": 1,
-            "hardware": [{"hardware_id": simple_hardware.id, "quantity_fulfilled": 1}],
+            "hardware": [
+                {
+                    "hardware_id": simple_hardware.id,
+                    "hardware_name": "name",
+                    "quantity_fulfilled": 1,
+                }
+            ],
             "errors": [],
         }
 
@@ -1348,7 +1392,13 @@ class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
 
         expected_response = {
             "order_id": 2,
-            "hardware": [{"hardware_id": hardware.id, "quantity_fulfilled": 4}],
+            "hardware": [
+                {
+                    "hardware_id": hardware.id,
+                    "hardware_name": "name",
+                    "quantity_fulfilled": 4,
+                }
+            ],
             "errors": [],
         }
 
@@ -1389,7 +1439,13 @@ class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
 
         expected_response = {
             "order_id": 2,
-            "hardware": [{"hardware_id": hardware.id, "quantity_fulfilled": 1}],
+            "hardware": [
+                {
+                    "hardware_id": hardware.id,
+                    "hardware_name": "name",
+                    "quantity_fulfilled": 1,
+                }
+            ],
             "errors": [],
         }
 
@@ -1530,7 +1586,13 @@ class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
 
         expected_response = {
             "order_id": 2,
-            "hardware": [{"hardware_id": hardware.id, "quantity_fulfilled": 4}],
+            "hardware": [
+                {
+                    "hardware_id": hardware.id,
+                    "hardware_name": "name",
+                    "quantity_fulfilled": 4,
+                }
+            ],
             "errors": [],
         }
 
@@ -1571,7 +1633,13 @@ class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
 
         expected_response = {
             "order_id": 2,
-            "hardware": [{"hardware_id": hardware.id, "quantity_fulfilled": 1}],
+            "hardware": [
+                {
+                    "hardware_id": hardware.id,
+                    "hardware_name": "name",
+                    "quantity_fulfilled": 1,
+                }
+            ],
             "errors": [],
         }
 
@@ -1682,10 +1750,12 @@ class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
         self.assertEqual(len(response_hardware), 2)
         expected_response_hardware_1 = {
             "hardware_id": hardware_1.id,
+            "hardware_name": "name",
             "quantity_fulfilled": num_hardware_1_requested,
         }
         expected_response_hardware_2 = {
             "hardware_id": hardware_2.id,
+            "hardware_name": "name",
             "quantity_fulfilled": num_hardware_2_requested,
         }
         self.assertCountEqual(
@@ -1738,6 +1808,7 @@ class OrderListViewPostTestCase(SetupUserMixin, APITestCase):
             "hardware": [
                 {
                     "hardware_id": hardware.id,
+                    "hardware_name": "name",
                     "quantity_fulfilled": num_hardware_requested,
                 }
             ],
@@ -1935,7 +2006,7 @@ class OrderListPatchTestCase(SetupUserMixin, APITestCase):
 
     def test_successful_status_change(self):
         self._login(self.change_permissions)
-        request_data = {"status": "Ready for Pickup"}
+        request_data = {"status": "In Progress"}
         response = self.client.patch(self._build_view(self.pk), request_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(request_data["status"], Order.objects.get(id=self.pk).status)
@@ -2002,7 +2073,8 @@ class OrderItemReturnViewTestCase(SetupUserMixin, APITestCase):
         )
 
         self.order_item = OrderItem.objects.create(
-            order=self.order, hardware=self.hardware,
+            order=self.order,
+            hardware=self.hardware,
         )
 
         self.request_data = {
@@ -2052,7 +2124,8 @@ class OrderLockViewTestCase(SetupUserMixin, APITestCase):
         super().setUp()
         self.view = reverse("api:hardware:order-lock")
         self.admin_permissions = Permission.objects.filter(
-            content_type__app_label="hardware", codename__in=["view_order", "change_order"]
+            content_type__app_label="hardware",
+            codename__in=["view_order", "change_order"],
         )
         # Ensure lock config starts in unlocked state
         lock_config = OrderLockConfig.get_lock_status()
@@ -2085,37 +2158,48 @@ class OrderLockViewTestCase(SetupUserMixin, APITestCase):
         admin_group = Group.objects.get(name="Hardware Site Admins")
         self.user.groups.add(admin_group)
         self._login()
-        
+
         # Lock orders
         request_data = {"orders_locked": True, "reason": "Test lock"}
         response = self.client.post(self.view, request_data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
         self.assertTrue(data["orders_locked"])
-        
+
         # Verify in database
         lock_config = OrderLockConfig.get_lock_status()
         self.assertTrue(lock_config.orders_locked)
         self.assertEqual(lock_config.locked_by, self.user)
         self.assertIsNotNone(lock_config.locked_at)
-        
+
         # Unlock orders
         request_data = {"orders_locked": False}
         response = self.client.post(self.view, request_data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.json()
         self.assertFalse(data["orders_locked"])
-        
+
         # Verify in database
         lock_config.refresh_from_db()
         self.assertFalse(lock_config.orders_locked)
         self.assertIsNone(lock_config.locked_by)
 
 
+@override_settings(
+    HARDWARE_SIGN_OUT_END_DATE=datetime.now(settings.TZ_INFO) + relativedelta(days=1)
+)
 class OrderSubmissionWithLockTestCase(SetupUserMixin, APITestCase):
     def setUp(self):
         super().setUp()
         self.view = reverse("api:hardware:order-list")
+        self.team = Team.objects.create()
+        self.user2 = User.objects.create_user(
+            username="frank@johnston.com",
+            password="hellothere31415",
+            email="frank@johnston.com",
+            first_name="Frank",
+            last_name="Johnston",
+        )
         self.hardware = Hardware.objects.create(
             name="Test Hardware",
             model_number="model",
@@ -2130,40 +2214,48 @@ class OrderSubmissionWithLockTestCase(SetupUserMixin, APITestCase):
         lock_config.orders_locked = False
         lock_config.save()
 
+    def create_min_number_of_profiles(self):
+        Profile.objects.create(user=self.user, team=self.team)
+        Profile.objects.create(user=self.user2, team=self.team)
+
     def test_order_submission_when_locked(self):
         """Test that regular users cannot submit orders when locked"""
         self._login()
         self.create_min_number_of_profiles()
-        
+
         # Lock orders
         lock_config = OrderLockConfig.get_lock_status()
         lock_config.orders_locked = True
         lock_config.save()
-        
+
         request_data = {"hardware": [{"id": self.hardware.id, "quantity": 1}]}
         response = self.client.post(self.view, request_data, format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("non_field_errors", response.json())
-        self.assertIn("locked by administrators", response.json()["non_field_errors"][0])
+        self.assertIn(
+            "locked by administrators", response.json()["non_field_errors"][0]
+        )
 
     @override_settings(
-        HARDWARE_SIGN_OUT_START_DATE=datetime.now(settings.TZ_INFO) - relativedelta(days=1),
-        HARDWARE_SIGN_OUT_END_DATE=datetime.now(settings.TZ_INFO) + relativedelta(days=1),
+        HARDWARE_SIGN_OUT_START_DATE=datetime.now(settings.TZ_INFO)
+        - relativedelta(days=1),
+        HARDWARE_SIGN_OUT_END_DATE=datetime.now(settings.TZ_INFO)
+        + relativedelta(days=1),
     )
     def test_order_submission_when_unlocked(self):
         """Test that users can submit orders when unlocked"""
         self._login()
         self.create_min_number_of_profiles()
-        
+
         # Ensure unlocked
         lock_config = OrderLockConfig.get_lock_status()
         lock_config.orders_locked = False
         lock_config.save()
-        
+
         request_data = {"hardware": [{"id": self.hardware.id, "quantity": 1}]}
         response = self.client.post(self.view, request_data, format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_superuser_can_bypass_lock(self):
@@ -2172,13 +2264,13 @@ class OrderSubmissionWithLockTestCase(SetupUserMixin, APITestCase):
         self.user.is_superuser = True
         self.user.save()
         self.create_min_number_of_profiles()
-        
+
         # Lock orders
         lock_config = OrderLockConfig.get_lock_status()
         lock_config.orders_locked = True
         lock_config.save()
-        
+
         request_data = {"hardware": [{"id": self.hardware.id, "quantity": 1}]}
         response = self.client.post(self.view, request_data, format="json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

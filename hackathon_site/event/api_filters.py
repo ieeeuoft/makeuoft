@@ -25,5 +25,7 @@ class TeamFilter(filters.FilterSet):
     )
 
     team_code = filters.CharFilter(
-        field_name="team_code", label="Team code", help_text="Team code",
+        field_name="team_code",
+        label="Team code",
+        help_text="Team code",
     )

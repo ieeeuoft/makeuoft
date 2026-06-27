@@ -10,11 +10,26 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="application", name="birthday",),
-        migrations.RemoveField(model_name="application", name="data_agree",),
-        migrations.RemoveField(model_name="application", name="q1",),
-        migrations.RemoveField(model_name="application", name="q2",),
-        migrations.RemoveField(model_name="application", name="q3",),
+        migrations.RemoveField(
+            model_name="application",
+            name="birthday",
+        ),
+        migrations.RemoveField(
+            model_name="application",
+            name="data_agree",
+        ),
+        migrations.RemoveField(
+            model_name="application",
+            name="q1",
+        ),
+        migrations.RemoveField(
+            model_name="application",
+            name="q2",
+        ),
+        migrations.RemoveField(
+            model_name="application",
+            name="q3",
+        ),
         migrations.AddField(
             model_name="application",
             name="age",

@@ -11,6 +11,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name="team", name="credits", field=models.IntegerField(default=300),
+            model_name="team",
+            name="credits",
+            field=models.IntegerField(default=300),
         ),
     ]

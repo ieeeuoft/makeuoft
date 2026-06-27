@@ -30,7 +30,9 @@ class Migration(migrations.Migration):
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
             ],
-            options={"verbose_name_plural": "categories",},
+            options={
+                "verbose_name_plural": "categories",
+            },
         ),
         migrations.CreateModel(
             name="Hardware",
@@ -56,7 +58,9 @@ class Migration(migrations.Migration):
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 ("categories", models.ManyToManyField(to="hardware.Category")),
             ],
-            options={"verbose_name_plural": "hardware",},
+            options={
+                "verbose_name_plural": "hardware",
+            },
         ),
         migrations.CreateModel(
             name="Order",

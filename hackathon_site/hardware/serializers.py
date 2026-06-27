@@ -8,7 +8,14 @@ from django.conf import settings
 from rest_framework import serializers
 
 from event.models import Profile
-from hardware.models import Hardware, Category, OrderItem, Order, Incident, OrderLockConfig
+from hardware.models import (
+    Hardware,
+    Category,
+    OrderItem,
+    Order,
+    Incident,
+    OrderLockConfig,
+)
 
 
 class HardwareSerializer(serializers.ModelSerializer):
@@ -142,8 +149,12 @@ class OrderListSerializer(serializers.ModelSerializer):
     items = OrderItemInOrderSerializer(many=True, read_only=True)
     team_code = serializers.SerializerMethodField()
     total_credits = serializers.SerializerMethodField()  # Add total_credits field
-    packing_admin_id = serializers.SerializerMethodField()  # track who is packing this order
-    packing_admin_name = serializers.SerializerMethodField()  # display admin name for ui
+    packing_admin_id = (
+        serializers.SerializerMethodField()
+    )  # track who is packing this order
+    packing_admin_name = (
+        serializers.SerializerMethodField()
+    )  # display admin name for ui
 
     class Meta:
         model = Order
@@ -168,15 +179,18 @@ class OrderListSerializer(serializers.ModelSerializer):
     def get_total_credits(self, obj):
         # Directly use the model method
         return obj.get_total_credits()
-    
+
     def get_packing_admin_id(self, obj):
         # return the id of the admin currently packing this order
         return obj.packing_admin.id if obj.packing_admin else None
-    
+
     def get_packing_admin_name(self, obj):
         # return full name of admin packing the order for display purposes
         if obj.packing_admin:
-            return f"{obj.packing_admin.first_name} {obj.packing_admin.last_name}".strip() or obj.packing_admin.username
+            return (
+                f"{obj.packing_admin.first_name} {obj.packing_admin.last_name}".strip()
+                or obj.packing_admin.username
+            )
         return None
 
 
@@ -230,7 +244,7 @@ class OrderChangeSerializer(OrderListSerializer):
 
         if status is not None:
             instance.status = status
-            
+
             # automatically manage packing_admin based on status changes
             if status == "In Progress" and instance.packing_admin is None:
                 # when starting to pack an order, assign current user as packing admin
@@ -240,7 +254,7 @@ class OrderChangeSerializer(OrderListSerializer):
             elif status in ["Ready for Pickup", "Cancelled", "Submitted"]:
                 # clear packing admin when order is no longer being packed
                 instance.packing_admin = None
-        
+
         if request_field is not None:
             for item in request_field:
                 items_in_order = list(
@@ -320,7 +334,7 @@ class OrderCreateSerializer(serializers.Serializer):
         user = self.context["request"].user
         is_test_user = user.groups.filter(name=settings.TEST_USER_GROUP).exists()
         is_superuser = user.is_superuser
-        
+
         # Allow test users and superusers to bypass all restrictions
         if not is_test_user and not is_superuser:
             # Check lock status first
@@ -330,7 +344,7 @@ class OrderCreateSerializer(serializers.Serializer):
                     "Order submissions are currently locked by administrators. "
                     "Please contact the hardware team for assistance."
                 )
-            
+
             # time restrictions
             if datetime.now(settings.TZ_INFO) < settings.HARDWARE_SIGN_OUT_START_DATE:
                 raise serializers.ValidationError(
@@ -405,7 +419,7 @@ class OrderCreateSerializer(serializers.Serializer):
                 f"Projected credits after order: {remaining_credits - new_order_credits}."
             )
 
-        for (hardware, requested_quantity) in requested_hardware.items():
+        for hardware, requested_quantity in requested_hardware.items():
             team_hardware = team_unreturned_orders.get(id=hardware.id)
             team_hardware_count = getattr(team_hardware, "past_order_count", 0)
             if hardware.quantity_remaining - requested_quantity < 0:
@@ -424,7 +438,7 @@ class OrderCreateSerializer(serializers.Serializer):
                     + team_hardware_count
                     + requested_quantity
                 )
-        for (category, count) in category_counts.items():
+        for category, count in category_counts.items():
             if count > category.max_per_team:
                 error_messages.append(
                     "Maximum number of items for the Category {} is reached (limit of {} items per team)".format(
@@ -446,13 +460,13 @@ class OrderCreateSerializer(serializers.Serializer):
 
         # The reason why doing this is because the id field stores the hardware object, django cannot translate hardware object into JSON. Therefore, loop has been used to get the hardware id and quantity requested
         serialized_requested_hardware = []
-        for (hardware, requested_quantity) in requested_hardware.items():
+        for hardware, requested_quantity in requested_hardware.items():
             serialized_requested_hardware.append(
                 {"id": hardware.id, "requested_quantity": requested_quantity}
             )
 
         order_items = []
-        for (hardware, requested_quantity) in requested_hardware.items():
+        for hardware, requested_quantity in requested_hardware.items():
             num_order_items = min(hardware.quantity_remaining, requested_quantity)
             if num_order_items <= 0:
                 response_data["hardware"].append(
@@ -484,7 +498,9 @@ class OrderCreateSerializer(serializers.Serializer):
                     {
                         "hardware_id": hardware.id,
                         "message": "Only {} of {} {}(s) were available".format(
-                            num_order_items, requested_quantity, hardware.name,
+                            num_order_items,
+                            requested_quantity,
+                            hardware.name,
                         ),
                     }
                 )
@@ -666,9 +682,9 @@ class OrderItemReturnSerializer(serializers.Serializer):
                     )
 
             for quantity_idx in range(max_available_quantity):
-                order_items_with_hardware[
-                    quantity_idx
-                ].part_returned_health = hardware_item["part_returned_health"]
+                order_items_with_hardware[quantity_idx].part_returned_health = (
+                    hardware_item["part_returned_health"]
+                )
                 order_items_with_hardware[quantity_idx].save()
 
             if max_available_quantity > 0:

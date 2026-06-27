@@ -56,7 +56,6 @@ class SetupUserMixin:
             "school": "UofT",
             "study_level": "other",
             "graduation_year": 2020,
-            "what_hackathon_experience": "hi",
             "why_participate": "there",
             "what_technical_experience": "foo",
             "conduct_agree": True,
@@ -147,7 +146,10 @@ class SetupUserMixin:
         return team
 
     def _review(
-        self, application=None, reviewer=None, **kwargs,
+        self,
+        application=None,
+        reviewer=None,
+        **kwargs,
     ):
         if application is None:
             application = self.user.application

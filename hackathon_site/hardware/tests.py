@@ -35,6 +35,7 @@ class HardwareSerializerTestCase(TestCase):
         expected_response = {
             "id": 1,
             "name": "name",
+            "credits": 0,
             "categories": [self.category1.id, self.category2.id],
             "model_number": "model",
             "manufacturer": "manufacturer",
@@ -57,7 +58,10 @@ class HardwareSerializerTestCase(TestCase):
             team=team,
             request={"hardware": [{"id": 1, "quantity": 2}, {"id": 2, "quantity": 3}]},
         )
-        order_item_1 = OrderItem.objects.create(order=order, hardware=self.hardware,)
+        order_item_1 = OrderItem.objects.create(
+            order=order,
+            hardware=self.hardware,
+        )
 
         self.hardware.refresh_from_db()
         hardware_serializer = HardwareSerializer(self.hardware)
@@ -65,6 +69,7 @@ class HardwareSerializerTestCase(TestCase):
         expected_response = {
             "id": 1,
             "name": "name",
+            "credits": 0,
             "categories": [self.category1.id, self.category2.id],
             "model_number": "model",
             "manufacturer": "manufacturer",
@@ -89,13 +94,17 @@ class HardwareSerializerTestCase(TestCase):
         order_item_1 = OrderItem.objects.create(
             order=order, hardware=self.hardware, part_returned_health="Healthy"
         )
-        order_item_2 = OrderItem.objects.create(order=order, hardware=self.hardware,)
+        order_item_2 = OrderItem.objects.create(
+            order=order,
+            hardware=self.hardware,
+        )
         self.hardware.refresh_from_db()
         hardware_serializer = HardwareSerializer(self.hardware)
 
         expected_response = {
             "id": 1,
             "name": "name",
+            "credits": 0,
             "categories": [self.category1.id, self.category2.id],
             "model_number": "model",
             "manufacturer": "manufacturer",
@@ -136,8 +145,14 @@ class HardwareQuantityRemainingTestCase(TestCase):
             team=team,
             request={"hardware": [{"id": 1, "quantity": 2}]},
         )
-        order_item_1 = OrderItem.objects.create(order=order, hardware=self.hardware,)
-        order_item_2 = OrderItem.objects.create(order=order, hardware=self.hardware,)
+        order_item_1 = OrderItem.objects.create(
+            order=order,
+            hardware=self.hardware,
+        )
+        order_item_2 = OrderItem.objects.create(
+            order=order,
+            hardware=self.hardware,
+        )
         self.hardware.refresh_from_db()
         hardware_serializer = HardwareSerializer(self.hardware)
         self.assertEqual(hardware_serializer.data["quantity_remaining"], 2)
@@ -152,7 +167,10 @@ class HardwareQuantityRemainingTestCase(TestCase):
         order_item_1 = OrderItem.objects.create(
             order=order, hardware=self.hardware, part_returned_health="Healthy"
         )
-        order_item_2 = OrderItem.objects.create(order=order, hardware=self.hardware,)
+        order_item_2 = OrderItem.objects.create(
+            order=order,
+            hardware=self.hardware,
+        )
         self.hardware.refresh_from_db()
         hardware_serializer = HardwareSerializer(self.hardware)
         self.assertEqual(hardware_serializer.data["quantity_remaining"], 3)
@@ -168,7 +186,8 @@ class HardwareQuantityRemainingTestCase(TestCase):
             order=order, hardware=self.hardware, part_returned_health="Broken"
         )
         OrderItem.objects.create(
-            order=order, hardware=self.hardware,
+            order=order,
+            hardware=self.hardware,
         )
         self.hardware.refresh_from_db()
         hardware_serializer = HardwareSerializer(self.hardware)
@@ -181,8 +200,14 @@ class HardwareQuantityRemainingTestCase(TestCase):
             team=team,
             request={"hardware": [{"id": 1, "quantity": 2}, {"id": 2, "quantity": 3}]},
         )
-        order_item_1 = OrderItem.objects.create(order=order, hardware=self.hardware,)
-        order_item_2 = OrderItem.objects.create(order=order, hardware=self.hardware,)
+        order_item_1 = OrderItem.objects.create(
+            order=order,
+            hardware=self.hardware,
+        )
+        order_item_2 = OrderItem.objects.create(
+            order=order,
+            hardware=self.hardware,
+        )
         self.hardware.refresh_from_db()
         hardware_serializer = HardwareSerializer(self.hardware)
         self.assertEqual(hardware_serializer.data["quantity_remaining"], 4)
@@ -326,6 +351,9 @@ class OrderListSerializerTestCase(TestCase):
             "team_id": self.team.id,
             "team_code": self.team.team_code,
             "status": "Cart",
+            "total_credits": 0,
+            "packing_admin_id": None,
+            "packing_admin_name": None,
             "items": [],
             "created_at": serializers.DateTimeField().to_representation(
                 order.created_at
@@ -349,7 +377,10 @@ class OrderListSerializerTestCase(TestCase):
         item_1 = OrderItem.objects.create(
             order=order, hardware=self.hardware, part_returned_health="Healthy"
         )
-        item_2 = OrderItem.objects.create(order=order, hardware=self.other_hardware,)
+        item_2 = OrderItem.objects.create(
+            order=order,
+            hardware=self.other_hardware,
+        )
         self.hardware.refresh_from_db()
         self.other_hardware.refresh_from_db()
         order_serializer = OrderListSerializer(order).data
@@ -358,6 +389,9 @@ class OrderListSerializerTestCase(TestCase):
             "team_id": self.team.id,
             "team_code": self.team.team_code,
             "status": "Cart",
+            "total_credits": 0,
+            "packing_admin_id": None,
+            "packing_admin_name": None,
             "items": [
                 {
                     "id": item_1.id,

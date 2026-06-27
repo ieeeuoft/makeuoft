@@ -4,6 +4,7 @@ hackathon_site URL Configuration
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.0/topics/http/urls/
 """
+
 from django.contrib import admin
 from django.urls import path, include  # re_path is imported later only for DEBUG block
 from django.conf import settings
@@ -19,12 +20,14 @@ from registration.views import ResumeView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("api.urls", namespace="api")),
-
     # OpenAPI schema & docs (drf-spectacular)
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path(
+        "api/docs/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
-
     path("registration/", include("registration.urls", namespace="registration")),
 ]
 

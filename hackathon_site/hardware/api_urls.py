@@ -21,6 +21,14 @@ urlpatterns = [
         views.HardwareDetailView.as_view(),
         name="hardware-detail",
     ),
-    path("orders/<int:pk>/", views.OrderDetailView.as_view(), name="order-detail",),
-    path("order_items/", views.OrderItemListView.as_view(), name="order-item-list",),
+    path(
+        "orders/<int:pk>/",
+        views.OrderDetailView.as_view(),
+        name="order-detail",
+    ),
+    path(
+        "order_items/",
+        views.OrderItemListView.as_view(),
+        name="order-item-list",
+    ),
 ]

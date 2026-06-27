@@ -823,7 +823,8 @@ class UserSerializerTestCase(TestCase):
         user.groups.add(group)
 
         Profile.objects.create(
-            user=user, team=team,
+            user=user,
+            team=team,
         )
 
         user_serialized = UserSerializer(user).data
@@ -849,7 +850,8 @@ class UserInProfileSerializerTestCase(TestCase):
         user = User.objects.create()
 
         Profile.objects.create(
-            user=user, team=team,
+            user=user,
+            team=team,
         )
 
         user_serialized = UserInProfileSerializer(user).data
@@ -937,7 +939,6 @@ class CreateProfileSerializerTestCase(TestCase):
             "school": "UofT",
             "study_level": "other",
             "graduation_year": 2020,
-            "what_hackathon_experience": "hi",
             "why_participate": "there",
             "what_technical_experience": "foo",
             "conduct_agree": True,
