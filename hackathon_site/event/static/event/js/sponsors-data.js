@@ -6,27 +6,27 @@ window.SPONSORS_DATA = [
     {
         name: "Qualcomm",
         logo: "event/images/sponsors/qualcomm.png",
-        website: "https://www.qualcomm.com"
+        website: "https://www.qualcomm.com",
     },
     {
         name: "Alphawave Semi",
         logo: "event/images/sponsors/alphawave.png",
-        website: "https://awavesemi.com"
+        website: "https://awavesemi.com",
     },
     {
         name: "Marvell",
         logo: "event/images/sponsors/marvell.png",
-        website: "https://www.marvell.com"
+        website: "https://www.marvell.com",
     },
     {
         name: "MLH",
         logo: "event/images/sponsors/mlh.png",
-        website: "https://mlh.io"
+        website: "https://mlh.io",
     },
     {
         name: "Titan Haptics",
         logo: "event/images/sponsors/titan.png",
-        website: "https://titanhaptics.com"
+        website: "https://titanhaptics.com",
     },
 
     /***
@@ -54,17 +54,17 @@ window.SPONSORS_DATA = [
     {
         name: "Altera",
         logo: "event/images/sponsors/altera.png",
-        website: "https://www.altera.com"
+        website: "https://www.altera.com",
     },
     {
         name: "University of Toronto ECE Department",
         logo: "event/images/sponsors/ece.png",
-        website: "https://www.ece.utoronto.ca"
+        website: "https://www.ece.utoronto.ca",
     },
     {
         name: "Edge Impulse",
         logo: "event/images/sponsors/edge_impulse.png",
-        website: "https://www.edgeimpulse.com"
+        website: "https://www.edgeimpulse.com",
     },
     // Add more sponsors here:
     // {
@@ -73,4 +73,3 @@ window.SPONSORS_DATA = [
     //     website: "https://www.company.com"
     // },
 ];
-

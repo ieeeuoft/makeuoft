@@ -386,7 +386,9 @@ class TeamReviewAdmin(admin.ModelAdmin):
 
             # Update the active reviewers cache set, 20 minute TTL
             cache.set(
-                active_reviewers_set_cache_key, active_reviewers, timeout=60 * 20,
+                active_reviewers_set_cache_key,
+                active_reviewers,
+                timeout=60 * 20,
             )
 
         team_review_page = reverse(

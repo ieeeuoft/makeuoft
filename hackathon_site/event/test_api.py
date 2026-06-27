@@ -579,16 +579,30 @@ class CreateProfileViewTestCase(SetupUserMixin, APITestCase):
     def test_not_including_required_fields(self):
         self._review(application=self._apply_as_user(self.user, rsvp=True))
         self._login()
-        response = self.client.post(self.view, {"e_signature": "user signature",})
+        response = self.client.post(
+            self.view,
+            {
+                "e_signature": "user signature",
+            },
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        response = self.client.post(self.view, {"acknowledge_rules": True,})
+        response = self.client.post(
+            self.view,
+            {
+                "acknowledge_rules": True,
+            },
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_acknowledge_rules_is_false(self):
         self._review(application=self._apply_as_user(self.user, rsvp=True))
         self._login()
         response = self.client.post(
-            self.view, {"e_signature": "user signature", "acknowledge_rules": False,},
+            self.view,
+            {
+                "e_signature": "user signature",
+                "acknowledge_rules": False,
+            },
         )
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -600,7 +614,11 @@ class CreateProfileViewTestCase(SetupUserMixin, APITestCase):
         self._review(application=self._apply_as_user(self.user, rsvp=True))
         self._login()
         response = self.client.post(
-            self.view, {"e_signature": "", "acknowledge_rules": True,},
+            self.view,
+            {
+                "e_signature": "",
+                "acknowledge_rules": True,
+            },
         )
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -703,10 +721,12 @@ class CurrentTeamOrderListViewTestCase(SetupUserMixin, APITestCase):
             picture="/picture/location/other",
         )
         OrderItem.objects.create(
-            order=self.order, hardware=self.hardware,
+            order=self.order,
+            hardware=self.hardware,
         )
         OrderItem.objects.create(
-            order=self.order, hardware=self.other_hardware,
+            order=self.order,
+            hardware=self.other_hardware,
         )
 
         # making extra data to test if team data is being filtered
@@ -715,10 +735,12 @@ class CurrentTeamOrderListViewTestCase(SetupUserMixin, APITestCase):
             status="Submitted", team=self.team2, request={"hardware": []}
         )
         OrderItem.objects.create(
-            order=self.order_2, hardware=self.hardware,
+            order=self.order_2,
+            hardware=self.hardware,
         )
         OrderItem.objects.create(
-            order=self.order_2, hardware=self.other_hardware,
+            order=self.order_2,
+            hardware=self.other_hardware,
         )
 
         self.view = reverse("api:event:team-orders")
@@ -768,7 +790,8 @@ class TeamIncidentListViewPostTestCase(SetupUserMixin, APITestCase):
             picture="/picture/location",
         )
         self.order_item = OrderItem.objects.create(
-            order=self.order, hardware=self.hardware,
+            order=self.order,
+            hardware=self.hardware,
         )
 
         self.request_data = {
@@ -806,7 +829,8 @@ class TeamIncidentListViewPostTestCase(SetupUserMixin, APITestCase):
             request={"hardware": [{"id": 1, "quantity": 2}]},
         )
         self.order_item2 = OrderItem.objects.create(
-            order=self.order2, hardware=self.other_hardware,
+            order=self.order2,
+            hardware=self.other_hardware,
         )
 
         request_data = {
@@ -1050,7 +1074,8 @@ class TeamOrderDetailViewTestCase(SetupUserMixin, APITestCase):
         )
         response = self.client.patch(self._build_view(order.id), self.request_data)
         self.assertEqual(
-            response.json(), {"status": ["Cannot change the status for this order."]},
+            response.json(),
+            {"status": ["Cannot change the status for this order."]},
         )
         self.assertFalse(
             self.request_data["status"] == Order.objects.get(id=self.pk).status
@@ -1066,7 +1091,8 @@ class TeamOrderDetailViewTestCase(SetupUserMixin, APITestCase):
         )
         response = self.client.patch(self._build_view(order.id), self.request_data)
         self.assertEqual(
-            response.json(), {"detail": "Can only change the status of your orders."},
+            response.json(),
+            {"detail": "Can only change the status of your orders."},
         )
         self.assertFalse(
             self.request_data["status"] == Order.objects.get(id=self.pk).status

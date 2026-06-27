@@ -11,9 +11,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="incident", name="order",),
-        migrations.RemoveField(model_name="order", name="hardware",),
-        migrations.RemoveField(model_name="order", name="part_returned_health",),
+        migrations.RemoveField(
+            model_name="incident",
+            name="order",
+        ),
+        migrations.RemoveField(
+            model_name="order",
+            name="hardware",
+        ),
+        migrations.RemoveField(
+            model_name="order",
+            name="part_returned_health",
+        ),
         migrations.AlterField(
             model_name="order",
             name="status",

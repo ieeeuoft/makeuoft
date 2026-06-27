@@ -18,6 +18,7 @@ postgres, that would pose an issue in production but will not be
 caught during testing. These should be caught by a staging environment,
 and by running your code before you merge it.
 """
+
 from hackathon_site.settings import *
 
 # Convenient for some methods to test, since DEBUG=0 in testing

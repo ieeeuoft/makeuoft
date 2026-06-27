@@ -202,7 +202,7 @@ class Application(models.Model):
         null=False,
         validators=[
             validators.RegexValidator(
-                r"^\+?\d[\d\s()-]{7,}$",
+                r"^\+?(?:[\s()-]*\d){10,13}[\s()-]*$",
                 message="Enter a valid phone number.",
             )
         ],

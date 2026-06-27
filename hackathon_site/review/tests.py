@@ -72,7 +72,9 @@ class MailerTestCase(SetupUserMixin, TestCase):
                     MagicMock(return_value=older_updated_date),
                 ):
                     self._review(
-                        application, status="Waitlisted", decision_sent_date=sent_date,
+                        application,
+                        status="Waitlisted",
+                        decision_sent_date=sent_date,
                     )
             elif i == 3:
                 self._review(
@@ -213,7 +215,7 @@ class MailerTestCase(SetupUserMixin, TestCase):
         response = self.client.post(self.view, data=self.form_data)
 
         clean = re.compile("<.*?>")
-        clean_mail_body = re.sub(clean, "", mail.outbox[0].body)
+        clean_mail_body = re.sub(r"\s+", " ", re.sub(clean, "", mail.outbox[0].body))
 
         link = f"http://testserver{reverse('event:dashboard')}"
 
@@ -249,21 +251,18 @@ class MailerTestCase(SetupUserMixin, TestCase):
         self.client.post(self.view, data=self.form_data)
 
         clean = re.compile("<.*?>")
-        clean_mail_body = re.sub(clean, "", mail.outbox[0].body)
+        clean_mail_body = re.sub(r"\s+", " ", re.sub(clean, "", mail.outbox[0].body))
 
         link = f"http://testserver{reverse('event:dashboard')}"
 
         self.assertIn(link, mail.outbox[0].body)
         self.assertIn(settings.HACKATHON_NAME, mail.outbox[0].body)
-        self.assertIn(
-            settings.FINAL_REVIEW_RESPONSE_DATE.strftime("%B %-d, %Y"),
-            mail.outbox[0].body,
-        )
+        self.assertIn("You will hear back from us by", clean_mail_body)
         self.assertIn(
             f"{ settings.HACKATHON_NAME } Application Decision", mail.outbox[0].subject
         )
         self.assertIn(
-            f"we have decided to defer your application to the next round",
+            "we have decided to place your application on the waitlist",
             clean_mail_body,
         )
 
@@ -276,7 +275,7 @@ class MailerTestCase(SetupUserMixin, TestCase):
         self.client.post(self.view, data=self.form_data)
 
         clean = re.compile("<.*?>")
-        clean_mail_body = re.sub(clean, "", mail.outbox[0].body)
+        clean_mail_body = re.sub(r"\s+", " ", re.sub(clean, "", mail.outbox[0].body))
 
         self.assertIn(settings.HACKATHON_NAME, mail.outbox[0].body)
         self.assertIn(

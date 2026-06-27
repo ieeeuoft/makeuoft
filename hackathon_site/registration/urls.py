@@ -16,7 +16,11 @@ urlpatterns = [
         ),
         name="signup_complete",
     ),
-    path("signup/closed/", views.SignUpClosedView.as_view(), name="signup_closed",),
+    path(
+        "signup/closed/",
+        views.SignUpClosedView.as_view(),
+        name="signup_closed",
+    ),
     path(
         "activate/<str:activation_key>/",
         views.ActivationView.as_view(),
