@@ -138,7 +138,7 @@ class IndexViewTestCase(SetupUserMixin, TestCase):
         """The public MLH interest form and its checkboxes render on the page."""
         response = self.client.get(self.view)
         self.assertContains(response, "Register Your Interest")
-        self.assertContains(response, "MLH code of conduct")
+        self.assertContains(response, "MLH Code of Conduct")
         self.assertContains(response, 'name="conduct_agree"')
         self.assertContains(response, 'name="logistics_agree"')
         self.assertContains(response, 'name="email_agree"')
