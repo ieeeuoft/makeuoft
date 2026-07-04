@@ -6,23 +6,34 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0013_auto_20251128_1027'),
+        ("registration", "0013_auto_20251128_1027"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='application',
-            name='conduct_agree',
-            field=models.BooleanField(default=False, help_text='I have read and agree to the <a href="https://github.com/MLH/mlh-policies/blob/main/code-of-conduct.md" rel="noopener noreferrer" target="_blank">MLH Code of Conduct</a>.'),
+            model_name="application",
+            name="conduct_agree",
+            field=models.BooleanField(
+                default=False,
+                help_text='I have read and agree to the <a href="https://github.com/MLH/mlh-policies/blob/main/code-of-conduct.md" rel="noopener noreferrer" target="_blank">MLH Code of Conduct</a>.',
+            ),
         ),
         migrations.AlterField(
-            model_name='application',
-            name='email_agree',
-            field=models.BooleanField(blank=True, default=False, help_text='I authorize MLH + DEV to send me occasional emails about relevant events, career opportunities, and community announcements.', null=True),
+            model_name="application",
+            name="email_agree",
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text="I authorize MLH + DEV to send me occasional emails about relevant events, career opportunities, and community announcements.",
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='application',
-            name='logistics_agree',
-            field=models.BooleanField(default=False, help_text='I authorize you to share my application/registration information with Major League Hacking for event administration, ranking, and administration (including the creation of linked accounts on MLH and <a href="https://dev.to" rel="noopener noreferrer" target="_blank">DEV (dev.to)</a>) in line with the <a href="https://github.com/MLH/mlh-policies/blob/main/privacy-policy.md" rel="noopener noreferrer" target="_blank">MLH Privacy Policy</a>. I further agree to the terms of both the <a href="https://github.com/MLH/mlh-policies/blob/main/contest-terms.md" rel="noopener noreferrer" target="_blank">MLH Contest Terms and Conditions</a> and the <a href="https://github.com/MLH/mlh-policies/blob/main/privacy-policy.md" rel="noopener noreferrer" target="_blank">MLH Privacy Policy</a>.'),
+            model_name="application",
+            name="logistics_agree",
+            field=models.BooleanField(
+                default=False,
+                help_text='I authorize you to share my application/registration information with Major League Hacking for event administration, ranking, and administration (including the creation of linked accounts on MLH and <a href="https://dev.to" rel="noopener noreferrer" target="_blank">DEV (dev.to)</a>) in line with the <a href="https://github.com/MLH/mlh-policies/blob/main/privacy-policy.md" rel="noopener noreferrer" target="_blank">MLH Privacy Policy</a>. I further agree to the terms of both the <a href="https://github.com/MLH/mlh-policies/blob/main/contest-terms.md" rel="noopener noreferrer" target="_blank">MLH Contest Terms and Conditions</a> and the <a href="https://github.com/MLH/mlh-policies/blob/main/privacy-policy.md" rel="noopener noreferrer" target="_blank">MLH Privacy Policy</a>.',
+            ),
         ),
     ]
