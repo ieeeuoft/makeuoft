@@ -51,7 +51,7 @@
                                 </li>
                             {% else %}
                                 <li>
-                                    <a href="{{ url("event:login") }}" class="btn-small waves-effect waves-light colorBtn">Login</a>
+                                    <a href="{% if request.path == url('event:index') %}#interest{% else %}{{ url('event:index') }}#interest{% endif %}" class="btn-small waves-effect waves-light colorBtn">Register Your Interest</a>
                                 </li>
                             {% endif %}
                         {% endblock %}
