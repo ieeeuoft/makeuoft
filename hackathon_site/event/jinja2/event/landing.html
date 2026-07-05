@@ -103,43 +103,6 @@
     <br />
 
     <div class="container colorScroll" data-background-color="#fff">
-        <div class="section scrollspy" id="about">
-            <div class="row">
-                <div class="col m12 l7" id="aboutText">
-                    <h3 class="center">About us</h3>
-
-                    <p class="center">
-                        Join us at MakeUofT to transform your ideas into reality! This year (2026), the themes for MakeUofT are: Valentines Day, Audio/Music, and Survival (D-day)!
-                    </p>
-                    <p class="center">
-                        Our in-person makeathon is designed for everyone to participate, from beginners to experts. To help facilitate your learning experience, we will have mentors available throughout the event to assist you! You will also be able to interact with some of the top companies in the industry through our networking booths.
-                    </p>
-                </div>
-
-               <div class="col m12 l5 flexColCenter" id="countdown">
-                    <h3 class="center" id="countdownTitle"></h3>
-                    <div class="countdown">
-                        <div class="col countdownNum">
-                            <div class="countdownWhiteLine"></div>
-                            <p id="day1"></p>
-                        </div>
-                        <div class="col countdownNum">
-                            <div class="countdownWhiteLine"></div>
-                            <p id="day2"></p>
-                        </div>
-                        <div class="col countdownNum">
-                            <div class="countdownWhiteLine"></div>
-                            <p id="day3"></p>
-                        </div>
-                    </div>
-                    <div class="col center countdownDays" id="countdownUnit">Days</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <br /><br /><br />
-
-    <div class="container colorScroll" data-background-color="#fff">
         <div class="section scrollspy" id="interest">
             {% set msgs = get_messages(request) %}
             {# Open the panel automatically when there's feedback to show. #}
@@ -202,6 +165,42 @@
                             </div>
                         </li>
                     </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container colorScroll" data-background-color="#fff">
+        <div class="section scrollspy" id="about">
+            <div class="row">
+                <div class="col m12 l7" id="aboutText">
+                    <h3 class="center">About us</h3>
+
+                    <p class="center">
+                        Join us at MakeUofT to transform your ideas into reality! This year (2026), the themes for MakeUofT are: Valentines Day, Audio/Music, and Survival (D-day)!
+                    </p>
+                    <p class="center">
+                        Our in-person makeathon is designed for everyone to participate, from beginners to experts. To help facilitate your learning experience, we will have mentors available throughout the event to assist you! You will also be able to interact with some of the top companies in the industry through our networking booths.
+                    </p>
+                </div>
+
+               <div class="col m12 l5 flexColCenter" id="countdown">
+                    <h3 class="center" id="countdownTitle"></h3>
+                    <div class="countdown">
+                        <div class="col countdownNum">
+                            <div class="countdownWhiteLine"></div>
+                            <p id="day1"></p>
+                        </div>
+                        <div class="col countdownNum">
+                            <div class="countdownWhiteLine"></div>
+                            <p id="day2"></p>
+                        </div>
+                        <div class="col countdownNum">
+                            <div class="countdownWhiteLine"></div>
+                            <p id="day3"></p>
+                        </div>
+                    </div>
+                    <div class="col center countdownDays" id="countdownUnit">Days</div>
                 </div>
             </div>
         </div>
