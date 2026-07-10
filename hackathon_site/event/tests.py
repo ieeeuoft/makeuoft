@@ -85,7 +85,7 @@ class IndexViewTestCase(SetupUserMixin, TestCase):
     """
     Tests for the landing page template.
 
-    We test for correct rendering and rendering of Logout/Register Your Interest buttons
+    We test for correct rendering and rendering of Logout/Login/Register Your Interest buttons
     """
 
     def setUp(self):
@@ -95,10 +95,18 @@ class IndexViewTestCase(SetupUserMixin, TestCase):
     def test_index_view(self):
         response = self.client.get(self.view)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, "Register Your Interest")
-        self.assertContains(response, 'href="#interest"')
+        self.assertContains(response, reverse("event:login"))
         self.assertContains(response, "Apply")
         self.assertContains(response, reverse("registration:signup"))
+
+    @patch("hackathon_site.utils.is_registration_open")
+    def test_register_your_interest_nav_when_registration_closed(
+        self, mock_is_registration_open
+    ):
+        mock_is_registration_open.return_value = False
+        response = self.client.get(self.view)
+        self.assertContains(response, 'href="#interest"')
+        self.assertNotContains(response, reverse("event:login"))
 
     def test_logout_button_renders_when_logged_in(self):
         self._login()
