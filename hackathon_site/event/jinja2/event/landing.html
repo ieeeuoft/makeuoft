@@ -58,13 +58,9 @@
         <li>
             <a href="{{ url("event:logout") }}" class="btn-small waves-effect waves-light colorBtn">Logout</a>
         </li>
-    {% elif not is_registration_open() %}
-        <li>
-            <a href="#interest" class="btn-small waves-effect waves-light colorBtn">Register Your Interest</a>
-        </li>
     {% else %}
         <li>
-            <a href="{{ url("event:login") }}" class="btn-small waves-effect waves-light colorBtn">Login</a>
+            <a href="#interest" class="btn-small waves-effect waves-light colorBtn">Register Your Interest</a>
         </li>
     {% endif %}
 {% endblock %}
