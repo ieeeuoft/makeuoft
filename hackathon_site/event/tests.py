@@ -85,7 +85,7 @@ class IndexViewTestCase(SetupUserMixin, TestCase):
     """
     Tests for the landing page template.
 
-    We test for correct rendering and rendering of Logout/Login buttons
+    We test for correct rendering and rendering of Logout/Register Your Interest buttons
     """
 
     def setUp(self):
@@ -95,7 +95,8 @@ class IndexViewTestCase(SetupUserMixin, TestCase):
     def test_index_view(self):
         response = self.client.get(self.view)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, "Login")
+        self.assertContains(response, "Register Your Interest")
+        self.assertContains(response, 'href="#interest"')
         self.assertContains(response, "Apply")
         self.assertContains(response, reverse("registration:signup"))
 
