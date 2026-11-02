@@ -149,19 +149,25 @@ function setCounter(countDownDate) {
             const cell = document.createElement("span");
             if (column >= 48) cell.classList.add("faq-desktop-column");
             if (column >= 32) cell.classList.add("faq-wide-column");
-            const probability = distance < lengths[column]
-                ? 0.88 - 0.25 * (distance / rows) : 0.04;
+            const probability =
+                distance < lengths[column] ? 0.88 - 0.25 * (distance / rows) : 0.04;
             if (random() < probability) {
                 cell.textContent = random() < 0.5 ? "0" : "1";
-                const opacity = Math.max(0.05,
-                    0.62 * Math.pow(1 - distance / rows, 1.4) + 0.06
-                ) * (0.6 + random() * 0.6);
+                const opacity =
+                    Math.max(0.05, 0.62 * Math.pow(1 - distance / rows, 1.4) + 0.06) *
+                    (0.6 + random() * 0.6);
                 cell.style.setProperty("--o", opacity.toFixed(2));
                 if (random() < 0.07) {
                     cell.classList.add("pulse");
-                    cell.style.setProperty("--k", Math.min(1, opacity + 0.5).toFixed(2));
+                    cell.style.setProperty(
+                        "--k",
+                        Math.min(1, opacity + 0.5).toFixed(2)
+                    );
                     cell.style.setProperty("--t", (5 + random() * 5).toFixed(1) + "s");
-                    cell.style.setProperty("--d", "-" + (random() * 8).toFixed(1) + "s");
+                    cell.style.setProperty(
+                        "--d",
+                        "-" + (random() * 8).toFixed(1) + "s"
+                    );
                 }
             }
             fragment.appendChild(cell);
