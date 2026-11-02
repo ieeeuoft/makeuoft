@@ -9,6 +9,7 @@
     const registrationCloseDate = new Date("{{ localtime(registration_close_date)|strftime('%b %-d, %Y, %H:%M:%S') }}");
     const eventStartDate = new Date("{{ localtime(event_start_date)|strftime('%b %-d, %Y, %H:%M:%S') }}");
 </script>
+{% include "event/faq_styles.html" %}
 <!-- Select2 CSS (MLH interest form) -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
 <link rel="stylesheet" type="text/css" href="{{ static('event/styles/css/select2.css') }}"/>
@@ -291,105 +292,48 @@
     <br /><br /><br />
 
     <div class="container colorScroll" data-background-color="#003650">
-        <div class="section scrollspy" id="faq">
-            <div class="row">
-                <div class="col s12 m12 center">
-                    <h3 class="center">FAQ</h3>
+        <section class="section scrollspy faq-panel" id="faq" aria-labelledby="faq-title">
+            <div class="faq-binary" aria-hidden="true"></div>
+            <h3 class="center" id="faq-title">FAQ</h3>
+            <div class="faq-grid">
+                <div class="faq-column">
+                    <details class="faq-card">
+                        <summary><span>What is a makeathon?</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+                        <div class="faq-answer">A makeathon is like a hackathon but more hands-on. It involves the integration of hardware and software to build a working device that could be used in any application from gaming to solving a real life problem! As such, we require all participants to build some sort of physical device that is at the very least electrically powered or computer programmed.</div>
+                    </details>
+                    <details class="faq-card">
+                        <summary><span>What if I have no experience? Can I still come?</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+                        <div class="faq-answer">Yes! MakeUofT is for everyone, from beginners to veterans. You will have the opportunity to learn technical skills from industry mentors. Also, if you ever get stuck on your project just ask one of the mentors!</div>
+                    </details>
+                    <details class="faq-card">
+                        <summary><span>Will we receive hardware for the project?</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+                        <div class="faq-answer">Yes! Once you are accepted, each team will be able to select and sign out a wide range of hardware on our Hardware Signout Site <a href="https://hardware.makeuoft.ca" target="_blank">hardware.makeuoft.ca</a>. The site opens for ordering on the first day of the hackathon, you must be in a team of 2 to 4 to order from our inventory.</div>
+                    </details>
+                    <details class="faq-card">
+                        <summary><span>How do I apply with a team?</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+                        <div class="faq-answer">You only need to fill out your individual application, receive an acceptance, and form a team with other accepted hackers. Teams are not required in advance; you're welcome to form a team with other hackers on the first day of the event! When you demo, you will provide the names of all of your team members.</div>
+                    </details>
                 </div>
-                <div class="col s12 m6">
-                    <ul class="collapsible expandable">
-                        <li>
-                            <div class="collapsible-header">
-                                What is a makeathon?
-                            </div>
-                            <div class="collapsible-body">
-                                <span>
-                                    A makeathon is like a hackathon but more hands-on. It involves the integration of hardware and software to build a working device that could be used in any application from gaming to solving a real life problem! As such, we require all participants to build some sort of physical device that is at the very least electrically powered or computer programmed.
-                                </span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header">
-                                What if I have no experience? Can I still come?
-                            </div>
-                            <div class="collapsible-body">
-                                <span>
-                                    Yes! MakeUofT is for everyone, from beginners to veterans. You will have the opportunity to learn technical skills from industry mentors. Also, if you ever get stuck on your project just ask one of the mentors!
-                                </span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header">
-                                Will we receive hardware for the project?
-                            </div>
-                            <div class="collapsible-body">
-                                <span>
-                                    Yes! Once you are accepted, each team will be able to select and sign out a wide range of hardware on our Hardware Signout Site <a href="https://hardware.makeuoft.ca" target="_blank">hardware.makeuoft.ca</a>. The site opens for ordering on the first day of the hackathon, you must be in a team of 2 to 4 to order from our inventory.
-                                </span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header">
-                                How do I apply with a team?
-                            </div>
-                            <div class="collapsible-body">
-                                <span>
-                                    You only need to fill out your individual application, receive an acceptance, and form a team with other accepted hackers. Teams are not required in advance; you're welcome to form a team with other hackers on the first day of the event! When you demo, you will provide the names of all of your team members.
-                                </span>
-                            </div>
-                        </li>
-
-                    </ul>
-                </div>
-
-                <div class="col s12 m6">
-                    <ul class="collapsible">
-
-                        <li>
-                            <div class="collapsible-header">
-                                Who can apply? When is the deadline to apply?
-                            </div>
-                            <div class="collapsible-body">
-                                <span>
-                                    We're welcoming any students pursuing post-secondary education! Applications will open later this year. Acceptances will be internally decided on a rolling basis, so apply early to maximize your chances of getting accepted!
-                                </span>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="collapsible-header">
-                                What size of team is allowed?
-                            </div>
-                            <div class="collapsible-body">
-                                <span>
-                                    Feel free to make a team with 2 to 4 members, including yourself.
-                                </span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header">
-                                When can I expect to hear back?
-                            </div>
-                            <div class="collapsible-body">
-                                <span>
-                                    Acceptances will be sent out on a rolling basis, so apply early!
-                                </span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header">
-                                Is the makeathon in-person?
-                            </div>
-                            <div class="collapsible-body">
-                                <span>
-                                    This year (2026), MakeUofT will be fully in person. The event will be hosted at the University of Toronto St.George Campus in Myhal Centre for Engineering Innovation and Entrepreneurship (MY).
-                                </span>
-                            </div>
-                        </li>
-                    </ul>
+                <div class="faq-column">
+                    <details class="faq-card">
+                        <summary><span>Who can apply? When is the deadline to apply?</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+                        <div class="faq-answer">We're welcoming any students pursuing post-secondary education! Applications will open later this year. Acceptances will be internally decided on a rolling basis, so apply early to maximize your chances of getting accepted!</div>
+                    </details>
+                    <details class="faq-card">
+                        <summary><span>What size of team is allowed?</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+                        <div class="faq-answer">Feel free to make a team with 2 to 4 members, including yourself.</div>
+                    </details>
+                    <details class="faq-card">
+                        <summary><span>When can I expect to hear back?</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+                        <div class="faq-answer">Acceptances will be sent out on a rolling basis, so apply early!</div>
+                    </details>
+                    <details class="faq-card">
+                        <summary><span>Is the makeathon in-person?</span><span class="faq-arrow" aria-hidden="true"></span></summary>
+                        <div class="faq-answer">This year (2027), MakeUofT will be fully in person. The event will be hosted at the University of Toronto St.George Campus in Myhal Centre for Engineering Innovation and Entrepreneurship (MY).</div>
+                    </details>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
     <br /><br /><br />
 
@@ -493,7 +437,7 @@
 </script>
 <script src="{{ static('event/js/sponsors-data.js') }}"></script>
 <script src="{{ static('event/js/sponsors-component.js') }}"></script>
-<script src="{{ static('event/js/landing.js') }}"></script>
+<script src="{{ static('event/js/landing.js') }}?v=faq-slide-9"></script>
 
 <!-- Select2 JS for the MLH interest form -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
