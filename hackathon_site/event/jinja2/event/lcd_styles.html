@@ -6,6 +6,14 @@
     overflow: clip;
     padding-bottom: 230px;
 }
+.hero-chip {
+    position: absolute;
+    top: clamp(60px, 8vw, 120px);
+    right: 11.2%;
+    width: clamp(157.5px, 20.25vw, 306px);
+    height: auto;
+    pointer-events: none;
+}
 .lcd-definition {
     position: absolute;
     width: clamp(260px, 28vw, 420px);
@@ -77,8 +85,22 @@
     white-space: nowrap;
     border: 0;
 }
+@media (max-width: 992px) {
+    .landingBackground { padding-bottom: 270px; }
+    .hero-chip {
+        top: auto;
+        bottom: 240px;
+        width: 226.8px;
+    }
+}
+@media (min-width: 601px) and (max-width: 992px) {
+    .lcd-definition { width: 300px; }
+}
 @media (max-width: 600px) {
     .landingBackground { padding-bottom: 210px; }
+    .hero-chip {
+        display: none;
+    }
     .lcd-definition {
         right: 8%;
         width: min(82vw, 360px);
