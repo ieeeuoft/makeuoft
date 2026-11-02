@@ -15,7 +15,7 @@
         if (startedAt === undefined) startedAt = now;
         const count = Math.min(
             sentence.length,
-            Math.floor((now - startedAt) / millisecondsPerCharacter),
+            Math.floor((now - startedAt) / millisecondsPerCharacter)
         );
         visible.textContent = sentence.slice(0, count);
         if (count < sentence.length) requestAnimationFrame(type);
