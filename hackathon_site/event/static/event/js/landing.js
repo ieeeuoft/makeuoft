@@ -127,3 +127,80 @@ function setCounter(countDownDate) {
     $("#day2").html(Math.floor(days / 10) % 10);
     $("#day3").html(days % 10);
 }
+// Bottom-anchored binary rain field bg
+(function () {
+    const box = document.querySelector("#faq .faq-binary");
+    if (!box) return;
+    const columns = 72;
+    const rows = 29;
+    // Seeded randomness keeps the layout stable between page loads.
+    let seed = 2026;
+    function random() {
+        seed = (seed * 16807) % 2147483647;
+        return (seed - 1) / 2147483646;
+    }
+    const lengths = Array.from({ length: columns }, () =>
+        Math.floor(14 + Math.pow(random(), 0.25) * (rows - 14))
+    );
+    const fragment = document.createDocumentFragment();
+    for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+            const distance = rows - 1 - row;
+            const cell = document.createElement("span");
+            if (column >= 48) cell.classList.add("faq-desktop-column");
+            if (column >= 32) cell.classList.add("faq-wide-column");
+            const probability = distance < lengths[column]
+                ? 0.88 - 0.25 * (distance / rows) : 0.04;
+            if (random() < probability) {
+                cell.textContent = random() < 0.5 ? "0" : "1";
+                const opacity = Math.max(0.05,
+                    0.62 * Math.pow(1 - distance / rows, 1.4) + 0.06
+                ) * (0.6 + random() * 0.6);
+                cell.style.setProperty("--o", opacity.toFixed(2));
+                if (random() < 0.07) {
+                    cell.classList.add("pulse");
+                    cell.style.setProperty("--k", Math.min(1, opacity + 0.5).toFixed(2));
+                    cell.style.setProperty("--t", (5 + random() * 5).toFixed(1) + "s");
+                    cell.style.setProperty("--d", "-" + (random() * 8).toFixed(1) + "s");
+                }
+            }
+            fragment.appendChild(cell);
+        }
+    }
+    box.appendChild(fragment);
+})();
+// Animate answer slideout cards while preserving keyboard and no-JS support.
+(function () {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    document.querySelectorAll("#faq .faq-card").forEach(function (card) {
+        const summary = card.querySelector("summary");
+        let animation = null;
+        let expanded = card.open;
+        summary.addEventListener("click", function (event) {
+            if (reducedMotion.matches || !card.animate) return;
+            event.preventDefault();
+            // Native toggles can change the open state while reduced motion is enabled.
+            if (!animation) expanded = card.open;
+            const startHeight = card.getBoundingClientRect().height;
+            if (animation) {
+                animation.cancel();
+                animation = null;
+            }
+            expanded = !expanded;
+            // Measure both natural states, keeping the answer rendered to slide closed.
+            card.open = expanded;
+            const endHeight = card.getBoundingClientRect().height;
+            card.open = true;
+            summary.setAttribute("aria-expanded", String(expanded));
+            animation = card.animate(
+                { height: [startHeight + "px", endHeight + "px"] },
+                { duration: 300, easing: "cubic-bezier(0.4, 0, 0.2, 1)" }
+            );
+            animation.onfinish = function () {
+                card.open = expanded;
+                animation = null;
+                summary.removeAttribute("aria-expanded");
+            };
+        });
+    });
+})();

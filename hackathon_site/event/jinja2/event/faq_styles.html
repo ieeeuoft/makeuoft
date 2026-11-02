@@ -1,0 +1,172 @@
+<style>
+#faq.faq-panel {
+  position: relative;
+  isolation: isolate;
+  /* Expanding an answer should not make the browser shift the scroll position. */
+  overflow-anchor: none;
+  overflow: hidden;
+  padding: 42px 36px 48px;
+  border: 1px solid rgba(72, 160, 175, 0.65);
+  border-radius: 28px;
+  background: #003650;
+  color: #fff;
+}
+#faq.faq-panel h3 {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 40px;
+}
+
+.faq-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 24px;
+}
+
+.faq-column {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.faq-card {
+  /* Keep the top in normal flow and let only the bottom expand downward. */
+  flex-shrink: 0;
+  border: 1px solid #48a0af;
+  border-radius: 16px;
+  background: rgba(0, 54, 80, 0.94);
+  overflow: hidden;
+}
+.faq-card summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 72px;
+  padding: 14px 24px;
+  font-weight: 700;
+  line-height: 1.45;
+  cursor: pointer;
+  list-style: none;
+}
+.faq-card summary::-webkit-details-marker {
+  display: none;
+}
+.faq-card summary:hover {
+  background: rgba(72, 160, 175, 0.14);
+}
+.faq-card summary:focus-visible {
+  outline: 3px solid #f0ab3a;
+  outline-offset: -5px;
+}
+.faq-card[open] {
+  border-color: #f0ab3a;
+}
+.faq-card[open] .faq-arrow { transform: rotate(225deg); }
+.faq-arrow {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  flex-shrink: 0;
+  border-right: 2px solid #f0ab3a;
+  border-bottom: 2px solid #f0ab3a;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+.faq-answer {
+  padding: 0 24px 24px;
+  line-height: 1.7;
+  color: #ddeeff;
+}
+.faq-answer a {
+  color: #f0ab3a;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
+
+.faq-binary {
+  position: absolute;
+  z-index: 0;
+  inset: 33.333% 0 0;
+  display: grid;
+  grid-template-columns: repeat(72, minmax(0, 1fr));
+  grid-template-rows: repeat(29, minmax(18px, 1fr));
+  align-content: end;
+  overflow: hidden;
+  font: 15px/18px monospace;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  color: #5885a3;
+  opacity: 0.45;
+  mask-image: linear-gradient(to bottom, transparent, #000 35%);
+}
+.faq-binary span {
+  opacity: var(--o);
+}
+.faq-binary .pulse {
+  animation: faq-pulse var(--t) ease-in-out var(--d) infinite;
+}
+
+@keyframes faq-pulse {
+  0%, 100% {
+    opacity: var(--o);
+  }
+  50% {
+    opacity: var(--k);
+    text-shadow: 0 0 6px rgba(88, 133, 163, 0.4);
+  }
+}
+@media (max-width: 992px) {
+  .faq-binary {
+    grid-template-columns: repeat(48, minmax(0, 1fr));
+  }
+
+  .faq-binary .faq-desktop-column {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .faq-binary {
+    grid-template-columns: repeat(32, minmax(0, 1fr));
+  }
+
+  .faq-binary .faq-wide-column {
+    display: none;
+  }
+
+  #faq.faq-panel {
+    padding: 32px 16px 36px;
+    border-radius: 20px;
+  }
+
+  .faq-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .faq-card summary {
+    min-height: 64px;
+    padding: 12px 18px;
+  }
+
+  .faq-answer {
+    padding: 0 18px 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-binary .pulse {
+    animation: none;
+  }
+
+  .faq-arrow {
+    transition: none;
+  }
+}
+
+#faq summary::marker { content: ""; }
+</style>
