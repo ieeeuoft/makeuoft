@@ -85,6 +85,14 @@
     white-space: nowrap;
     border: 0;
 }
+@media (min-width: 993px) {
+    .hero-chip {
+        top: 120px;
+        width: 306px;
+        min-width: 306px;
+        max-width: none;
+    }
+}
 @media (max-width: 992px) {
     .landingBackground { padding-bottom: 270px; }
     .hero-chip {
@@ -94,7 +102,9 @@
     }
 }
 @media (min-width: 601px) and (max-width: 992px) {
+    .hero-chip { width: clamp(226.8px, calc(20.256vw + 105.06px), 306px); }
     .lcd-definition { width: 300px; }
+    .lcd-text { font-size: 12px; }
 }
 @media (max-width: 600px) {
     .landingBackground { padding-bottom: 210px; }

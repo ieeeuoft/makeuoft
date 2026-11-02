@@ -9,7 +9,7 @@
     stroke-dashoffset: 12;
     opacity: 0;
     filter: url(#glow);
-    animation: travel 9.333s linear infinite;
+    animation: travel 4.6665s linear infinite;
   }
   @keyframes travel {
     0%   { stroke-dashoffset: 12; opacity: 0; }
@@ -18,15 +18,15 @@
     88%  { stroke-dashoffset: -100; opacity: 0; }
     100% { stroke-dashoffset: -100; opacity: 0; }
   }
-  .d1 { animation-delay: -2s; animation-duration: 9.333s; }
-  .d2 { animation-delay: -7s; animation-duration: 10.67s; }
-  .d3 { animation-delay: -11s; animation-duration: 10s; }
-  .d4 { animation-delay: -4s; animation-duration: 12s; }
-  .d5 { animation-delay: -9s; animation-duration: 9.333s; }
-  .d6 { animation-delay: -13s; animation-duration: 11.33s; }
-  .d7 { animation-delay: -6s; animation-duration: 13.33s; }
-  .d8 { animation-delay: -15s; animation-duration: 10.67s; }
-  .d9 { animation-delay: -3s; animation-duration: 12.67s; }
+  .d1 { animation-delay: -1s; animation-duration: 4.6665s; }
+  .d2 { animation-delay: -3.5s; animation-duration: 5.335s; }
+  .d3 { animation-delay: -5.5s; animation-duration: 5s; }
+  .d4 { animation-delay: -2s; animation-duration: 6s; }
+  .d5 { animation-delay: -4.5s; animation-duration: 4.6665s; }
+  .d6 { animation-delay: -6.5s; animation-duration: 5.665s; }
+  .d7 { animation-delay: -3s; animation-duration: 6.665s; }
+  .d8 { animation-delay: -7.5s; animation-duration: 5.335s; }
+  .d9 { animation-delay: -1.5s; animation-duration: 6.335s; }
   @media (prefers-reduced-motion: reduce) {
     .pulse { animation: none; opacity: 0; }
   }
