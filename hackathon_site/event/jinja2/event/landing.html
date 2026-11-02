@@ -4,6 +4,9 @@
 {% block nav_background_color %}{% endblock %}
 
 {% block head_extends %}
+{% include "event/lcd_styles.html" %}
+<script defer src="{{ static('event/scripts/lcd-typewriter.js') }}"></script>
+<script defer src="{{ static('event/scripts/lcd-glow.js') }}"></script>
 <script>
     const registrationOpenDate = new Date("{{ localtime(registration_open_date)|strftime('%b %-d, %Y, %H:%M:%S') }}");
     const registrationCloseDate = new Date("{{ localtime(registration_close_date)|strftime('%b %-d, %Y, %H:%M:%S') }}");
@@ -58,18 +61,13 @@
 <a id="mlh-trust-badge" style="display:block;max-width:100px;min-width:60px;position:fixed;right:50px;top:0;width:10%;z-index:10000" href="https://mlh.io/seasons/2027/events" target="_blank"><img src="https://s3.amazonaws.com/logged-assets/trust-badge/2027/mlh-trust-badge-2027-white.svg" alt="Major League Hacking 2027 Hackathon Season" style="width:100%"></a>
 <div class="wrapper">
     <div class="landingBackground">
+        <img class="hero-chip" src="{{ static('event/images/hero-chip.svg') }}" alt="" aria-hidden="true" />
         <div class="container">
             <div class="section row" id="landing">
                 <div class="col container s12 m12 l7">
-                    <h1 class="row header">MakeUofT 2027</h1>
+                    <h1 class="row header">MakeUofT <span class="secondaryText">2027</span></h1>
                     <div class="row">
                         <h4 class="header s12">Canada's Largest Makeathon</h4>
-                        <div class="definition">
-                            <div class="definition-shape">
-                                <p>Make·a·thon</p>
-                            </div>
-                            <p>a hackathon where hardware-based projects are manifested </p>
-                        </div>
                     </div>
                     <div class="row">
                         <h5>University of Toronto</h5>
@@ -94,9 +92,21 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="col s12 m12 l5 landingImg">
-                    <img src="{{ static('event/images/landing.svg') }}" alt="landing"/>
-                </div>
+            </div>
+        </div>
+        <div class="lcd-definition" role="group" aria-label="Makeathon definition">
+            <div class="lcd-glow" aria-hidden="true"></div>
+            <svg class="lcd-wires" viewBox="0 0 300 400" preserveAspectRatio="none" aria-hidden="true">
+                <g fill="none" stroke="#c5b94d" stroke-width="2">
+                    <path d="M0 109 H170 L300 20" />
+                    <path d="M0 174 H300" />
+                    <path d="M0 237 H300" />
+                    <path d="M0 301 H170 L300 390" />
+                </g>
+            </svg>
+            <div class="lcd-board">
+                <img class="lcd-art" src="{{ static('event/images/lcd.png') }}" alt="MAKE A THON" />
+                <p class="lcd-text" data-lcd-typewriter>a hackathon where hardware-based projects are manifested.</p>
             </div>
         </div>
     </div>

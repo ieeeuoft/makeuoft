@@ -1,0 +1,123 @@
+<!-- Keep LCD layout with its template so cached/generated global CSS cannot omit it. -->
+<style>
+/* Clip wires without creating a formatting context that collides with navbar floats. */
+.landingBackground {
+    position: relative;
+    overflow: clip;
+    padding-bottom: 230px;
+}
+.hero-chip {
+    position: absolute;
+    top: clamp(60px, 8vw, 120px);
+    right: 11.2%;
+    width: clamp(157.5px, 20.25vw, 306px);
+    height: auto;
+    pointer-events: none;
+}
+.lcd-definition {
+    position: absolute;
+    width: clamp(260px, 28vw, 420px);
+    aspect-ratio: 837 / 400;
+    right: 12.2%;
+    bottom: 44px;
+    text-align: left;
+    isolation: isolate;
+}
+.lcd-glow {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    width: 190%;
+    aspect-ratio: 1;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background:
+        radial-gradient(ellipse at 32% 40%, rgba(255, 255, 255, 0.7), transparent 55%),
+        radial-gradient(ellipse at 68% 60%, rgba(255, 255, 255, 0.45), transparent 52%);
+    filter: blur(28px);
+    opacity: 0.4;
+}
+.lcd-board {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 2%;
+    background: #0c2d1e;
+}
+.lcd-art {
+    position: absolute;
+    width: 244.6834%;
+    max-width: none;
+    height: 257.25%;
+    left: -98.9247%;
+    top: -132.25%;
+}
+.lcd-text {
+    position: absolute;
+    left: 9.8%;
+    top: 49%;
+    width: 79%;
+    margin: 0;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: clamp(11px, 1.05vw, 16px);
+    line-height: 1.3;
+    text-align: left;
+}
+.lcd-wires {
+    position: absolute;
+    left: 99.8%;
+    top: 0;
+    width: 12.3vw;
+    height: 100%;
+}
+.lcd-screen-reader-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+@media (min-width: 993px) {
+    .hero-chip {
+        top: 120px;
+        width: 306px;
+        min-width: 306px;
+        max-width: none;
+    }
+}
+@media (max-width: 992px) {
+    .landingBackground { padding-bottom: 270px; }
+    .hero-chip {
+        top: auto;
+        bottom: 240px;
+        width: 226.8px;
+    }
+}
+@media (min-width: 601px) and (max-width: 992px) {
+    .hero-chip { width: clamp(226.8px, calc(20.256vw + 105.06px), 306px); }
+    .lcd-definition { width: 300px; }
+    .lcd-text { font-size: 12px; }
+}
+@media (max-width: 600px) {
+    .landingBackground { padding-bottom: 210px; }
+    .hero-chip {
+        display: none;
+    }
+    .lcd-definition {
+        right: 8%;
+        width: min(82vw, 360px);
+        bottom: 40px;
+    }
+    .lcd-wires { width: 8.1vw; }
+    .lcd-text { font-size: clamp(11px, 3vw, 14px); }
+}
+
+</style>
