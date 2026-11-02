@@ -263,40 +263,6 @@ nav ul a {
     }
 }
 
-.definition {
-    @include flexPosition($alIte: flex-start);
-    padding: 5px 0 25px;
-    &-shape {
-        clip-path: polygon(0 0, 100% 0%, 90% 100%, 0% 100%);
-        background-color: color(secondary);
-        width: auto;
-        border-radius: 100px 14px 100px 100px;
-        padding: 2px 17px 2px 12px;
-        font-size: 18px;
-        font-size: size(lg);
-        font-style: italic;
-        color: color(font);
-        font-weight: 700;
-    }
-
-    > p {
-        font-weight: 400;
-        margin: 4px 20px 0 15px;
-        text-align: left !important;
-    }
-
-    @include responsive(sm-down) {
-        padding: 5px 0 15px;
-        &-shape {
-            padding: 2px 17px 2px 12px;
-            font-size: 16px;
-        }
-        > p {
-            margin: 2.5px 0 2px 10px;
-            font-size: 16px;
-        }
-    }
-}
 // End of landing section
 
 // "About" section
