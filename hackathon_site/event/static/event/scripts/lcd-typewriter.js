@@ -13,7 +13,10 @@
     let startedAt;
     function type(now) {
         if (startedAt === undefined) startedAt = now;
-        const count = Math.min(sentence.length, Math.floor((now - startedAt) / millisecondsPerCharacter));
+        const count = Math.min(
+            sentence.length,
+            Math.floor((now - startedAt) / millisecondsPerCharacter),
+        );
         visible.textContent = sentence.slice(0, count);
         if (count < sentence.length) requestAnimationFrame(type);
     }
