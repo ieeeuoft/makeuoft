@@ -340,6 +340,24 @@ class Application(models.Model):
         help_text="If you had a million dollars to invest in one technology brand, what would it be and why?",
         max_length=1000,
     )
+    community_problem = models.TextField(
+        null=False,
+        default="",
+        help_text="What is one problem in your community or everyday life that you would like to solve through technology?",
+        max_length=1000,
+    )
+    proud_project = models.TextField(
+        null=False,
+        default="",
+        help_text="Tell us a project that you have made in the past (technical or non-technical) that you are most proud of? What aspect of that project stood out to you?",
+        max_length=1000,
+    )
+    deadline_plan = models.TextField(
+        null=False,
+        default="",
+        help_text="It’s 11 PM, and you have a project due at 11 AM tomorrow. Would you choose to stay up late or wake up early to finish it, and what would your plan be?",
+        max_length=1000,
+    )
     discovery_method = models.TextField(
         null=False,
         default="",
@@ -358,18 +376,18 @@ class Application(models.Model):
         help_text="I authorize you to share my application/registration information with Major League Hacking"
         " for event administration, ranking, and administration (including the creation of linked accounts on MLH and "
         '<a href="https://dev.to" rel="noopener noreferrer" target="_blank">DEV</a>) in line with the '
-        "MLH Privacy Policy. "
+        '<a href="https://github.com/MLH/mlh-policies/blob/main/privacy-policy.md" rel="noopener noreferrer" target="_blank">MLH Privacy Policy</a>. '
         "I further agree to the terms of both the "
         '<a href="https://github.com/MLH/mlh-policies/blob/main/contest-terms.md" rel="noopener noreferrer" target="_blank">MLH Contest Terms and Conditions</a>'
         " and the "
-        "MLH Privacy Policy.",
+        '<a href="https://github.com/MLH/mlh-policies/blob/main/privacy-policy.md" rel="noopener noreferrer" target="_blank">MLH Privacy Policy</a>.',
         blank=False,
         null=False,
         default=False,
     )
 
     email_agree = models.BooleanField(
-        help_text="I authorize MLH + DEV to send me occasional emails about relevant events, career opportunities, and community announcements.",
+        help_text="I authorize MLH and DEV to send me occasional emails about relevant events, career opportunities, and community announcements.",
         blank=True,
         null=True,
         default=False,

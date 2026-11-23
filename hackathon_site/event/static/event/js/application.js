@@ -1,5 +1,3 @@
 $(document).ready(function () {
-    $(
-        "#what_hackathon_experience, #id_why_participate, #id_what_technical_experience"
-    ).characterCounter();
+    $("#id_community_problem, #id_proud_project, #id_deadline_plan").characterCounter();
 });
